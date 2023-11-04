@@ -5,7 +5,6 @@ module.exports = {
 
     addProductToCart: async (req, res) => {
         const userId = req.user.id;
-        console.log(userId);
         const {  productId, totalPrice, quantity } = req.body;
         let count;
         try {
@@ -59,8 +58,9 @@ module.exports = {
                 path: 'productId',
                 select: "imageUrl title restaurant rating ratingCount"
             })
+            const count = await Cart.countDocuments({userId: id });
 
-            res.status(200).json({ status: true, cart: userCart });
+            res.status(200).json({ status: true, cart: userCart, cartCount: count });
         } catch (error) {
             res.status(500).json(error);
         }
@@ -82,7 +82,7 @@ module.exports = {
         const userId = req.user.id;
     
         try {
-            const count = await Cart.countDocuments({ userId });
+            const count = await Cart.countDocuments({ userId: userId });
             res.status(200).json({ status: true, cartCount: count });
         } catch (error) {
             res.status(500).json(error);

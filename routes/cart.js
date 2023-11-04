@@ -12,7 +12,7 @@ router.post("/decrement",verifyTokenAndAuthorization, cartController.decrementPr
 router.delete("/delete/:id",verifyTokenAndAuthorization, cartController.removeProductFromCart);
 
 
-router.get("/:id",verifyTokenAndAuthorization, cartController.fetchUserCart);
+router.get("/",verifyTokenAndAuthorization, cartController.fetchUserCart);
 
 router.get("/count",verifyTokenAndAuthorization, cartController.getCartCount);
 
