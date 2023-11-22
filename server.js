@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const dotenv = require('dotenv');
-
+const compression = require('compression');
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user");
 const restRoute = require("./routes/restaurant");
@@ -30,6 +30,10 @@ mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log("connected to the db")).catch((err) => { console.log(err) });
 
 
+app.use(compression({
+    level: 6,
+    threshold: 0
+}))
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

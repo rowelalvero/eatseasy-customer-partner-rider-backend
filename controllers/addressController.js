@@ -1,7 +1,9 @@
 const Address = require('../models/Address')
+const User = require('../models/User')
 
 module.exports = {
     createAddress: async (req, res) => {
+       
         const address = new Address({
             userId: req.user.id,
             district: req.body.district,
@@ -25,6 +27,30 @@ module.exports = {
             res.status(500).json(error);
         }
     },
+    setDefaultAddress: async (req, res) => {
+        const userId = req.body.userId;
+        const addressId = req.body.addressId;
+    
+        try {
+            // Set all addresses for this user to non-default
+            await Address.updateMany({ userId }, { default: false });
+    
+            // Now set the specified address as default
+            const updatedAddress = await Address.findByIdAndUpdate(addressId, { default: true }, { new: true });
+    
+            if (updatedAddress) {
+                // Update the user's address field to the new default address
+                await User.findByIdAndUpdate(userId, { address: addressId }, { new: true });
+    
+                res.status(200).json({ status: true, message: 'Address set as default successfully', data: updatedAddress });
+            } else {
+                res.status(404).json({ status: false, message: 'Address not found' });
+            }
+        } catch (error) {
+            res.status(500).json({status: false, message:error.message});
+        }
+    },
+    
 
     deleteAddress: async (req, res) => {
         const  addressId  = req.params.id;
@@ -76,26 +102,7 @@ module.exports = {
         }
     },
 
-    setDefaultAddress: async (req, res) => {
-        const { userId, addressId } = req.body;
-    
-        try {
-            // Set all addresses for this user to non-default
-            await Address.updateMany({ userId }, { default: false });
-    
-            // Now set the specified address as default
-            const updatedAddress = await Address.findByIdAndUpdate(addressId, { default: true }, { new: true });
-    
-            if (updatedAddress) {
-                res.status(200).json({ status: true, message: 'Address set as default successfully', data: updatedAddress });
-            } else {
-                res.status(404).json({ status: false, message: 'Address not found' });
-            }
-        } catch (error) {
-            res.status(500).json(error);
-        }
-    },
-    
+  
     
     
 }

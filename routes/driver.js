@@ -1,22 +1,23 @@
 const router = require("express").Router();
 const driverController = require("../controllers/driverController");
+const {verifyTokenAndAuthorization, verifyDriver}= require("../middlewares/verifyToken")
 
 
 
 // UPDATE DRIVER
-router.post("/", driverController.registerDriver);
+router.post("/",verifyTokenAndAuthorization, driverController.registerDriver);
 
 // DELETE DRIVER
 router.delete("/:id", driverController.deleteDriver);
 
 // UPDATE DRIVER
-router.put("/:id", driverController.updateDriverDetails);
+router.put("/:id",verifyDriver, driverController.updateDriverDetails);
 
 // GET DRIVER
-router.get("/:id", driverController.getDriverDetails);
+router.get("/",verifyTokenAndAuthorization, driverController.getDriverDetails);
 
 // TOGGLE DRIVER AVAILABILITY
-router.patch("/availability/:id", driverController.setDriverAvailability);
+router.patch("/availability/:id",verifyTokenAndAuthorization, driverController.setDriverAvailability);
 
 
 module.exports = router;

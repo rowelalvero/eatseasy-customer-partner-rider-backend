@@ -3,6 +3,8 @@ const foodController = require("../controllers/foodController");
 
 
 // UPADATE category
+router.get('/restaurant-foods/:id', foodController.getFoodList)
+
 router.post("/", foodController.addFood);
 
 router.post("/tags/:id", foodController.addFoodTag);
@@ -17,7 +19,6 @@ router.delete("/:id", foodController.deleteFoodById);
 
 router.patch("/:id", foodController.foodAvailability);
 
-router.get("/restaurant/:restaurantId", foodController.getFoodsByRestaurant);
 
 router.get("/recommendation/:code", foodController.getRandomFoodsByCode);
 

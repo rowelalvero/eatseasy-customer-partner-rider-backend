@@ -8,7 +8,7 @@ module.exports = {
             await order.save();
             res.status(201).json({ status: true, message: 'Order placed successfully', data: order });
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({status: false,message: error.message});
         }
     },
 
@@ -100,10 +100,10 @@ module.exports = {
 
     updatePaymentStatus: async (req, res) => {
         const orderId  = req.params.id;
-        const { paymentStatus } = req.body;
+        
     
         try {
-            const updatedOrder = await Order.findByIdAndUpdate(orderId, { paymentStatus }, { new: true });
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { paymentStatus: 'Completed' }, { new: true });
             if (updatedOrder) {
                 res.status(200).json({ status: true, message: 'Payment status updated successfully', data: updatedOrder });
             } else {
@@ -112,7 +112,97 @@ module.exports = {
         } catch (error) {
             res.status(500).json(error);
         }
-    }
+    },
+
+    getNearbyOrders: async (req, res) => {
+        try {
+            const parcels = await Order.find({orderStatus: req.params.status
+            }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords')
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile' // Replace with actual field names for suid
+                })
+                .populate({
+                    path: 'restaurantId',
+                    select: 'title coords imageUrl' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'deliveryAddress',
+                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                })
+
+
+
+            res.status(200).json({ status: true, message: 'Parcels retrieved successfully.', data: parcels });
+        } catch (error) {
+            res.status(500).json({ status: false, message: 'Error retrieving parcels', error: error.message });
+        }
+    },
+
+    getPickedOrders: async (req, res) => {
+        let status
+        if(req.params.status === '2'){
+            status = "Out-for-Delivery"
+        }
+        else if(req.params.status === '3'){
+            status = "Delivered"
+        }
+        else{
+            status = "Preparing"
+        }
+        try {
+            const parcels = await Order.find({orderStatus: status, driverId: req.params.driver 
+            }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords driverId orderStatus orderStatus orderStatus orderStatus orderStatus orderStatus orderStatus orderStatus')
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile' // Replace with actual field names for suid
+                })
+                .populate({
+                    path: 'restaurantId',
+                    select: 'title coords imageUrl' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'deliveryAddress',
+                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                })
+
+
+
+            res.status(200).json({ status: true, message: 'Parcels retrieved successfully.', data: parcels });
+        } catch (error) {
+            res.status(500).json({ status: false, message: 'Error retrieving parcels', error: error.message });
+        }
+    },
+
+    addDriver: async (req, res) => {
+        const  orderId = req.params.id;
+        const driver  = req.params.driver;
     
-    
+        try {
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Out-for-Delivery', driverId: driver }, { new: true });
+            if (updatedOrder) {
+                res.status(200).json({ status: true, message: 'Order status updated successfully'});
+            } else {
+                res.status(404).json({ status: false, message: 'Order not found' });
+            }
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
+    markAsDelivered: async (req, res) => {
+        const  orderId = req.params.id;
+
+        try {
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true });
+            if (updatedOrder) {
+                res.status(200).json({ status: true, message: 'Order delivered successfully'});
+            } else {
+                res.status(404).json({ status: false, message: 'Order not found' });
+            }
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
 }

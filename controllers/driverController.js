@@ -2,21 +2,32 @@ const Driver = require('../models/Driver')
 
 module.exports = {
     registerDriver: async (req, res) => {
-        const driver = new Driver(req.body);
+        console.log("-----hit register driver----");
+        const userId = req.user.id;
+        const newDriver = new Driver({
+            driver: userId, 
+            vehicleType: req.body.vehicleType,
+            phone: req.body.phone,
+            vehicleNumber: req.body.vehicleNumber,
+            currentLocation: {
+                latitude: req.body.latitude,
+                longitude: req.body.longitude
+            },
+        });
     
         try {
-            await driver.save();
-            res.status(201).json({ status: true, message: 'Driver registered successfully', data: driver });
+            await newDriver.save();
+            res.status(201).json({ status: true, message: 'Driver successfully added', data: newDriver });
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({ message: 'Error adding driver', error: error.message });
         }
-    },
+    },    
 
     getDriverDetails: async (req, res) => {
-        const driverId = req.params.id;
+        const driverId = req.user.id;
     
         try {
-            const driver = await Driver.find({driver: driverId}).populate('driver');
+            const driver = await Driver.find({driver: driverId})
             if (driver) {
                 res.status(200).json({ status: true, data: driver });
             } else {

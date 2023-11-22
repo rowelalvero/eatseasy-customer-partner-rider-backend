@@ -66,7 +66,7 @@ module.exports = {
             res.status(200).json({ ...others, userToken });
 
         } catch (error) {
-            res.status(500)
+            res.status({status: false, error: error.message});
         }
     }
 }

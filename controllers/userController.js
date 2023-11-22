@@ -31,7 +31,7 @@ module.exports = {
   
     getUser: async (req, res) => {
         try {
-            const user = await User.findById(req.user.id);
+            const user = await User.findById(req.user.id).populate('address');
             const { password, __v, createdAt, ...userdata } = user._doc;
             res.status(200).json(userdata)
         } catch (error) {

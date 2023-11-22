@@ -17,7 +17,11 @@ module.exports = {
         const foodId = req.params.id;
 
         try {
-            const food = await Food.findById(foodId) // populate the restaurant field if needed
+            const food = await Food.findById(foodId)
+            .populate({
+                path: 'restaurant',
+                select: 'coords'
+            })
 
             if (!food) {
                 return res.status(404).json({ status: false, message: 'Food item not found' });
@@ -29,21 +33,18 @@ module.exports = {
         }
     },
 
-    getFoodsByRestaurant: async (req, res) => {
-        const restaurantId = req.params.restaurantId;
+    getFoodList: async (req, res) => {
+      const restaurant = req.params.id
 
         try {
-            const foods = await Food.find({ restaurant: restaurantId });
+            const foods = await Food.find({restaurant: restaurant});
 
-            if (!foods || foods.length === 0) {
-                return res.status(404).json({ status: false, message: 'No food items found for this restaurant' });
-            }
-
-            res.status(200).json(foods);
+            res.status(200).json({ status: true, data: foods}); 
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({ status: false, message: error.message });  
         }
-    },
+    }, 
+    
 
     deleteFoodById: async (req, res) => {
         const foodId = req.params.id;
@@ -137,7 +138,6 @@ module.exports = {
            const randomFoodItems = await Food.aggregate([
                 { $match: { code: req.params.code } },
                 { $sample: { size: 5 } },
-                { $project: { _id: 0 } }
             ]);
 
             res.status(200).json(randomFoodItems);
