@@ -195,8 +195,32 @@ module.exports = {
 
             res.status(200).json(foods);
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({error: error.message , status: false});
         }
-    }
+    },
+
+    searchFoods: async (req, res) => {
+        const search = req.params.food
+        try {
+            const results = await Food.aggregate(
+                [
+                    {
+                      $search: {
+                        index: "foods",
+                        text: {
+                          query: search,
+                          path: {
+                            wildcard: "*"
+                          }
+                        }
+                      }
+                    }
+                  ]
+            )
+            res.status(200).json(results);
+        } catch (error) {
+            res.status(500).json({error: error.message , status: false});
+        }
+    },
 
 }

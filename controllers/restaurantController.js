@@ -19,7 +19,7 @@ module.exports ={
             // Check if code is provided in the params
             if (req.params.code) {
                 randomRestaurants = await Restaurant.aggregate([
-                    { $match: { code: req.params.code } },
+                    { $match: { code: req.params.code, serviceAvailability: true } },
                     { $sample: { size: 5 } },
                     { $project: {  __v: 0 } }
                 ]);
@@ -85,7 +85,6 @@ module.exports ={
     },
     getRestaurant: async (req, res) => {
         const id = req.params.id;
-        console.log(id);
 
         try {
             const restaurant = await Restaurant.findById(id) // populate the restaurant field if needed
