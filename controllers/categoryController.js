@@ -56,15 +56,18 @@ module.exports = {
         }
     },
 
-     getAllCategories: async (req, res) => {
+    getAllCategories: async (req, res) => {
         try {
-            const categories = await Category.find({}, {__v: 0});
+            // Find categories where 'title' is not equal to "More"
+            const categories = await Category.find({ title: { $ne: "More" } }, { __v: 0 });
+    
             res.status(200).json(categories);
         } catch (error) {
             console.error("Error fetching categories:", error);
             res.status(500).json({ status: false, message: 'An error occurred while fetching the categories.' });
         }
     },
+    
 
      patchCategoryImage: async (req, res) => {
         const id  = req.params;

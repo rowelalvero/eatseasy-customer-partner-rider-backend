@@ -6,7 +6,8 @@ module.exports = {
     
         try {
             await order.save();
-            res.status(201).json({ status: true, message: 'Order placed successfully', data: order });
+            const orderId = order.id; 
+            res.status(201).json({ status: true, message: 'Order placed successfully', orderId: orderId });
         } catch (error) {
             res.status(500).json({status: false,message: error.message});
         }

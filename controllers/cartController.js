@@ -41,9 +41,9 @@ module.exports = {
         try {
             await Cart.findOneAndDelete({_id:itemId});
             count = await Cart.countDocuments({ userId });
-            res.status(200).json({ status: true, cartCount: count });
+            res.status(200).json({ status: true, count: count });
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({ status: false, message: error.message });
         }
     },
 
@@ -56,11 +56,15 @@ module.exports = {
             const userCart = await Cart.find({ userId: id })
             .populate({
                 path: 'productId',
-                select: "imageUrl title restaurant rating ratingCount"
+                select: "imageUrl title restaurant rating ratingCount",
+                populate: {
+                    path: 'restaurant',
+                    select: "time coords" // Add the fields you want to select from the restaurant
+                }
             })
             const count = await Cart.countDocuments({userId: id });
 
-            res.status(200).json({ status: true, cart: userCart, cartCount: count });
+            res.status(200).json(userCart);
         } catch (error) {
             res.status(500).json(error);
         }

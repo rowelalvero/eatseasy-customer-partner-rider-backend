@@ -4,9 +4,9 @@ const UserSchema = new mongoose.Schema(
     {
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
-        uid: { type: String, required: true, unique: true },
+        uid: { type: String, required: true },
         password: { type: String, required: true },
-        phone: { type: String, required: false },
+        phone: { type: String, required: false, default:"01234567890"},
         address: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Address", 

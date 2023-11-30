@@ -13,7 +13,7 @@ router.delete("/:id",verifyTokenAndAuthorization, addressController.deleteAddres
 
 router.get("/default",verifyTokenAndAuthorization, addressController.getDefaultAddress);
 
-router.get("/:id",verifyTokenAndAuthorization, addressController.getUserAddresses);
+router.get("/all",verifyTokenAndAuthorization, addressController.getUserAddresses);
 
 router.put("/:id",verifyTokenAndAuthorization, addressController.getUserAddresses);
 

@@ -39,7 +39,7 @@ module.exports = {
         try {
             const foods = await Food.find({restaurant: restaurant});
 
-            res.status(200).json({ status: true, data: foods}); 
+            res.status(200).json(foods); 
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });  
         }

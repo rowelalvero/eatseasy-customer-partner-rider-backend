@@ -22,9 +22,9 @@ module.exports = {
                 await Address.updateMany({ userId: req.body.userId }, { default: false });
             }
             await address.save();
-            res.status(201).json({ status: true, message: 'Address successfully added', data: address });
+            res.status(201).json({ status: true, message: 'Address successfully added'});
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({status: false, message: error.message});
         }
     },
     setDefaultAddress: async (req, res) => {
@@ -75,14 +75,14 @@ module.exports = {
     },
 
     getUserAddresses: async (req, res) => {
-        const  userId  = req.params.id;
+        const  userId  = req.user.id;
 
     
         try {
             const addresses = await Address.find({ userId });
-            res.status(200).json({ status: true, data: addresses });
+            res.status(200).json(addresses);
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({status: false, message: error.message});
         }
     },
 
