@@ -44,6 +44,38 @@ module.exports ={
         }
     },
 
+    
+
+    getAllRandomRestaurants: async (req, res) => {
+        try {
+            let randomRestaurants = [];
+    
+            // Check if code is provided in the params
+            if (req.params.code) {
+                randomRestaurants = await Restaurant.aggregate([
+                    { $match: { code: req.params.code, serviceAvailability: true } },
+                    { $project: {  __v: 0 } }
+                ]);
+            }
+            
+            // If no code provided in params or no restaurants match the provided code
+            if (!randomRestaurants.length) {
+                randomRestaurants = await Restaurant.aggregate([
+                    { $project: {  __v: 0 } }
+                ]);
+            }
+    
+            // Respond with the results
+            if (randomRestaurants.length) {
+                res.status(200).json(randomRestaurants);
+            } else {
+                res.status(404).json({ message: 'No restaurants found' });
+            }
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    },
+
      serviceAvailability: async (req, res) => {
         const restaurantId = req.params; 
     

@@ -45,6 +45,45 @@ module.exports = {
         }
     },
 
+    getUserOrders: async (req, res) => {
+        const userId = req.user.id;
+        const { paymentStatus, orderStatus } = req.query;
+    
+        let query = { userId };
+    
+        if (paymentStatus) {
+            query.paymentStatus = paymentStatus;
+        }
+    
+        if (orderStatus) {
+            query.orderStatus = orderStatus;
+        }
+    
+        // // Calculate the start of today
+        // const today = new Date();
+        // today.setHours(0, 0, 0, 0);
+    
+        // // Calculate the start of yesterday
+        // const yesterday = new Date(today);
+        // yesterday.setDate(yesterday.getDate() - 1);
+    
+        // // Add date range to the query
+        // query.orderDate = { $gte: yesterday, $lt: today };
+    
+        try {
+            const orders = await Order.find(query)
+                .populate({
+                    path: 'orderItems.foodId',
+                    select: 'imageUrl title rating time'
+                })
+                // .populate('driverId');
+            
+            res.status(200).json(orders);
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    },
+
     deleteOrder: async (req, res) => {
         const { orderId } = req.params;
     
@@ -56,16 +95,7 @@ module.exports = {
         }
     },
 
-    getUserOrders: async (req, res) => {
-        const userId = req.user.id;
-    
-        try {
-            const orders = await Order.find({ userId }).populate('restaurantId').populate('driverId');
-            res.status(200).json({ status: true, data: orders });
-        } catch (error) {
-            res.status(500).json(error);
-        }
-    },
+
 
     rateOrder: async (req, res) => {
         const orderId  = req.params.id;
@@ -117,15 +147,19 @@ module.exports = {
 
     getNearbyOrders: async (req, res) => {
         try {
-            const parcels = await Order.find({orderStatus: req.params.status
-            }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords')
+            const parcels = await Order.find({orderStatus: req.params.status, paymentStatus: 'Completed'
+            }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
                 .populate({
                     path: 'userId',
                     select: 'phone profile' // Replace with actual field names for suid
                 })
                 .populate({
                     path: 'restaurantId',
-                    select: 'title coords imageUrl' // Replace with actual field names for courier
+                    select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'orderItems.foodId',
+                    select: 'title imageUrl time' // Replace with actual field names for courier
                 })
                 .populate({
                     path: 'deliveryAddress',
@@ -134,7 +168,7 @@ module.exports = {
 
 
 
-            res.status(200).json({ status: true, message: 'Parcels retrieved successfully.', data: parcels });
+            res.status(200).json(parcels);
         } catch (error) {
             res.status(500).json({ status: false, message: 'Error retrieving parcels', error: error.message });
         }
@@ -142,14 +176,14 @@ module.exports = {
 
     getPickedOrders: async (req, res) => {
         let status
-        if(req.params.status === '2'){
-            status = "Out-for-Delivery"
-        }
-        else if(req.params.status === '3'){
+        if(req.params.status === 'Out_for_Delivery'){
+            status = "Out_for_Delivery"
+        }else if(req.params.status === 'Delivered'){
             status = "Delivered"
-        }
-        else{
-            status = "Preparing"
+        }else if(req.params.status === '5'){
+            status = "Manual"
+        }else{
+            status = "Cancelled"
         }
         try {
             const parcels = await Order.find({orderStatus: status, driverId: req.params.driver 

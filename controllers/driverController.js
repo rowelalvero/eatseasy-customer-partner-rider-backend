@@ -29,12 +29,12 @@ module.exports = {
         try {
             const driver = await Driver.find({driver: driverId})
             if (driver) {
-                res.status(200).json({ status: true, data: driver });
+                res.status(200).json(driver[0]);
             } else {
                 res.status(404).json({ status: false, message: 'Driver not found' });
             }
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({ status: false, message: error.message });
         }
     },
 

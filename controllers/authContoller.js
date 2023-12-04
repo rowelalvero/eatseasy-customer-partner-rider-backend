@@ -2,7 +2,7 @@ const User = require("../models/User");
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const admin = require('firebase-admin')
-
+const nodemailer = require('nodemailer');
 
 module.exports = {
     createUser: async (req, res) => {
@@ -82,5 +82,41 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ status: false, error: error.message });
         }
-    }
+    },
+
+
 }
+
+const verifyEmail = () => {
+    let transport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.PASSWORD
+        }
+    })
+
+    function generateRandomNumber() {
+        return Math.floor(Math.random() * (10000000 - 1000000) + 1000000);
+    }
+
+    sendVerificationEmail = ({ _id, email }, res) => {
+        const currentUrl = 'https://localhost:6003/';
+
+
+
+        const token = jwt.sign({ _id }, process.env.JWT_ACC_ACTIVATE, { expiresIn: '12hours' });
+
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: email,
+            subject: 'Account Activation Link',
+            html: `
+            <p>Please click on given link to verify your account</p>
+            <p>This link <b>expires in 12 hours</b>.</p>
+            <p>Please click on the following link to complete your activation: <a href="${currentUrl}/auth/activate/${_id}/${generateRandomNumber()}">Click Here</a></p>
+            
+            `
+        }
+    }
+};

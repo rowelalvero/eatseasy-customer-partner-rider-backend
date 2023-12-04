@@ -95,7 +95,7 @@ module.exports = {
         try {
             let categories = await Category.aggregate([
                 { $match: { value: { $ne: "more" } } },  // Exclude the "more" category from random selection
-                { $sample: { size: 7 } }  // Get 7 random categories
+                { $sample: { size: 4 } }  // Get 7 random categories
             ]);
     
             // Find the "More" category in the database

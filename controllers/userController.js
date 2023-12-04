@@ -2,6 +2,7 @@ const User = require("../models/User");
 
 
 module.exports = {
+
     updateUser: async (req, res) => {
         if (req.body.password) {
             req.body.password = CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString();

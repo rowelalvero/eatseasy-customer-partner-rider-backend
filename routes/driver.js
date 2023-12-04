@@ -14,7 +14,7 @@ router.delete("/:id", driverController.deleteDriver);
 router.put("/:id",verifyDriver, driverController.updateDriverDetails);
 
 // GET DRIVER
-router.get("/",verifyTokenAndAuthorization, driverController.getDriverDetails);
+router.get("/",verifyDriver, driverController.getDriverDetails);
 
 // TOGGLE DRIVER AVAILABILITY
 router.patch("/availability/:id",verifyTokenAndAuthorization, driverController.setDriverAvailability);

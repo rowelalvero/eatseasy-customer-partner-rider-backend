@@ -18,10 +18,10 @@ module.exports = {
 
         try {
             const food = await Food.findById(foodId)
-            .populate({
-                path: 'restaurant',
-                select: 'coords'
-            })
+                .populate({
+                    path: 'Food',
+                    select: 'coords'
+                })
 
             if (!food) {
                 return res.status(404).json({ status: false, message: 'Food item not found' });
@@ -34,17 +34,17 @@ module.exports = {
     },
 
     getFoodList: async (req, res) => {
-      const restaurant = req.params.id
+        const restaurant = req.params.id
 
         try {
-            const foods = await Food.find({restaurant: restaurant});
+            const foods = await Food.find({ restaurant: restaurant });
 
-            res.status(200).json(foods); 
+            res.status(200).json(foods);
         } catch (error) {
-            res.status(500).json({ status: false, message: error.message });  
+            res.status(500).json({ status: false, message: error.message });
         }
-    }, 
-    
+    },
+
 
     deleteFoodById: async (req, res) => {
         const foodId = req.params.id;
@@ -130,22 +130,39 @@ module.exports = {
         }
     },
 
+
     getRandomFoodsByCode: async (req, res) => {
         try {
-
-            // If code is provided in the params, try to fetch matching food items
-
-           const randomFoodItems = await Food.aggregate([
-                { $match: { code: req.params.code } },
-                { $sample: { size: 5 } },
-            ]);
-
-            res.status(200).json(randomFoodItems);
-
+            let randomFoodList = [];
+    
+            // Check if code is provided in the params
+            if (req.params.code) {
+                randomFoodList = await Food.aggregate([
+                    { $match: { code: req.params.code } },
+                    { $sample: { size: 3 } },
+                    { $project: {  __v: 0 } }
+                ]);
+            }
+            
+            // If no code provided in params or no Foods match the provided code
+            if (!randomFoodList.length) {
+                randomFoodList = await Food.aggregate([
+                    { $sample: { size: 5 } },
+                    { $project: {  __v: 0 } }
+                ]);
+            }
+    
+            // Respond with the results
+            if (randomFoodList.length) {
+                res.status(200).json(randomFoodList);
+            } else {
+                res.status(404).json({status: false, message: 'No Foods found' });
+            }
         } catch (error) {
             res.status(500).json(error);
         }
     },
+
 
     addFoodType: async (req, res) => {
         const foodId = req.params.id;
@@ -195,7 +212,7 @@ module.exports = {
 
             res.status(200).json(foods);
         } catch (error) {
-            res.status(500).json({error: error.message , status: false});
+            res.status(500).json({ error: error.message, status: false });
         }
     },
 
@@ -205,21 +222,21 @@ module.exports = {
             const results = await Food.aggregate(
                 [
                     {
-                      $search: {
-                        index: "foods",
-                        text: {
-                          query: search,
-                          path: {
-                            wildcard: "*"
-                          }
+                        $search: {
+                            index: "foods",
+                            text: {
+                                query: search,
+                                path: {
+                                    wildcard: "*"
+                                }
+                            }
                         }
-                      }
                     }
-                  ]
+                ]
             )
             res.status(200).json(results);
         } catch (error) {
-            res.status(500).json({error: error.message , status: false});
+            res.status(500).json({ error: error.message, status: false });
         }
     },
 
