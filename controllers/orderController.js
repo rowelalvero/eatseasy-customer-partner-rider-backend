@@ -175,12 +175,13 @@ module.exports = {
     },
 
     getPickedOrders: async (req, res) => {
+        
         let status
         if(req.params.status === 'Out_for_Delivery'){
             status = "Out_for_Delivery"
         }else if(req.params.status === 'Delivered'){
             status = "Delivered"
-        }else if(req.params.status === '5'){
+        }else if(req.params.status === 'Manual'){
             status = "Manual"
         }else{
             status = "Cancelled"
@@ -201,9 +202,8 @@ module.exports = {
                     select: 'addressLine1 city district' // Replace with actual field names for courier
                 })
 
-
-
-            res.status(200).json({ status: true, message: 'Parcels retrieved successfully.', data: parcels });
+                console.log(parcels.length);
+            res.status(200).json(parcels);
         } catch (error) {
             res.status(500).json({ status: false, message: 'Error retrieving parcels', error: error.message });
         }
@@ -214,7 +214,7 @@ module.exports = {
         const driver  = req.params.driver;
     
         try {
-            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Out-for-Delivery', driverId: driver }, { new: true });
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Out_for_Delivery', driverId: driver }, { new: true });
             if (updatedOrder) {
                 res.status(200).json({ status: true, message: 'Order status updated successfully'});
             } else {
