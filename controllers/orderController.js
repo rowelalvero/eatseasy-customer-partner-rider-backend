@@ -3,19 +3,19 @@ const Order = require("../models/Orders")
 module.exports = {
     placeOrder: async (req, res) => {
         const order = new Order(req.body);
-    
+
         try {
             await order.save();
-            const orderId = order.id; 
+            const orderId = order.id;
             res.status(201).json({ status: true, message: 'Order placed successfully', orderId: orderId });
         } catch (error) {
-            res.status(500).json({status: false,message: error.message});
+            res.status(500).json({ status: false, message: error.message });
         }
     },
 
     getOrderDetails: async (req, res) => {
-        const orderId  = req.params.id;
-    
+        const orderId = req.params.id;
+
         try {
             const order = await Order.findById(orderId)
                 .populate({
@@ -34,7 +34,7 @@ module.exports = {
                     path: 'driverId',
                     select: 'name phone'  // Fetch only the name and phone of the driver
                 });
-    
+
             if (order) {
                 res.status(200).json({ status: true, data: order });
             } else {
@@ -48,36 +48,36 @@ module.exports = {
     getUserOrders: async (req, res) => {
         const userId = req.user.id;
         const { paymentStatus, orderStatus } = req.query;
-    
+
         let query = { userId };
-    
+
         if (paymentStatus) {
             query.paymentStatus = paymentStatus;
         }
-    
+
         if (orderStatus) {
             query.orderStatus = orderStatus;
         }
-    
+
         // // Calculate the start of today
         // const today = new Date();
         // today.setHours(0, 0, 0, 0);
-    
+
         // // Calculate the start of yesterday
         // const yesterday = new Date(today);
         // yesterday.setDate(yesterday.getDate() - 1);
-    
+
         // // Add date range to the query
         // query.orderDate = { $gte: yesterday, $lt: today };
-    
+
         try {
             const orders = await Order.find(query)
                 .populate({
                     path: 'orderItems.foodId',
                     select: 'imageUrl title rating time'
                 })
-                // .populate('driverId');
-            
+            // .populate('driverId');
+
             res.status(200).json(orders);
         } catch (error) {
             res.status(500).json(error);
@@ -86,7 +86,7 @@ module.exports = {
 
     deleteOrder: async (req, res) => {
         const { orderId } = req.params;
-    
+
         try {
             await Order.findByIdAndDelete(orderId);
             res.status(200).json({ status: true, message: 'Order deleted successfully' });
@@ -98,9 +98,9 @@ module.exports = {
 
 
     rateOrder: async (req, res) => {
-        const orderId  = req.params.id;
+        const orderId = req.params.id;
         const { rating, feedback } = req.body;
-    
+
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { rating, feedback }, { new: true });
             if (updatedOrder) {
@@ -114,9 +114,9 @@ module.exports = {
     },
 
     updateOrderStatus: async (req, res) => {
-        const  orderId = req.params.id;
-        const {orderStatus}  = req.body;
-    
+        const orderId = req.params.id;
+        const { orderStatus } = req.body;
+
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus }, { new: true });
             if (updatedOrder) {
@@ -130,9 +130,9 @@ module.exports = {
     },
 
     updatePaymentStatus: async (req, res) => {
-        const orderId  = req.params.id;
-        
-    
+        const orderId = req.params.id;
+
+
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { paymentStatus: 'Completed' }, { new: true });
             if (updatedOrder) {
@@ -147,7 +147,8 @@ module.exports = {
 
     getNearbyOrders: async (req, res) => {
         try {
-            const parcels = await Order.find({orderStatus: req.params.status, paymentStatus: 'Completed'
+            const parcels = await Order.find({
+                orderStatus: req.params.status, paymentStatus: 'Completed'
             }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
                 .populate({
                     path: 'userId',
@@ -175,36 +176,37 @@ module.exports = {
     },
 
     getPickedOrders: async (req, res) => {
-        
+
         let status
-        if(req.params.status === 'Out_for_Delivery'){
+        if (req.params.status === 'Out_for_Delivery') {
             status = "Out_for_Delivery"
-        }else if(req.params.status === 'Delivered'){
+        } else if (req.params.status === 'Delivered') {
             status = "Delivered"
-        }else if(req.params.status === 'Manual'){
+        } else if (req.params.status === 'Manual') {
             status = "Manual"
-        }else{
+        } else {
             status = "Cancelled"
         }
         try {
-            const parcels = await Order.find({orderStatus: status, driverId: req.params.driver 
+            const parcels = await Order.find({
+                orderStatus: status, driverId: req.params.driver
             }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
-            .populate({
-                path: 'userId',
-                select: 'phone profile' // Replace with actual field names for suid
-            })
-            .populate({
-                path: 'restaurantId',
-                select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
-            })
-            .populate({
-                path: 'orderItems.foodId',
-                select: 'title imageUrl time' // Replace with actual field names for courier
-            })
-            .populate({
-                path: 'deliveryAddress',
-                select: 'addressLine1 city district' // Replace with actual field names for courier
-            })
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile' // Replace with actual field names for suid
+                })
+                .populate({
+                    path: 'restaurantId',
+                    select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'orderItems.foodId',
+                    select: 'title imageUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'deliveryAddress',
+                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                })
 
             res.status(200).json(parcels);
         } catch (error) {
@@ -213,13 +215,30 @@ module.exports = {
     },
 
     addDriver: async (req, res) => {
-        const  orderId = req.params.id;
-        const driver  = req.params.driver;
-    
+        const orderId = req.params.id;
+        const driver = req.params.driver;
+
         try {
-            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Out_for_Delivery', driverId: driver }, { new: true });
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Out_for_Delivery', driverId: driver }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile' // Replace with actual field names for suid
+                })
+                .populate({
+                    path: 'restaurantId',
+                    select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'orderItems.foodId',
+                    select: 'title imageUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'deliveryAddress',
+                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                });
+
             if (updatedOrder) {
-                res.status(200).json({ status: true, message: 'Order status updated successfully'});
+                res.status(200).json(updatedOrder);
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });
             }
@@ -229,12 +248,12 @@ module.exports = {
     },
 
     markAsDelivered: async (req, res) => {
-        const  orderId = req.params.id;
+        const orderId = req.params.id;
 
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true });
             if (updatedOrder) {
-                res.status(200).json({ status: true, message: 'Order delivered successfully'});
+                res.status(200).json({ status: true, message: 'Order delivered successfully' });
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });
             }
