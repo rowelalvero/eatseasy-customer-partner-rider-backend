@@ -188,21 +188,24 @@ module.exports = {
         }
         try {
             const parcels = await Order.find({orderStatus: status, driverId: req.params.driver 
-            }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords driverId orderStatus orderStatus orderStatus orderStatus orderStatus orderStatus orderStatus orderStatus')
-                .populate({
-                    path: 'userId',
-                    select: 'phone profile' // Replace with actual field names for suid
-                })
-                .populate({
-                    path: 'restaurantId',
-                    select: 'title coords imageUrl' // Replace with actual field names for courier
-                })
-                .populate({
-                    path: 'deliveryAddress',
-                    select: 'addressLine1 city district' // Replace with actual field names for courier
-                })
+            }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
+            .populate({
+                path: 'userId',
+                select: 'phone profile' // Replace with actual field names for suid
+            })
+            .populate({
+                path: 'restaurantId',
+                select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+            })
+            .populate({
+                path: 'orderItems.foodId',
+                select: 'title imageUrl time' // Replace with actual field names for courier
+            })
+            .populate({
+                path: 'deliveryAddress',
+                select: 'addressLine1 city district' // Replace with actual field names for courier
+            })
 
-                console.log(parcels.length);
             res.status(200).json(parcels);
         } catch (error) {
             res.status(500).json({ status: false, message: 'Error retrieving parcels', error: error.message });
