@@ -2,7 +2,6 @@ const Driver = require('../models/Driver')
 
 module.exports = {
     registerDriver: async (req, res) => {
-        console.log("-----hit register driver----");
         const userId = req.user.id;
         const newDriver = new Driver({
             driver: userId, 
