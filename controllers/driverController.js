@@ -19,7 +19,7 @@ module.exports = {
             await newDriver.save();
             res.status(201).json({ status: true, message: 'Driver successfully added', data: newDriver });
         } catch (error) {
-            res.status(500).json({ message: 'Error adding driver', error: error.message });
+            res.status(500).json({ status: false, message: error.message, });
         }
     },    
 

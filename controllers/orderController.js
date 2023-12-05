@@ -134,7 +134,23 @@ module.exports = {
 
 
         try {
-            const updatedOrder = await Order.findByIdAndUpdate(orderId, { paymentStatus: 'Completed' }, { new: true });
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { paymentStatus: 'Completed' }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile' // Replace with actual field names for suid
+                })
+                .populate({
+                    path: 'restaurantId',
+                    select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'orderItems.foodId',
+                    select: 'title imageUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'deliveryAddress',
+                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                });
             if (updatedOrder) {
                 res.status(200).json({ status: true, message: 'Payment status updated successfully', data: updatedOrder });
             } else {
@@ -251,9 +267,25 @@ module.exports = {
         const orderId = req.params.id;
 
         try {
-            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true });
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
+            .populate({
+                path: 'userId',
+                select: 'phone profile' // Replace with actual field names for suid
+            })
+            .populate({
+                path: 'restaurantId',
+                select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+            })
+            .populate({
+                path: 'orderItems.foodId',
+                select: 'title imageUrl time' // Replace with actual field names for courier
+            })
+            .populate({
+                path: 'deliveryAddress',
+                select: 'addressLine1 city district' // Replace with actual field names for courier
+            });
             if (updatedOrder) {
-                res.status(200).json({ status: true, message: 'Order delivered successfully' });
+                res.status(200).json(updatedOrder);
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });
             }
