@@ -4,19 +4,20 @@ const restaurantSchema = new mongoose.Schema({
     title: {type: String , required: true},
     time: {type: String , required: true},
     imageUrl: {type: String , required: true},
-    foods: {type: Array , required: true},
-    pickup: {type: Boolean , required: true, default: true},
-    delivery: {type: Boolean , required: true, default: true},
+    foods: {type: Array , default: []},
+    pickup: {type: Boolean , default: true},
+    delivery: {type: Boolean, default: true},
     owner: {type: String , required: true},
-    isAvailable: {type: Boolean , required: true, default: true},
+    isAvailable: {type: Boolean , default: false},
     code: {type: String , required: true},
     logoUrl: {type: String , required: true},
     rating: {
         type: Number,
         min: 1,
-        max: 5
+        max: 5,
+        default: 3
     },
-    ratingCount: {type: String },
+    ratingCount: {type: String, default: "210"},
     coords: {
         id: {type: String },
         latitude: {type: Number , required: true},

@@ -1,13 +1,17 @@
 const router = require("express").Router();
 const restaurantController = require("../controllers/restaurantController");
+const { verifyTokenAndAuthorization, verifyVendor } = require("../middlewares/verifyToken");
 
 
 // CREATE RESTAURANT
-router.post("/",  restaurantController.addRestaurant);
+router.post("/",verifyTokenAndAuthorization,  restaurantController.addRestaurant);
+
+
+router.get("/profile", verifyVendor, restaurantController.getRestaurantByOwner);
 
 
 // Sevices availability
-router.patch("/:id", restaurantController.serviceAvailability);
+router.patch("/:id",verifyVendor, restaurantController.serviceAvailability);
 
 
 
@@ -20,6 +24,7 @@ router.get("/all/:code", restaurantController.getAllRandomRestaurants);
 
 // // GET ALL RESTAURANT
 router.get("/byId/:id", restaurantController.getRestaurant);
+
 
 
 

@@ -161,6 +161,49 @@ module.exports = {
         }
     },
 
+    getRestaurantOrders: async (req, res) => {
+
+        let status
+        if (req.params.status === 'placed') {
+            status = "Placed"
+        }else if (req.params.status === 'preparing') {
+            status = "Preparing"
+        }  else if (req.params.status === 'out_for_delivery') {
+            status = "Out_for_Delivery"
+        } else if (req.params.status === 'delivered') {
+            status = "Delivered"
+        } else if (req.params.status === 'manual') {
+            status = "Manual"
+        }else if (req.params.status === 'cancelled') {
+            status = "Cancelled"
+        }
+        try {
+            const parcels = await Order.find({
+                orderStatus: status, restaurantId: req.params.restaurant, paymentStatus: 'Completed'
+            }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile' // Replace with actual field names for suid
+                })
+                .populate({
+                    path: 'restaurantId',
+                    select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'orderItems.foodId',
+                    select: 'title imageUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'deliveryAddress',
+                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                })
+
+            res.status(200).json(parcels);
+        } catch (error) {
+            res.status(500).json({ status: false, message: 'Error retrieving parcels', error: error.message });
+        }
+    },
+
     getNearbyOrders: async (req, res) => {
         try {
             const parcels = await Order.find({

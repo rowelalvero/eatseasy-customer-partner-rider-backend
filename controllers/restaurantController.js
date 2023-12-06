@@ -1,16 +1,49 @@
 const Restaurant =require("../models/Restaurant")
 
 module.exports ={
-     addRestaurant: async (req, res) => {
+    addRestaurant: async (req, res) => {
+        const owner = req.user.id;
+        const { title, time, imageUrl, code, logoUrl, coords } = req.body;
+    
+        // Check if required fields are not empty
+        if (!title || !time || !imageUrl ||  !code || !logoUrl || !coords || !coords.latitude || !coords.longitude || !coords.address || !coords.title) {
+            return res.status(400).json({ status: false, message: 'Missing required fields' });
+        }
+    
+        // Check if the restaurant code already exists
+        const existingRestaurant = await Restaurant.findOne({ owner: owner });
+        if (existingRestaurant) {
+            return res.status(400).json({ status: false, message: 'Restaurant with this code already exists' });
+        }
+    
         const newRestaurant = new Restaurant(req.body);
     
         try {
             await newRestaurant.save();
             res.status(201).json({ status: true, message: 'Restaurant successfully created' });
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({status: false, message: error.message });
         }
     },
+
+
+    getRestaurantByOwner: async (req, res) => {
+        const id = req.user.id;
+
+        try {
+            const restaurant = await Restaurant.findOne({owner: id}) // populate the restaurant field if needed
+
+
+            if (!restaurant) {
+                return res.status(404).json({ status: false, message: 'restaurant item not found' });
+            }
+
+            res.status(200).json(restaurant);
+        } catch (error) {
+            res.status(500).json({status: false, message: error.message });
+        }
+    },
+    
 
      getRandomRestaurants: async (req, res) => {
         try {
@@ -95,7 +128,7 @@ module.exports ={
     
             res.status(200).json({ message: 'Availability toggled successfully', isAvailable: restaurant.isAvailable });
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({status: false, message: error.message});
         }
     },
 
@@ -115,6 +148,7 @@ module.exports ={
             res.status(500).json({ status: false, message: 'An error occurred while deleting the restaurant.' });
         }
     },
+    
     getRestaurant: async (req, res) => {
         const id = req.params.id;
 
@@ -130,5 +164,7 @@ module.exports ={
             res.status(500).json(error);
         }
     },
+
+
     
 }
