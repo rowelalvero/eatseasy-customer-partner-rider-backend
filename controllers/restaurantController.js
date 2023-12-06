@@ -110,7 +110,7 @@ module.exports ={
     },
 
      serviceAvailability: async (req, res) => {
-        const restaurantId = req.params; 
+        const restaurantId = req.params.id; 
     
         try {
             // Find the restaurant by its ID
