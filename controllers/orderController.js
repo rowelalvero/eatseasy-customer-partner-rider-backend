@@ -337,4 +337,36 @@ module.exports = {
         }
     },
 
+    processOrder: async (req, res) => {
+        const orderId = req.params.id;
+        const status = req.params.status;
+
+        try {
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: status }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
+            .populate({
+                path: 'userId',
+                select: 'phone profile' // Replace with actual field names for suid
+            })
+            .populate({
+                path: 'restaurantId',
+                select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+            })
+            .populate({
+                path: 'orderItems.foodId',
+                select: 'title imageUrl time' // Replace with actual field names for courier
+            })
+            .populate({
+                path: 'deliveryAddress',
+                select: 'addressLine1 city district' // Replace with actual field names for courier
+            });
+            if (updatedOrder) {
+                res.status(200).json(updatedOrder);
+            } else {
+                res.status(404).json({ status: false, message: 'Order not found' });
+            }
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
 }
