@@ -3,13 +3,32 @@ const Food = require("../models/Food")
 
 module.exports = {
     addFood: async (req, res) => {
-        const newFood = new Food(req.body);
+        const { title, foodTags, category, foodType, code, isAvailable, restaurant, description,time, price, additives, imageUrl } = req.body;
 
+        // Simple validation
+        if (!title || !foodTags || !category || !foodType || !code || !description || !price || !additives || !time || !imageUrl || !restaurant || !isAvailable) {
+            return res.status(400).json({ status: false, message: 'Missing required fields' });
+        }
+        const newFood = new Food({
+            title: req.body.title,
+            foodTags: req.body.foodTags,
+            category: req.body.category,
+            foodType: req.body.foodType,
+            code: req.body.code,
+            isAvailable: req.body.isAvailable,
+            restaurant: req.body.restaurant,
+            description: req.body.description,
+            time: req.body.time,
+            price: req.body.price,
+            additives: req.body.additives,
+            imageUrl: req.body.imageUrl
+        });
+    
         try {
             await newFood.save();
-            res.status(201).json({ status: true, message: 'Food item successfully created' });
+            res.status(201).json({ status: true, message: 'Food item successfully created', data: newFood });
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({ status: false, message: error.message });
         }
     },
 
@@ -34,16 +53,16 @@ module.exports = {
     },
 
     getFoodList: async (req, res) => {
-        const restaurant = req.params.id
-
+        const restaurant = req.params.id;
+      
         try {
-            const foods = await Food.find({ restaurant: restaurant });
-
-            res.status(200).json(foods);
+          const foods = await Food.find({ restaurant: restaurant }).sort({ createdAt: -1 }); // Sort by date in descending order (newest first)
+      
+          res.status(200).json(foods);
         } catch (error) {
-            res.status(500).json({ status: false, message: error.message });
+          res.status(500).json({ status: false, message: error.message });
         }
-    },
+      },
 
 
     deleteFoodById: async (req, res) => {

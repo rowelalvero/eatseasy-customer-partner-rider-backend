@@ -1,11 +1,12 @@
 const router = require("express").Router();
 const foodController = require("../controllers/foodController");
+const {verifyTokenAndAuthorization, verifyVendor}= require("../middlewares/verifyToken")
 
 
 // UPADATE category
 router.get('/restaurant-foods/:id', foodController.getFoodList)
 
-router.post("/", foodController.addFood);
+router.post("/", verifyVendor , foodController.addFood);
 
 router.post("/tags/:id", foodController.addFoodTag);
 

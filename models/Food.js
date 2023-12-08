@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const foodSchema = new mongoose.Schema({
     title: { type: String, required: true },
+    time: { type: String, required: true },
     foodTags: {type: Array, required: true},
     category: {type: String, required: true},
     foodType: {type: Array, required: true},
@@ -11,9 +12,10 @@ const foodSchema = new mongoose.Schema({
     rating: {
         type: Number,
         min: 1,
-        max: 5
+        max: 5,
+        default: 3,
     },
-    ratingCount: {type: String },
+    ratingCount: {type: String, default: "302"},
     description: { type: String, required: true },
     price: { type: Number, required: true },
     additives: { type: Array, required: true },
