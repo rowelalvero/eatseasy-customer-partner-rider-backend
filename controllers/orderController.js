@@ -169,7 +169,7 @@ module.exports = {
         }else if (req.params.status === 'preparing') {
             status = "Preparing"
         }  else if (req.params.status === 'out_for_delivery') {
-            status = "Out_for_Delivery"
+            status = "Ready"
         } else if (req.params.status === 'delivered') {
             status = "Delivered"
         } else if (req.params.status === 'manual') {

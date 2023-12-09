@@ -70,10 +70,10 @@ module.exports ={
             if (randomRestaurants.length) {
                 res.status(200).json(randomRestaurants);
             } else {
-                res.status(404).json({ message: 'No restaurants found' });
+                res.status(404).json({status: false, message: 'No restaurants found' });
             }
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({status: false, message: error.message });
         }
     },
 
@@ -102,10 +102,10 @@ module.exports ={
             if (randomRestaurants.length) {
                 res.status(200).json(randomRestaurants);
             } else {
-                res.status(404).json({ message: 'No restaurants found' });
+                res.status(404).json({status: false, message: 'No restaurants found' });
             }
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({status: false, message: error.message });
         }
     },
 
