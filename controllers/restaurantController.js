@@ -1,4 +1,6 @@
 const Restaurant =require("../models/Restaurant")
+const User =require("../models/User")
+
 
 module.exports ={
     addRestaurant: async (req, res) => {
@@ -20,6 +22,12 @@ module.exports ={
     
         try {
             await newRestaurant.save();
+            await User.findByIdAndUpdate(
+                owner,
+                { userType: "Vendor" },
+                { new: true, runValidators: true });
+            
+
             res.status(201).json({ status: true, message: 'Restaurant successfully created' });
         } catch (error) {
             res.status(500).json({status: false, message: error.message });
