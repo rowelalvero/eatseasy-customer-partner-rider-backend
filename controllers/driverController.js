@@ -1,4 +1,5 @@
-const Driver = require('../models/Driver')
+const Driver = require('../models/Driver');
+const User = require('../models/User');
 
 module.exports = {
     registerDriver: async (req, res) => {
@@ -16,6 +17,10 @@ module.exports = {
     
         try {
             await newDriver.save();
+            await User.findByIdAndUpdate(
+                owner,
+                { userType: "Driver" },
+                { new: true, runValidators: true });
             res.status(201).json({ status: true, message: 'Driver successfully added', data: newDriver });
         } catch (error) {
             res.status(500).json({ status: false, message: error.message, });
