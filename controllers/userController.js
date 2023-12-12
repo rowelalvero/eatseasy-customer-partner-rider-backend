@@ -25,7 +25,36 @@ module.exports = {
             await User.findByIdAndDelete(req.user.id)
             res.status(200).json("Successfully Deleted")
         } catch (error) {
-            res.status(500).json(error)
+            res.status(500).json({status: false, message: error.message})
+        }
+    },
+
+    verifyAccount: async (req, res) => {
+        const providedOtp = req.params.otp
+        try {
+            
+            const user = await User.findById(req.user.id);
+
+            if(!user){
+                return res.status(404).json({status: false, message: 'User not found'})
+            }
+    
+            // Check if user exists and OTP matches
+            if (user.otp === providedOtp) {
+                // Update the verification field
+                user.verification = true;
+                user.otp = 'none'; // Optionally reset the OTP
+                await user.save();
+    
+                console.log('User verified successfully');
+                const { password, __v, otp, createdAt, ...others } = user._doc;
+                return res.status(200).json({ ...others });
+            } else {
+                console.log('OTP verification failed');
+                return res.status(400).json({status: false, message: 'OTP verification failed'});
+            }
+        } catch (error) {
+            res.status(500).json({status: false, message: error.message });
         }
     },
 

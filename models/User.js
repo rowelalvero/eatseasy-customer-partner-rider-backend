@@ -4,9 +4,11 @@ const UserSchema = new mongoose.Schema(
     {
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
-        uid: { type: String, required: true },
+        otp: { type: String, required: true, default: "none" },
+        verification: {type: Boolean, default: false},
         password: { type: String, required: true },
         phone: { type: String, required: false, default:"01234567890"},
+        phoneVerification: { type: Boolean, default: false},
         address: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Address", 

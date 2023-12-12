@@ -2,11 +2,11 @@ const User = require("../models/User");
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const admin = require('firebase-admin')
-const nodemailer = require('nodemailer');
+const generateOtp = require('../utils/otp_generator');
+const sendVerificationEmail = require('../utils/email_verification');
 
 module.exports = {
     createUser: async (req, res) => {
-        const user = req.body;
 
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         if (!emailRegex.test(req.body.email)) {
@@ -26,16 +26,18 @@ module.exports = {
                 return res.status(400).json({ status: false, message: "Email already exists" });
             }
 
+            const otp = generateOtp();
+
             const newUser = new User({
                 username: req.body.username,
                 email: req.body.email,
                 userType: 'Client',
-                uid: CryptoJS.AES.encrypt(req.body.email, process.env.SECRET).toString(),
+                otp: otp.toString(),
                 password: CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString(),
             });
 
             await newUser.save();
-
+            sendVerificationEmail(req.body.email, otp);
             res.status(201).json({ status: true, message: 'User created successfully' })
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
@@ -75,7 +77,7 @@ module.exports = {
                 { expiresIn: "21d" });
 
 
-            const { password, ...others } = user._doc;
+            const { password,otp, ...others } = user._doc;
 
             res.status(200).json({ ...others, userToken });
 
@@ -86,37 +88,3 @@ module.exports = {
 
 
 }
-
-const verifyEmail = () => {
-    let transport = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL,
-            pass: process.env.PASSWORD
-        }
-    })
-
-    function generateRandomNumber() {
-        return Math.floor(Math.random() * (10000000 - 1000000) + 1000000);
-    }
-
-    sendVerificationEmail = ({ _id, email }, res) => {
-        const currentUrl = 'https://localhost:6003/';
-
-
-
-        const token = jwt.sign({ _id }, process.env.JWT_ACC_ACTIVATE, { expiresIn: '12hours' });
-
-        const mailOptions = {
-            from: process.env.EMAIL,
-            to: email,
-            subject: 'Account Activation Link',
-            html: `
-            <p>Please click on given link to verify your account</p>
-            <p>This link <b>expires in 12 hours</b>.</p>
-            <p>Please click on the following link to complete your activation: <a href="${currentUrl}/auth/activate/${_id}/${generateRandomNumber()}">Click Here</a></p>
-            
-            `
-        }
-    }
-};

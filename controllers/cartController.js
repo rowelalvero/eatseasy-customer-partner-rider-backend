@@ -66,7 +66,7 @@ module.exports = {
 
             res.status(200).json(userCart);
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({ status: false, message: error.message });
         }
     },
 
