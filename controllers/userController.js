@@ -56,6 +56,28 @@ module.exports = {
         }
     },
 
+    verifyPhone: async (req, res) => {
+        const phone = req.params.phone
+        try {
+            
+            const user = await User.findById(req.user.id);
+
+            if(!user){
+                return res.status(404).json({status: false, message: 'User not found'})
+            }
+    
+            user.phoneVerification = true;
+            user.phone = phone; // Optionally reset the OTP
+            await user.save();
+
+            const { password, __v, otp, createdAt, ...others } = user._doc;
+            return res.status(200).json({ ...others });
+
+        } catch (error) {
+            res.status(500).json({status: false, message: error.message });
+        }
+    },
+
   
     getUser: async (req, res) => {
         try {
