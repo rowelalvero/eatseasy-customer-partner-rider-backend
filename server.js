@@ -15,6 +15,7 @@ const addressRoute = require("./routes/address");
 const driverRoute = require("./routes/driver");
 const messagingRoute = require("./routes/messaging");
 const orderRoute = require("./routes/order");
+const ratingRoute = require("./routes/rating");
 
 
 
@@ -46,6 +47,7 @@ app.use("/api/cart", cartRoute);
 app.use("/api/address", addressRoute);
 app.use("/api/driver", driverRoute);
 app.use("/api/orders", orderRoute);
+app.use("/api/rating", ratingRoute);
 app.use("/api/messaging", messagingRoute);
 
 

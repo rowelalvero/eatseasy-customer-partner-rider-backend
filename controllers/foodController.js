@@ -235,6 +235,24 @@ module.exports = {
         }
     },
 
+    getFoodsByCategoryAndCode: async (req, res) => {
+        const { category, code } = req.params;  // Assuming category, code, and value are sent as parameters
+
+        try {
+            const foods = await Food.aggregate([
+                { $match: { category: category, code: code } },
+            ]);
+
+            if(foods.length === 0){
+                return res.status(200).json([])
+            }
+
+            res.status(200).json(foods);
+        } catch (error) {
+            res.status(500).json({ error: error.message, status: false });
+        }
+    },
+
     searchFoods: async (req, res) => {
         const search = req.params.food
         try {

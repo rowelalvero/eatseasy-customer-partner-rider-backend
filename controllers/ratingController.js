@@ -1,27 +1,52 @@
 const Rating = require('../models/Rating')
 
 module.exports = {
-    addOrUpdateRating: async (req, res) => {
-        const { userId, product, rating } = req.body;
+    addRating: async (req, res) => {
+        const newRating = new Rating({
+            userId: req.user.id,
+            ratingType: req.body.ratingType,
+            product: req.body.product,
+            rating: req.body.rating
+        });
     
         try {
-            let userRating = await Rating.findOne({ userId, product });
+             await newRating.save();
     
-            if (userRating) {
-                // Update existing rating
-                userRating.rating = rating;
-                await userRating.save();
-                res.status(200).json({ status: true, message: 'Rating updated successfully', data: userRating });
-            } else {
-                // Add new rating
-                const newRating = new Rating({ userId, product, rating });
-                await newRating.save();
-                res.status(201).json({ status: true, message: 'Rating added successfully', data: newRating });
+            if (req.body.ratingType === 'Restaurant') {
+                const restaurants = await Rating.aggregate([
+                    { $match: { ratingType: 'Restaurant', product: req.body.product } },
+                    { $group: { _id: '$product', averageRating: { $avg: '$rating' } } }
+                ]);
+    
+                if (restaurants.length > 0) {
+                    const averageRating = restaurants[0].averageRating;
+                    await Restaurant.findByIdAndUpdate(req.body.product, { rating: averageRating }, { new: true });
+                }
+            } else if (req.body.ratingType === 'Driver') {
+                const driver = await Rating.aggregate([
+                    { $match: { ratingType: 'Driver', product: req.body.product } },
+                    { $group: { _id: '$product', averageRating: { $avg: '$rating' } } }
+                ]);
+    
+                if (driver.length > 0) {
+                    const averageRating = driver[0].averageRating;
+                    await Restaurant.findByIdAndUpdate(req.body.product, { rating: averageRating }, { new: true });
+                }
+            } else if (req.body.ratingType === 'Food') {
+                const food = await Rating.aggregate([
+                    { $match: { ratingType: 'Food', product: req.body.product } },
+                    { $group: { _id: '$product', averageRating: { $avg: '$rating' } } }
+                ]);
+    
+                if (food.length > 0) {
+                    const averageRating = food[0].averageRating;
+                    await Restaurant.findByIdAndUpdate(req.body.product, { rating: averageRating }, { new: true });
+                }
             }
-        } catch (error) {
-            res.status(500).json(error);
-        }
-    },
-
     
+            res.status(200).json({status: true, message: 'Rating added successfully'});
+        } catch (error) {
+            res.status(500).json({status: false, message: error.message});
+        }
+    }
 }
