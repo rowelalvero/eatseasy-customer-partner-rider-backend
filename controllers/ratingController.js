@@ -50,5 +50,27 @@ module.exports = {
         } catch (error) {
             res.status(500).json({status: false, message: error.message});
         }
+    },
+
+
+     checkIfUserRatedRestaurant: async (req, res) => {
+        const ratingType = req.query.ratingType;
+        const product = req.query.product;
+
+        try {
+            const ratingExists = await Rating.findOne({
+                userId: req.user.id,
+                product: product,
+                ratingType: ratingType
+            });
+    
+            if (ratingExists) {
+                return res.status(200).json({ status: true, message: "You have already rated this restaurant." });
+            } else {
+                return res.status(200).json({ status: false, message: "User has not rated this restaurant yet." });
+            }
+        } catch (error) {
+            return res.status(500).json({ status: false, message: error.message });
+        }
     }
 }
