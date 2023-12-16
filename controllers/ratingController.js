@@ -1,5 +1,7 @@
 const Rating = require('../models/Rating')
-
+const Restaurant = require('../models/Restaurant');
+const Food = require('../models/Food');
+const Driver = require('../models/Driver');
 module.exports = {
     addRating: async (req, res) => {
         const newRating = new Rating({
@@ -30,7 +32,7 @@ module.exports = {
     
                 if (driver.length > 0) {
                     const averageRating = driver[0].averageRating;
-                    await Restaurant.findByIdAndUpdate(req.body.product, { rating: averageRating }, { new: true });
+                    await Driver.findByIdAndUpdate(req.body.product, { rating: averageRating }, { new: true });
                 }
             } else if (req.body.ratingType === 'Food') {
                 const food = await Rating.aggregate([
@@ -40,7 +42,7 @@ module.exports = {
     
                 if (food.length > 0) {
                     const averageRating = food[0].averageRating;
-                    await Restaurant.findByIdAndUpdate(req.body.product, { rating: averageRating }, { new: true });
+                    await Food.findByIdAndUpdate(req.body.product, { rating: averageRating }, { new: true });
                 }
             }
     
