@@ -316,6 +316,10 @@ module.exports = {
     markAsDelivered: async (req, res) => {
         const orderId = req.params.id;
 
+
+//firebase here we including {{restaurantid: id, status}}
+
+
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
             .populate({
