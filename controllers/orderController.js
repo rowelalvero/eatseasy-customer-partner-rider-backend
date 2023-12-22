@@ -117,6 +117,10 @@ module.exports = {
         const orderId = req.params.id;
         const { orderStatus } = req.body;
 
+
+//firebase here we including {{orderid: id, status}}
+
+
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus }, { new: true });
             if (updatedOrder) {
