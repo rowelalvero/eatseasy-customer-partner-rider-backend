@@ -277,6 +277,9 @@ module.exports = {
         const orderId = req.params.id;
         const driver = req.params.driver;
 
+//firebase here we including {{orderid: id, status}}
+
+
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Out_for_Delivery', driverId: driver }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
                 .populate({
