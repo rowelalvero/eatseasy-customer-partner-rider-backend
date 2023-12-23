@@ -1,5 +1,6 @@
 const Order = require("../models/Orders")
-
+const admin = require("firebase-admin");
+const {updateDriver, updateRestaurant, updateUser} = require("../utils/driver_update")
 module.exports = {
     placeOrder: async (req, res) => {
         const order = new Order(req.body);
@@ -172,8 +173,10 @@ module.exports = {
             status = "Placed"
         }else if (req.params.status === 'preparing') {
             status = "Preparing"
-        }  else if (req.params.status === 'out_for_delivery') {
+        }  else if (req.params.status === 'ready') {
             status = "Ready"
+        }else if (req.params.status === 'out_for_delivery') {
+            status = "Out_for_Delivery"
         } else if (req.params.status === 'delivered') {
             status = "Delivered"
         } else if (req.params.status === 'manual') {
@@ -280,9 +283,7 @@ module.exports = {
     addDriver: async (req, res) => {
         const orderId = req.params.id;
         const driver = req.params.driver;
-
-//firebase here we including {{orderid: id, status}}
-
+        const status =  'Out_for_Delivery';
 
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Out_for_Delivery', driverId: driver }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
@@ -304,6 +305,9 @@ module.exports = {
                 });
 
             if (updatedOrder) {
+                const db = admin.database()
+                updateRestaurant(updatedOrder, db, status);
+                updateUser(updatedOrder, db, status);
                 res.status(200).json(updatedOrder);
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });
@@ -315,10 +319,7 @@ module.exports = {
 
     markAsDelivered: async (req, res) => {
         const orderId = req.params.id;
-
-
-//firebase here we including {{restaurantid: id, status}}
-
+        const status = 'Delivered';
 
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
@@ -339,6 +340,9 @@ module.exports = {
                 select: 'addressLine1 city district' // Replace with actual field names for courier
             });
             if (updatedOrder) {
+                const db = admin.database()
+                updateRestaurant(updatedOrder, db, status);
+                updateUser(updatedOrder, db, status);
                 res.status(200).json(updatedOrder);
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });
@@ -371,6 +375,15 @@ module.exports = {
                 select: 'addressLine1 city district' // Replace with actual field names for courier
             });
             if (updatedOrder) {
+                const db = admin.database()
+                if(status === 'Ready'){
+                   updateDriver(updatedOrder, db)
+                }else{
+                    updateRestaurant(updatedOrder, db, status);
+                    updateUser(updatedOrder, db, status);
+                }
+                
+                
                 res.status(200).json(updatedOrder);
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });
