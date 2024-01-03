@@ -31,7 +31,7 @@ module.exports = {
 
         try {
             // Set all addresses for this user to non-default
-            await Address.updateMany({ userId }, { default: false });
+            await Address.updateMany({ userId: userId }, { default: false });
 
             // Now set the specified address as default
             const updatedAddress = await Address.findByIdAndUpdate(addressId, { default: true }, { new: true });
