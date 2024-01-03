@@ -17,7 +17,7 @@ router.get("/all",verifyTokenAndAuthorization, addressController.getUserAddresse
 
 router.put("/:id",verifyTokenAndAuthorization, addressController.updateAddress);
 
-router.post("/default/:address",verifyTokenAndAuthorization, addressController.setDefaultAddress);
+router.patch("/default/:address",verifyTokenAndAuthorization, addressController.setDefaultAddress);
 
 
 
