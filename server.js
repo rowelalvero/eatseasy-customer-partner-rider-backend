@@ -7,7 +7,6 @@ const { fireBaseConnection } = require('./utils/fbConnect');
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user");
 const restRoute = require("./routes/restaurant");
-const sendVerificationEmail = require("./utils/email_verification");
 const catRoute = require("./routes/category");
 const foodRoute = require("./routes/food");
 const cartRoute = require("./routes/cart");
@@ -22,7 +21,7 @@ const ratingRoute = require("./routes/rating");
 dotenv.config()
 
 fireBaseConnection();
-// sendVerificationEmail("akotoxmpimbo@gmail.com", "fdhgfssdhgs")
+
 
 
 
