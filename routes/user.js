@@ -17,6 +17,8 @@ router.delete("/" , verifyTokenAndAuthorization, userController.deleteUser);
 
 router.get("/",verifyTokenAndAuthorization, userController.getUser);
 
+router.put("/updateToken/:token",verifyTokenAndAuthorization, userController.updateFcm);
+
 // Add Skills
 
 

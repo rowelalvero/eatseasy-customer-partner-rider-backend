@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const admin = require('firebase-admin')
 const generateOtp = require('../utils/otp_generator');
 const sendVerificationEmail = require('../utils/email_verification');
+const sendNotification = require('../utils/sendNotification');
 
 module.exports = {
     createUser: async (req, res) => {
@@ -32,12 +33,14 @@ module.exports = {
                 username: req.body.username,
                 email: req.body.email,
                 userType: 'Client',
+                fcm: req.body.fcm,
                 otp: otp.toString(),
                 password: CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString(),
             });
 
             await newUser.save();
             sendVerificationEmail(req.body.email, otp);
+            sendNotification(req.body.fcm, "Foodly Registration", `The verification code has been sent to ${req.body.email}`, { type: "account_verification" })
             res.status(201).json({ status: true, message: 'User created successfully' })
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
@@ -72,7 +75,7 @@ module.exports = {
             }
 
             const userToken = jwt.sign({
-                id: user._id, userType: user.userType, email: user.email
+                id: user._id, userType: user.userType, email: user.email, fcm: user.fcm,
             }, process.env.JWT_SEC,
                 { expiresIn: "21d" });
 

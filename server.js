@@ -18,16 +18,18 @@ const ratingRoute = require("./routes/rating");
 
 
 
+
 dotenv.config()
 
 fireBaseConnection();
 
 
 
-
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log("connected to the db")).catch((err) => { console.log(err) });
+
+
 
 
 app.use(compression({
@@ -51,3 +53,6 @@ app.use("/api/messaging", messagingRoute);
 
 
 app.listen(process.env.PORT || 6000, () => console.log(`Foodly backend app listening on port ${process.env.PORT}!`));
+
+
+// 

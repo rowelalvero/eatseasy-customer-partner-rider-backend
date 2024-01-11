@@ -1,8 +1,11 @@
 const Order = require("../models/Orders")
 const admin = require("firebase-admin");
 const {updateDriver, updateRestaurant, updateUser} = require("../utils/driver_update")
+const sendNotification = require('../utils/sendNotification');
+
 module.exports = {
     placeOrder: async (req, res) => {
+         
         const order = new Order(req.body);
 
         try {
@@ -21,7 +24,7 @@ module.exports = {
             const order = await Order.findById(orderId)
                 .populate({
                     path: 'userId',
-                    select: 'name email'  // Fetch only the name and email of the user
+                    select: 'name email fcm'  // Fetch only the name and email of the user
                 })
                 .populate({
                     path: 'deliveryAddress',
@@ -289,7 +292,7 @@ module.exports = {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Out_for_Delivery', driverId: driver }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
                 .populate({
                     path: 'userId',
-                    select: 'phone profile' // Replace with actual field names for suid
+                    select: 'phone profile fcm' // Replace with actual field names for suid
                 })
                 .populate({
                     path: 'restaurantId',
@@ -307,6 +310,8 @@ module.exports = {
             if (updatedOrder) {
                 const db = admin.database()
                 updateRestaurant(updatedOrder, db, status);
+                // send notification to the restaurant and to the client
+                // sendNotification()
                 updateUser(updatedOrder, db, status);
                 res.status(200).json(updatedOrder);
             } else {
@@ -325,7 +330,7 @@ module.exports = {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
             .populate({
                 path: 'userId',
-                select: 'phone profile' // Replace with actual field names for suid
+                select: 'phone profile fcm' // Replace with actual field names for suid
             })
             .populate({
                 path: 'restaurantId',
@@ -343,6 +348,8 @@ module.exports = {
                 const db = admin.database()
                 updateRestaurant(updatedOrder, db, status);
                 updateUser(updatedOrder, db, status);
+                // send notification to the restaurant and to the client
+                // sendNotification()
                 res.status(200).json(updatedOrder);
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });

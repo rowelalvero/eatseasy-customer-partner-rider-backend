@@ -90,12 +90,6 @@ module.exports = {
     },
 
 
-   
-
-   
-
-   
-
     getAllUsers: async (req, res) => {
         try {
             const allUser = await User.find();
@@ -107,5 +101,22 @@ module.exports = {
     },
 
 
+    updateFcm: async (req, res) => {
+        const token = req.params.token;
 
+        try {
+            const user = await User.findById(req.user.id);
+
+            if (!user) {
+                return res.status(404).json({ status: false, message: 'User not found' });
+            }
+
+            user.fcm = token;
+
+            await user.save();
+            return res.status(200).json({ status: true, message: 'FCM token updated successfully' });
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+     }
 }
