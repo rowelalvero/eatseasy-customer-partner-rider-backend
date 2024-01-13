@@ -5,7 +5,7 @@ const serviceAccount = require('../servicesAccountKey.json')
 const fireBaseConnection = async () => {
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        databaseURL: "https://identity-5de1f-default-rtdb.firebaseio.com"
+        databaseURL: "https://foodly-flutter-dc94b-default-rtdb.firebaseio.com"
       });
       console.log("Connected to Firebase");
       
