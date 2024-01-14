@@ -21,31 +21,39 @@ module.exports = {
         const orderId = req.params.id;
 
         try {
-            const order = await Order.findById(orderId)
-                .populate({
-                    path: 'userId',
-                    select: 'name email fcm'  // Fetch only the name and email of the user
-                })
-                .populate({
-                    path: 'deliveryAddress',
-                    select: 'addressLine1 city state postalCode'  // Fetch specific address fields
-                })
-                .populate({
-                    path: 'restaurantId',
-                    select: 'name location'  // Fetch the name and location of the restaurant
-                })
-                .populate({
-                    path: 'driverId',
-                    select: 'name phone'  // Fetch only the name and phone of the driver
-                });
+            const order = await Order.findById(orderId).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
+            .populate({
+                path: 'userId',
+                select: 'phone profile' // Replace with actual field names for suid
+            })
+            .populate({
+                path: 'restaurantId',
+                select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+            })
+            .populate({
+                path: 'orderItems.foodId',
+                select: 'title imageUrl time' // Replace with actual field names for courier
+            })
+            .populate({
+                path: 'deliveryAddress',
+                select: 'addressLine1' // Replace with actual field names for courier
+            })
+            .populate({
+                path: 'driverId',
+                select: 'phone vehicleNumber driver',// Replace with actual field names for courier
+                populate: {
+                    path: 'driver',
+                    select: 'phone username profile' 
+                }
+            });
 
             if (order) {
-                res.status(200).json({ status: true, data: order });
+                res.status(200).json(order);
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });
             }
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({ status: false, message: error.message});
         }
     },
 

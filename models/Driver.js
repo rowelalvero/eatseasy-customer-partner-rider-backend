@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const driverSchema = new mongoose.Schema({
     driver: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     vehicleType: { type: String, required: true, enum: ['Bike', 'Car', 'Scooter', 'Drone'] },
-    phone: { type: String, required: true},
+    phone: { type: String, required: true, default: '1234567890'},
     vehicleNumber: { type: String, required: true },
     currentLocation: {
         latitude: { type: Number, required: true },

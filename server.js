@@ -54,5 +54,3 @@ app.use("/api/messaging", messagingRoute);
 
 app.listen(process.env.PORT || 6000, () => console.log(`Foodly backend app listening on port ${process.env.PORT}!`));
 
-
-// 
