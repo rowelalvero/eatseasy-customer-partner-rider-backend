@@ -1,4 +1,5 @@
 const Order = require("../models/Orders")
+const Driver = require("../models/Driver")
 const admin = require("firebase-admin");
 const {updateDriver, updateRestaurant, updateUser} = require("../utils/driver_update")
 const sendNotification = require('../utils/sendNotification');
@@ -46,6 +47,10 @@ module.exports = {
                     select: 'phone username profile' 
                 }
             });
+
+            if(order.status === 'Out_for_Delivery' || order.status === 'Delivered'){
+                const driver = await Driver.findById(order.driverId).select('phone vehicleNumber driver')
+            }
 
             if (order) {
                 res.status(200).json(order);
