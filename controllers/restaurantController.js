@@ -1,3 +1,4 @@
+const Orders = require("../models/Orders");
 const Restaurant =require("../models/Restaurant")
 const User =require("../models/User")
 
@@ -15,7 +16,7 @@ module.exports ={
         // Check if the restaurant code already exists
         const existingRestaurant = await Restaurant.findOne({ owner: owner });
         if (existingRestaurant) {
-            return res.status(400).json({ status: false, message: 'Restaurant with this code already exists' });
+            return res.status(400).json({ status: false, message: 'Restaurant with this code already exists', data: existingRestaurant });
         }
     
         const newRestaurant = new Restaurant(req.body);
@@ -167,10 +168,28 @@ module.exports ={
                 return res.status(404).json({ status: false, message: 'restaurant item not found' });
             }
 
+            
+
             res.status(200).json(restaurant);
         } catch (error) {
             res.status(500).json(error);
         }
+    },
+
+    getRestarantFinance: async (req, res) => {
+        const id = req.params.id;
+
+        try {
+            const restaurant = await Restaurant.findById(id) // populate the restaurant field if needed
+
+            if (!restaurant) {
+                return res.status(404).json({ status: false, message: 'restaurant item not found' });
+            }
+
+            res.status(200).json(restaurant);
+        } catch (error) {
+            res.status(500).json(error);
+        } 
     },
 
 

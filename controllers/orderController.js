@@ -76,17 +76,6 @@ module.exports = {
             query.orderStatus = orderStatus;
         }
 
-        // // Calculate the start of today
-        // const today = new Date();
-        // today.setHours(0, 0, 0, 0);
-
-        // // Calculate the start of yesterday
-        // const yesterday = new Date(today);
-        // yesterday.setDate(yesterday.getDate() - 1);
-
-        // // Add date range to the query
-        // query.orderDate = { $gte: yesterday, $lt: today };
-
         try {
             const orders = await Order.find(query)
                 .populate({
@@ -185,24 +174,24 @@ module.exports = {
     getRestaurantOrders: async (req, res) => {
 
         let status
-        if (req.params.status === 'placed') {
+        if (req.query.status === 'placed') {
             status = "Placed"
-        }else if (req.params.status === 'preparing') {
+        }else if (req.query.status === 'preparing') {
             status = "Preparing"
-        }  else if (req.params.status === 'ready') {
+        }  else if (req.query.status === 'ready') {
             status = "Ready"
-        }else if (req.params.status === 'out_for_delivery') {
+        }else if (req.query.status === 'out_for_delivery') {
             status = "Out_for_Delivery"
-        } else if (req.params.status === 'delivered') {
+        } else if (req.query.status === 'delivered') {
             status = "Delivered"
-        } else if (req.params.status === 'manual') {
+        } else if (req.query.status === 'manual') {
             status = "Manual"
-        }else if (req.params.status === 'cancelled') {
+        }else if (req.query.status === 'cancelled') {
             status = "Cancelled"
         }
         try {
             const parcels = await Order.find({
-                orderStatus: status, restaurantId: req.params.restaurant, paymentStatus: 'Completed'
+                orderStatus: status, restaurantId: req.params.id, paymentStatus: 'Completed'
             }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
                 .populate({
                     path: 'userId',
@@ -216,10 +205,43 @@ module.exports = {
                     path: 'orderItems.foodId',
                     select: 'title imageUrl time' // Replace with actual field names for courier
                 })
+                
+
+            res.status(200).json(parcels);
+        } catch (error) {
+            res.status(500).json({ status: false, message: 'Error retrieving parcels', error: error.message });
+        }
+    },
+
+    getRestaurantOrdersList: async (req, res) => {
+        let status
+        if (req.query.status === 'placed') {
+            status = "Placed"
+        }else if (req.query.status === 'preparing') {
+            status = "Preparing"
+        }  else if (req.query.status === 'ready') {
+            status = "Ready"
+        }else if (req.query.status === 'out_for_delivery') {
+            status = "Out_for_Delivery"
+        } else if (req.query.status === 'delivered') {
+            status = "Delivered"
+        } else if (req.query.status === 'manual') {
+            status = "Manual"
+        }else if (req.query.status === 'cancelled') {
+            status = "Cancelled"
+        }
+        try {
+            const parcels = await Order.find({
+                orderStatus: status, restaurantId: req.params.id, paymentStatus: 'Completed'
+            }).select('userId deliveryAddress orderItems deliveryFee restaurantId orderStatus')
                 .populate({
+                    path: 'orderItems.foodId',
+                    select: 'title imageUrl time' // Replace with actual field names for courier
+                }).populate({
                     path: 'deliveryAddress',
                     select: 'addressLine1 city district' // Replace with actual field names for courier
                 })
+                
 
             res.status(200).json(parcels);
         } catch (error) {
@@ -412,5 +434,7 @@ module.exports = {
             res.status(500).json({ status: false, message: error.message });
         }
     },
+
+
 
 }

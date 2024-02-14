@@ -15,6 +15,7 @@ const driverRoute = require("./routes/driver");
 const messagingRoute = require("./routes/messaging");
 const orderRoute = require("./routes/order");
 const ratingRoute = require("./routes/rating");
+const uploadRoute =require("./routes/uploads")
 
 
 
@@ -50,6 +51,7 @@ app.use("/api/driver", driverRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/rating", ratingRoute);
 app.use("/api/messaging", messagingRoute);
+app.use("/api/uploads", uploadRoute);
 
 
 app.listen(process.env.PORT || 6000, () => console.log(`Foodly backend app listening on port ${process.env.PORT}!`));

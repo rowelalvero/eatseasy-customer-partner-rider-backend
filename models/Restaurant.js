@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const generateOtp = require('../utils/otp_generator')
 const restaurantSchema = new mongoose.Schema({
     title: {type: String , required: true},
     time: {type: String , required: true},
@@ -21,14 +21,15 @@ const restaurantSchema = new mongoose.Schema({
     verification: {type: String ,default: "Pending", enum: ["Pending", "Verified", "Rejected"]},
     verificationMessage: {type: String, default: "Please allow up to 24 hours for your verification to be processed. You will receive a notification once your verification is complete."},
     coords: {
-        id: {type: String },
+        id: {type: String, default: generateOtp() },
         latitude: {type: Number , required: true},
         longitude: {type: Number , required: true},
         latitudeDelta:{type: Number , default: 0.0122},
         longitudeDelta: {type: Number , default: 0.0221},
         address: {type: String , required: true},
         title: {type: String , required: true},
-    }
+    },
+    earnings: {type: Number, default: 0.868787}
 });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
