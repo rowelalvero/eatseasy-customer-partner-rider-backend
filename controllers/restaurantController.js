@@ -176,6 +176,49 @@ module.exports ={
         }
     },
 
+    getStats: async (req, res) => {
+        const id = req.params.id;
+        try {
+            const data = await Restaurant.findById(id, {coords: 0});
+            
+            const ordersTotal = await Orders.countDocuments({ restaurantId: id, orderStatus: "Delivered" });
+            const cancelledOrders = await Orders.countDocuments({ restaurantId: id, orderStatus: "Cancelled" });
+            
+            const revenue = await Orders.aggregate([
+                { $match: { restaurantId: id, orderStatus: "Delivered" } },
+                { $group: { _id: null, total: { $sum: "$orderTotal" } } }
+            ]);
+
+            const processingOrders = await Orders.countDocuments({
+                restaurantId: id,
+                orderStatus: {
+                  $in: ["Placed", "Preparing", "Manual", "Ready", "Out_for_Delivery"],
+                },
+              });
+
+              const revenueTotalString = revenue[0]?.total.toString() || 0.0.toString();
+
+            const revenueTotal = parseFloat(revenueTotalString)
+            const restaurantToken = await User.findById(data.owner, { fcm: 1 });
+           
+
+
+            res.status(200).json(
+                {
+                    data,
+                    ordersTotal,
+                    cancelledOrders,
+                    revenueTotal,
+                    processingOrders,
+                    restaurantToken
+                });
+
+
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
     getRestarantFinance: async (req, res) => {
         const id = req.params.id;
 

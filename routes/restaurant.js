@@ -25,6 +25,9 @@ router.get("/all/:code", restaurantController.getAllRandomRestaurants);
 // // GET ALL RESTAURANT
 router.get("/byId/:id", restaurantController.getRestaurant);
 
+router.get("/statistics/:id", restaurantController.getStats);
+
+
 
 
 
