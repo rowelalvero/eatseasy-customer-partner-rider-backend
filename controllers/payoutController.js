@@ -11,7 +11,7 @@ module.exports = {
         try {
             let query = {};
             if (status) {
-                query = { status: req.query.status };
+                query = { status: req.query.status, restaurant: req.query.id};
             }
 
             const totalItems = await Payout.countDocuments(query);

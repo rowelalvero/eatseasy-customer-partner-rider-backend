@@ -1,4 +1,5 @@
 const Orders = require("../models/Orders");
+const Payout = require("../models/Payout");
 const Restaurant =require("../models/Restaurant")
 const User =require("../models/User")
 
@@ -189,6 +190,7 @@ module.exports ={
                 { $group: { _id: null, total: { $sum: "$orderTotal" } } }
             ]);
 
+            const latestPayout = await Payout.findOne({restaurant: id}).sort({ createdAt: -1 });
             const processingOrders = await Orders.countDocuments({
                 restaurantId: id,
                 orderStatus: {
@@ -206,6 +208,7 @@ module.exports ={
             res.status(200).json(
                 {
                     data,
+                    latestPayout,
                     ordersTotal,
                     cancelledOrders,
                     revenueTotal,
