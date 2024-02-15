@@ -1,7 +1,8 @@
 const Orders = require("../models/Orders");
 const Payout = require("../models/Payout");
 const Restaurant =require("../models/Restaurant")
-const User =require("../models/User")
+const User =require("../models/User");
+const payoutRequestEmail = require("../utils/payout_request_email");
 
 
 module.exports ={
@@ -190,7 +191,7 @@ module.exports ={
                 { $group: { _id: null, total: { $sum: "$orderTotal" } } }
             ]);
 
-            const latestPayout = await Payout.findOne({restaurant: id}).sort({ createdAt: -1 });
+            const latestPayout = await Payout.find({restaurant: id}).sort({ createdAt: -1 });
             const processingOrders = await Orders.countDocuments({
                 restaurantId: id,
                 orderStatus: {
@@ -217,6 +218,34 @@ module.exports ={
                 });
 
 
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
+    createPayout: async (req, res) => {
+       
+
+        try {
+            const restaurant = await Restaurant.findById(req.body.restaurant);
+            
+            const user = await User.findById(restaurant.owner, { email: 1, username: 1 });
+
+            if (!user) {
+                return res.status(404).json({ status: false, message: "User not found" });
+            }
+
+            const cashout = new Payout({
+                amount: req.body.amount,
+                restaurant: req.body.restaurant,
+                accountNumber: req.body.accountNumber,
+                accountName: req.body.accountName,
+                accountBank: req.body.accountBank,
+                paymentMethod: req.body.paymentMethod,
+            });
+            await cashout.save();
+            payoutRequestEmail(user.email, user.username,req.body.amount)
+            res.status(200).json({ status: true, message: "Cashout request sent successfully" });
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }

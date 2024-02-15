@@ -27,6 +27,8 @@ router.get("/byId/:id", restaurantController.getRestaurant);
 
 router.get("/statistics/:id", restaurantController.getStats);
 
+router.post("/payout",verifyVendor, restaurantController.createPayout);
+
 
 
 
