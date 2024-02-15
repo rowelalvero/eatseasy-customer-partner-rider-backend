@@ -225,10 +225,10 @@ module.exports ={
 
     createPayout: async (req, res) => {
        
+        console.log(req.body.restaurant);
 
         try {
             const restaurant = await Restaurant.findById(req.body.restaurant);
-            
             const user = await User.findById(restaurant.owner, { email: 1, username: 1 });
 
             if (!user) {
@@ -244,8 +244,9 @@ module.exports ={
                 paymentMethod: req.body.paymentMethod,
             });
             await cashout.save();
+           
             payoutRequestEmail(user.email, user.username,req.body.amount)
-            res.status(200).json({ status: true, message: "Cashout request sent successfully" });
+            res.status(201).json({ status: true, message: "Cashout request sent successfully" });
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }

@@ -2,17 +2,16 @@ const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 
 async function payoutRequestEmail(userEmail, name, payoutAmount){
-
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.AUTH_EMAIL,
+            user: process.env.AUTH_USER,
             pass: process.env.AUTH_PASSWORD,
         }
     });
 
     const mailOptions = {
-        from: process.env.AUTH_EMAIL,
+        from: process.env.AUTH_USER,
         to: userEmail,
         subject: "Your Payout Request from Foodly",
         html: ` <h2>Foodly Payout Request Initiated</h2>
