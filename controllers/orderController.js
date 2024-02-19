@@ -1,12 +1,12 @@
 const Order = require("../models/Orders")
 const Driver = require("../models/Driver")
 const admin = require("firebase-admin");
-const {updateDriver, updateRestaurant, updateUser} = require("../utils/driver_update")
+const { updateDriver, updateRestaurant, updateUser } = require("../utils/driver_update")
 const sendNotification = require('../utils/sendNotification');
 
 module.exports = {
     placeOrder: async (req, res) => {
-         
+
         const order = new Order(req.body);
 
         try {
@@ -23,32 +23,32 @@ module.exports = {
 
         try {
             const order = await Order.findById(orderId).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
-            .populate({
-                path: 'userId',
-                select: 'phone profile' // Replace with actual field names for suid
-            })
-            .populate({
-                path: 'restaurantId',
-                select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
-            })
-            .populate({
-                path: 'orderItems.foodId',
-                select: 'title imageUrl time' // Replace with actual field names for courier
-            })
-            .populate({
-                path: 'deliveryAddress',
-                select: 'addressLine1' // Replace with actual field names for courier
-            })
-            .populate({
-                path: 'driverId',
-                select: 'phone vehicleNumber driver',// Replace with actual field names for courier
-                populate: {
-                    path: 'driver',
-                    select: 'phone username profile' 
-                }
-            });
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile' // Replace with actual field names for suid
+                })
+                .populate({
+                    path: 'restaurantId',
+                    select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'orderItems.foodId',
+                    select: 'title imageUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'deliveryAddress',
+                    select: 'addressLine1' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'driverId',
+                    select: 'phone vehicleNumber driver',// Replace with actual field names for courier
+                    populate: {
+                        path: 'driver',
+                        select: 'phone username profile'
+                    }
+                });
 
-            if(order.status === 'Out_for_Delivery' || order.status === 'Delivered'){
+            if (order.status === 'Out_for_Delivery' || order.status === 'Delivered') {
                 const driver = await Driver.findById(order.driverId).select('phone vehicleNumber driver')
             }
 
@@ -58,7 +58,7 @@ module.exports = {
                 res.status(404).json({ status: false, message: 'Order not found' });
             }
         } catch (error) {
-            res.status(500).json({ status: false, message: error.message});
+            res.status(500).json({ status: false, message: error.message });
         }
     },
 
@@ -124,7 +124,7 @@ module.exports = {
         const { orderStatus } = req.body;
 
 
-//firebase here we including {{orderid: id, status}}
+        //firebase here we including {{orderid: id, status}}
 
 
         try {
@@ -176,17 +176,17 @@ module.exports = {
         let status
         if (req.query.status === 'placed') {
             status = "Placed"
-        }else if (req.query.status === 'preparing') {
+        } else if (req.query.status === 'preparing') {
             status = "Preparing"
-        }  else if (req.query.status === 'ready') {
+        } else if (req.query.status === 'ready') {
             status = "Ready"
-        }else if (req.query.status === 'out_for_delivery') {
+        } else if (req.query.status === 'out_for_delivery') {
             status = "Out_for_Delivery"
         } else if (req.query.status === 'delivered') {
             status = "Delivered"
         } else if (req.query.status === 'manual') {
             status = "Manual"
-        }else if (req.query.status === 'cancelled') {
+        } else if (req.query.status === 'cancelled') {
             status = "Cancelled"
         }
         try {
@@ -205,7 +205,7 @@ module.exports = {
                     path: 'orderItems.foodId',
                     select: 'title imageUrl time' // Replace with actual field names for courier
                 })
-                
+
 
             res.status(200).json(parcels);
         } catch (error) {
@@ -217,23 +217,30 @@ module.exports = {
         let status
         if (req.query.status === 'placed') {
             status = "Placed"
-        }else if (req.query.status === 'preparing') {
+        } else if (req.query.status === 'preparing') {
             status = "Preparing"
-        }  else if (req.query.status === 'ready') {
+        } else if (req.query.status === 'ready') {
             status = "Ready"
-        }else if (req.query.status === 'out_for_delivery') {
+        } else if (req.query.status === 'out_for_delivery') {
             status = "Out_for_Delivery"
         } else if (req.query.status === 'delivered') {
             status = "Delivered"
         } else if (req.query.status === 'manual') {
             status = "Manual"
-        }else if (req.query.status === 'cancelled') {
+        } else if (req.query.status === 'cancelled') {
             status = "Cancelled"
         }
         try {
             const parcels = await Order.find({
                 orderStatus: status, restaurantId: req.params.id, paymentStatus: 'Completed'
-            }).select('userId deliveryAddress orderItems deliveryFee restaurantId orderStatus')
+            }).select('userId deliveryAddress orderItems deliveryFee restaurantId orderStatus restaurantCoords recipientCoords')
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile' // Replace with actual field names for suid
+                }).populate({
+                    path: 'restaurantId',
+                    select: 'title imageUrl logoUrl time' // Replace with actual field names for courier
+                })
                 .populate({
                     path: 'orderItems.foodId',
                     select: 'title imageUrl time' // Replace with actual field names for courier
@@ -241,7 +248,7 @@ module.exports = {
                     path: 'deliveryAddress',
                     select: 'addressLine1' // Replace with actual field names for courier
                 })
-                
+
 
             res.status(200).json(parcels);
         } catch (error) {
@@ -321,7 +328,7 @@ module.exports = {
     addDriver: async (req, res) => {
         const orderId = req.params.id;
         const driver = req.params.driver;
-        const status =  'Out_for_Delivery';
+        const status = 'Out_for_Delivery';
 
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Out_for_Delivery', driverId: driver }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
@@ -363,22 +370,22 @@ module.exports = {
 
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
-            .populate({
-                path: 'userId',
-                select: 'phone profile fcm' // Replace with actual field names for suid
-            })
-            .populate({
-                path: 'restaurantId',
-                select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
-            })
-            .populate({
-                path: 'orderItems.foodId',
-                select: 'title imageUrl time' // Replace with actual field names for courier
-            })
-            .populate({
-                path: 'deliveryAddress',
-                select: 'addressLine1 city district' // Replace with actual field names for courier
-            });
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile fcm' // Replace with actual field names for suid
+                })
+                .populate({
+                    path: 'restaurantId',
+                    select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'orderItems.foodId',
+                    select: 'title imageUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'deliveryAddress',
+                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                });
             if (updatedOrder) {
                 const db = admin.database()
                 updateRestaurant(updatedOrder, db, status);
@@ -400,32 +407,32 @@ module.exports = {
 
         try {
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: status }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
-            .populate({
-                path: 'userId',
-                select: 'phone profile' // Replace with actual field names for suid
-            })
-            .populate({
-                path: 'restaurantId',
-                select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
-            })
-            .populate({
-                path: 'orderItems.foodId',
-                select: 'title imageUrl time' // Replace with actual field names for courier
-            })
-            .populate({
-                path: 'deliveryAddress',
-                select: 'addressLine1 city district' // Replace with actual field names for courier
-            });
+                .populate({
+                    path: 'userId',
+                    select: 'phone profile' // Replace with actual field names for suid
+                })
+                .populate({
+                    path: 'restaurantId',
+                    select: 'title coords imageUrl logoUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'orderItems.foodId',
+                    select: 'title imageUrl time' // Replace with actual field names for courier
+                })
+                .populate({
+                    path: 'deliveryAddress',
+                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                });
             if (updatedOrder) {
                 const db = admin.database()
-                if(status === 'Ready'){
-                   updateDriver(updatedOrder, db)
-                }else{
+                if (status === 'Ready') {
+                    updateDriver(updatedOrder, db)
+                } else {
                     updateRestaurant(updatedOrder, db, status);
                     updateUser(updatedOrder, db, status);
                 }
-                
-                
+
+
                 res.status(200).json(updatedOrder);
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });
