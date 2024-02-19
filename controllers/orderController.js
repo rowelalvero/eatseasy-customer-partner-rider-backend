@@ -239,7 +239,7 @@ module.exports = {
                     select: 'title imageUrl time' // Replace with actual field names for courier
                 }).populate({
                     path: 'deliveryAddress',
-                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                    select: 'addressLine1' // Replace with actual field names for courier
                 })
                 
 

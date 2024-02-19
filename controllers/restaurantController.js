@@ -225,8 +225,6 @@ module.exports ={
 
     createPayout: async (req, res) => {
        
-        console.log(req.body.restaurant);
-
         try {
             const restaurant = await Restaurant.findById(req.body.restaurant);
             const user = await User.findById(restaurant.owner, { email: 1, username: 1 });
