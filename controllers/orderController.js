@@ -3,6 +3,7 @@ const Driver = require("../models/Driver")
 const admin = require("firebase-admin");
 const { updateDriver, updateRestaurant, updateUser } = require("../utils/driver_update")
 const sendNotification = require('../utils/sendNotification');
+const Restaurant = require("../models/Restaurant");
 
 module.exports = {
     placeOrder: async (req, res) => {
@@ -316,7 +317,7 @@ module.exports = {
                 })
                 .populate({
                     path: 'deliveryAddress',
-                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                    select: 'addressLine1' // Replace with actual field names for courier
                 })
 
             res.status(200).json(parcels);
@@ -384,9 +385,11 @@ module.exports = {
                 })
                 .populate({
                     path: 'deliveryAddress',
-                    select: 'addressLine1 city district' // Replace with actual field names for courier
+                    select: 'addressLine1' // Replace with actual field names for courier
                 });
             if (updatedOrder) {
+                const restaurant = await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId, {earnings: restaurant.earnings + updatedOrder.orderTotal}, {new: true});
+
                 const db = admin.database()
                 updateRestaurant(updatedOrder, db, status);
                 updateUser(updatedOrder, db, status);
