@@ -198,7 +198,7 @@ module.exports ={
               });
 
 
-            const revenueTotal = data.earnings
+            const revenueTotal = parseFloat(data.earnings.toFixed(2))
             const restaurantToken = await User.findById(data.owner, { fcm: 1 });
            
 
