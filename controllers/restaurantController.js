@@ -187,10 +187,7 @@ module.exports ={
             const deliiveryRevenue = await Orders.countDocuments({ restaurantId: id, orderStatus: "Delivered" });
             const cancelledOrders = await Orders.countDocuments({ restaurantId: id, orderStatus: "Cancelled" });
             
-            const revenue = await Orders.aggregate([
-                { $match: { restaurantId: id, orderStatus: "Delivered" } },
-                { $group: { _id: null, total: { $sum: "$orderTotal" } } }
-            ]);
+           
 
             const latestPayout = await Payout.find({restaurant: id}).sort({ createdAt: -1 });
             const processingOrders = await Orders.countDocuments({
@@ -200,9 +197,8 @@ module.exports ={
                 },
               });
 
-              const revenueTotalString = revenue[0]?.total.toString() || 0.0.toString();
 
-            const revenueTotal = parseFloat(revenueTotalString)
+            const revenueTotal = data.earnings
             const restaurantToken = await User.findById(data.owner, { fcm: 1 });
            
 
