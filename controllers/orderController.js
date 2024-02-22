@@ -389,7 +389,9 @@ module.exports = {
                     select: 'addressLine1' // Replace with actual field names for courier
                 });
 
-            await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {earnings: earnings + updatedOrder.orderTotal}, {new: true});
+           const restaurant = await Restaurant.findById(updatedOrder.restaurantId._id);
+
+            await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {earnings: restaurant.earnings + updatedOrder.orderTotal}, {new: true});
             if (updatedOrder) {
                 
                 const db = admin.database()
