@@ -14,11 +14,13 @@ module.exports = {
                 longitude: req.body.longitude
             },
         });
+
+        
     
         try {
             await newDriver.save();
             await User.findByIdAndUpdate(
-                owner,
+                userId,
                 { userType: "Driver" },
                 { new: true, runValidators: true });
             res.status(201).json({ status: true, message: 'Driver successfully added', data: newDriver });
