@@ -389,7 +389,8 @@ module.exports = {
                 });
             if (updatedOrder) {
                 const restaurant = await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId, {earnings: restaurant.earnings + updatedOrder.orderTotal}, {new: true});
-
+                
+                restaurant.save();
                 const db = admin.database()
                 updateRestaurant(updatedOrder, db, status);
                 updateUser(updatedOrder, db, status);
