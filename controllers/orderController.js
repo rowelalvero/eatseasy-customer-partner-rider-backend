@@ -370,6 +370,7 @@ module.exports = {
         const status = 'Delivered';
 
         try {
+            
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true }).select('userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
                 .populate({
                     path: 'userId',
@@ -387,10 +388,10 @@ module.exports = {
                     path: 'deliveryAddress',
                     select: 'addressLine1' // Replace with actual field names for courier
                 });
+
+            await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {earnings: earnings + updatedOrder.orderTotal}, {new: true});
             if (updatedOrder) {
-                const restaurant = await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId, {earnings: restaurant.earnings + updatedOrder.orderTotal}, {new: true});
                 
-                restaurant.save();
                 const db = admin.database()
                 updateRestaurant(updatedOrder, db, status);
                 updateUser(updatedOrder, db, status);
