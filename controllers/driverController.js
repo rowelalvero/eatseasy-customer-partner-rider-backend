@@ -23,7 +23,7 @@ module.exports = {
                 userId,
                 { userType: "Driver" },
                 { new: true, runValidators: true });
-            res.status(201).json({ status: true, message: 'Driver successfully added', data: newDriver });
+            res.status(201).json({ status: true, message: 'Driver successfully added',});
         } catch (error) {
             res.status(500).json({ status: false, message: error.message, });
         }
