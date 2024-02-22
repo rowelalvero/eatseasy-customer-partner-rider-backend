@@ -390,8 +390,13 @@ module.exports = {
                 });
 
            const restaurant = await Restaurant.findById(updatedOrder.restaurantId._id);
+                
 
-            await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {earnings: restaurant.earnings + updatedOrder.orderTotal}, {new: true});
+           const earnings = restaurant.earnings + updatedOrder.orderTotal;
+
+           console.log(earnings);
+
+            await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {earnings: earnings }, {new: true});
             if (updatedOrder) {
                 
                 const db = admin.database()
