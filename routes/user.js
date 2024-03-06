@@ -8,6 +8,7 @@ router.put("/",verifyTokenAndAuthorization, userController.updateUser);
 
 router.get("/verify/:otp",verifyTokenAndAuthorization, userController.verifyAccount);
 router.get("/customer_service", userController.getAdminNumber);
+router.post("/feedback", userController.userFeedback)
 router.get("/verify_phone/:phone",verifyTokenAndAuthorization, userController.verifyPhone);
 
 // DELETE USER

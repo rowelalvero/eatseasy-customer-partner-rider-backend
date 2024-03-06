@@ -1,3 +1,4 @@
+const FeedBack = require("../models/FeedBack");
 const User = require("../models/User");
 
 
@@ -94,6 +95,22 @@ module.exports = {
             const adminNumber = await User.find({userType: "Admin"}, {phone: 1});
 
             res.status(200).json(adminNumber[0]['phone'])
+        } catch (error) {
+            res.status(500).json({status: false, message: error.message})
+        }
+    },
+
+    userFeedback: async (req, res) => {
+        const id = req.user.id
+        try {
+            const feedback = new FeedBack({
+                userId: id,
+                message: req.body.message,
+                imageUrl: req.body.imageUrl,
+            })
+            await feedback.save()
+
+            res.status(201).json({status: true, message:"Feedback submitted successfully"})
         } catch (error) {
             res.status(500).json({status: false, message: error.message})
         }
