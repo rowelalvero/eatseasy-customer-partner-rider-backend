@@ -7,6 +7,7 @@ const {verifyTokenAndAuthorization, verifyAdmin}= require("../middlewares/verify
 router.put("/",verifyTokenAndAuthorization, userController.updateUser);
 
 router.get("/verify/:otp",verifyTokenAndAuthorization, userController.verifyAccount);
+router.get("/customer_service", userController.getAdminNumber);
 router.get("/verify_phone/:phone",verifyTokenAndAuthorization, userController.verifyPhone);
 
 // DELETE USER

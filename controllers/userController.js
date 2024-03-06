@@ -89,6 +89,16 @@ module.exports = {
         }
     },
 
+    getAdminNumber: async (req, res) => {
+        try {
+            const adminNumber = await User.find({userType: "Admin"}, {phone: 1});
+
+            res.status(200).json(adminNumber[0]['phone'])
+        } catch (error) {
+            res.status(500).json({status: false, message: error.message})
+        }
+    },
+
 
     getAllUsers: async (req, res) => {
         try {
