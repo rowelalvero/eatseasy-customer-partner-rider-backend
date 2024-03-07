@@ -8,7 +8,20 @@ const Restaurant = require("../models/Restaurant");
 module.exports = {
     placeOrder: async (req, res) => {
 
-        const order = new Order(req.body);
+
+        const order = new Order({
+            userId: req.body.userId,
+            orderItems: req.body.orderItems,
+            orderTotal: parseFloat(req.body.orderTotal), // Convert to double
+            deliveryFee: parseFloat(req.body.deliveryFee), // Assuming you want to convert this as well
+            grandTotal: parseFloat(req.body.grandTotal), // And this too
+            restaurantAddress: req.body.restaurantAddress,
+            paymentMethod: req.body.paymentMethod,
+            restaurantId: req.body.restaurantId,
+            restaurantCoords: req.body.restaurantCoords,
+            recipientCoords: req.body.recipientCoords,
+            deliveryAddress: req.body.deliveryAddress,
+          });
 
         try {
             await order.save();
