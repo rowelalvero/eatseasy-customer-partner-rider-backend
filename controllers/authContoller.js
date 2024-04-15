@@ -40,7 +40,7 @@ module.exports = {
 
             await newUser.save();
             sendVerificationEmail(req.body.email, otp);
-            sendNotification(req.body.fcm, "Foodly Registration", `The verification code has been sent to ${req.body.email}`, { type: "account_verification" })
+            // sendNotification(req.body.fcm, "Foodly Registration", `The verification code has been sent to ${req.body.email}`, { type: "account_verification" })
             res.status(201).json({ status: true, message: 'User created successfully' })
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
@@ -66,14 +66,11 @@ module.exports = {
                 return res.status(401).json({ status: false, message: "User not found, check your email address" })
             }
 
-
             const decrytedpass = CryptoJS.AES.decrypt(user.password, process.env.SECRET);
             const depassword = decrytedpass.toString(CryptoJS.enc.Utf8);
-
             if (depassword !== req.body.password) {
                 return res.status(401).json({ status: false, message: "Wrong password" })
             }
-
             const userToken = jwt.sign({
                 id: user._id, userType: user.userType, email: user.email, fcm: user.fcm,
             }, process.env.JWT_SEC,

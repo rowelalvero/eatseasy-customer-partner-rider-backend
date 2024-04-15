@@ -214,7 +214,7 @@ module.exports = {
 
         try {
             let foods = await Food.aggregate([
-                { $match: { category: category, code: code } },
+                { $match: { category: category } },
                 { $sample: { size: 10 } }
             ]);
 
@@ -237,10 +237,9 @@ module.exports = {
 
     getFoodsByCategoryAndCode: async (req, res) => {
         const { category, code } = req.params;  // Assuming category, code, and value are sent as parameters
-
         try {
             const foods = await Food.aggregate([
-                { $match: { category: category, code: code } },
+                { $match: { category: category } },
             ]);
 
             if(foods.length === 0){
