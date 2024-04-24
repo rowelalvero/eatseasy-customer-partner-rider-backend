@@ -54,5 +54,11 @@ app.use("/api/messaging", messagingRoute);
 app.use("/api/uploads", uploadRoute);
 
 
-app.listen(process.env.PORT || 6000, () => console.log(`Foodly backend app listening on port ${process.env.PORT}!`));
+const ip =  "127.0.0.1";
+
+const port = process.env.PORT || 3000; 
+
+app.listen(port, ip, () => {
+  console.log(`Product server listening on ${ip}:${port}`);
+});
 

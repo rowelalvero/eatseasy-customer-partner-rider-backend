@@ -4,6 +4,7 @@ const admin = require("firebase-admin");
 const { updateDriver, updateRestaurant, updateUser } = require("../utils/driver_update")
 const sendNotification = require('../utils/sendNotification');
 const Restaurant = require("../models/Restaurant");
+const { sendDeliveredOrder, sendOrderPreparing, sendOrderWaitingForCourier } = require("../utils/notifications_list");
 
 module.exports = {
     placeOrder: async (req, res) => {
@@ -21,7 +22,7 @@ module.exports = {
             restaurantCoords: req.body.restaurantCoords,
             recipientCoords: req.body.recipientCoords,
             deliveryAddress: req.body.deliveryAddress,
-          });
+        });
 
         try {
             await order.save();
@@ -368,6 +369,11 @@ module.exports = {
                 updateRestaurant(updatedOrder, db, status);
                 // send notification to the restaurant and to the client
                 // sendNotification()
+
+                if (updatedOrder.userId.fcm || updatedOrder.userId.fcm !== null) {
+                    sendOrderPickedUp(updatedOrder.userId.fcm, orderId )
+                }
+
                 updateUser(updatedOrder, db, status);
                 res.status(200).json(updatedOrder);
             } else {
@@ -383,7 +389,7 @@ module.exports = {
         const status = 'Delivered';
 
         try {
-            
+
             const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: 'Delivered' }, { new: true }).select('userId orderTotal deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus')
                 .populate({
                     path: 'userId',
@@ -402,17 +408,24 @@ module.exports = {
                     select: 'addressLine1' // Replace with actual field names for courier
                 });
 
-                await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {
-                    $inc: { earnings: updatedOrder.orderTotal }
-                  }, { new: true });
-                  
-            if (updatedOrder) {
                 
+
+            await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {
+                $inc: { earnings: updatedOrder.orderTotal }
+            }, { new: true });
+
+            if (updatedOrder) {
+
                 const db = admin.database()
                 updateRestaurant(updatedOrder, db, status);
                 updateUser(updatedOrder, db, status);
-                // send notification to the restaurant and to the client
-                // sendNotification()
+
+                if (updatedOrder.userId.fcm || updatedOrder.userId.fcm !== null) {
+                   sendDeliveredOrder(updatedOrder.userId.fcm, orderId)
+                }
+
+
+
                 res.status(200).json(updatedOrder);
             } else {
                 res.status(404).json({ status: false, message: 'Order not found' });
@@ -446,11 +459,15 @@ module.exports = {
                 });
             if (updatedOrder) {
                 const db = admin.database()
-                if (status === 'Ready') {
+                if (status === 'Preparing') {
+                    if (updatedOrder.userId.fcm || updatedOrder.userId.fcm !== null) {
+                        sendOrderPreparing(updatedOrder.userId.fcm, orderId)
+                     }
                     updateDriver(updatedOrder, db)
-                } else {
-                    updateRestaurant(updatedOrder, db, status);
-                    updateUser(updatedOrder, db, status);
+                }else if (status === 'Out_for_Delivery'|| status === 'Manual'){
+                    sendOrderWaitingForCourier(updatedOrder.userId.fcm, orderId)
+                }else if(status === 'Out_for_Delivery'){
+                    
                 }
 
 
