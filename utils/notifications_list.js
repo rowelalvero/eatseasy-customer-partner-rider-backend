@@ -49,4 +49,18 @@ const sendPushNotification = require("./sendNotification");
     }
 }
 
-exports = {sendDeliveredOrder, sendDeliveredOrderToRestaurant, sendOrderPickedUp, sendOrderPreparing, sendOrderCancelled, sendOrderWaitingForCourier}
+function sendPayoutRequestNotification(token, amount, payoutId) {
+    if (token) { 
+        sendPushNotification(
+            token,
+            `There is a new payout request with ID ${payoutId} for the amount of ${amount}. Please review and process it.`,
+            {
+                payoutId: payoutId.toString()
+            },
+            "New Payout Request" // Notification title for admin
+        );
+    }
+}
+
+
+exports = {sendDeliveredOrder,sendPayoutRequestNotification, sendDeliveredOrderToRestaurant, sendOrderPickedUp, sendOrderPreparing, sendOrderCancelled, sendOrderWaitingForCourier}
