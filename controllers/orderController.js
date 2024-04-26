@@ -422,8 +422,10 @@ module.exports = {
                 updateRestaurant(updatedOrder, db, status);
                 updateUser(updatedOrder, db, status);
 
-                if (updatedOrder.userId.fcm || updatedOrder.userId.fcm !== null) {
-                    sendDeliveredOrder(updatedOrder.userId.fcm, orderId)
+                const user = await User.findById(updatedOrder.userId._id, { fcm: 1 })
+
+                if (user.fcm || user.fcm !== null || user.fcm !== '') {
+                    sendNotification(user.fcm, "🎊 Food Delivered 🎉", data, `Thank you for ordering from us! Your order has been successfully delivered.`)
                 }
 
 
@@ -485,9 +487,13 @@ module.exports = {
                             sendNotification(user.fcm, "🚚 Order Picked Up and Out for Delivery", data, `Your order has been picked up and now getting delivered.`)
                         }
                     } else if (status === 'Delivered') {
+                        
+                        await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {
+                            $inc: { earnings: updatedOrder.orderTotal }
+                        }, { new: true });
+
                         if (user.fcm || user.fcm !== null || user.fcm !== '') {
                             sendNotification(user.fcm, "🎊 Food Delivered 🎉", data, `Thank you for ordering from us! Your order has been successfully delivered.`)
-                            
                         }
                     }else if (status === 'Cancelled') {
                         if (user.fcm || user.fcm !== null || user.fcm !== '') {
