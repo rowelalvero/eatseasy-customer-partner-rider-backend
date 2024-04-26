@@ -4,7 +4,6 @@ const admin = require("firebase-admin");
 const { updateDriver, updateRestaurant, updateUser } = require("../utils/driver_update")
 const sendNotification = require('../utils/sendNotification');
 const Restaurant = require("../models/Restaurant");
-const { sendDeliveredOrder, sendOrderPreparing, sendOrderWaitingForCourier, sendOrderCancelled } = require("../utils/notifications_list");
 const User = require("../models/User");
 
 module.exports = {
@@ -487,7 +486,7 @@ module.exports = {
                             sendNotification(user.fcm, "🚚 Order Picked Up and Out for Delivery", data, `Your order has been picked up and now getting delivered.`)
                         }
                     } else if (status === 'Delivered') {
-                        
+
                         await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {
                             $inc: { earnings: updatedOrder.orderTotal }
                         }, { new: true });
@@ -512,7 +511,5 @@ module.exports = {
             res.status(500).json({ status: false, message: error.message });
         }
     },
-
-
 
 }
