@@ -5,6 +5,8 @@ const { updateDriver, updateRestaurant, updateUser } = require("../utils/driver_
 const sendNotification = require('../utils/sendNotification');
 const Restaurant = require("../models/Restaurant");
 const User = require("../models/User");
+const sendNotificationToTopic = require('../utils/send_to_topic')
+
 
 module.exports = {
     placeOrder: async (req, res) => {
@@ -365,14 +367,13 @@ module.exports = {
                     select: 'addressLine1 city district' // Replace with actual field names for courier
                 });
 
+            const user = await User.findById(updatedOrder.userId._id, { fcm: 1 })
+
             if (updatedOrder) {
                 const db = admin.database()
-                updateRestaurant(updatedOrder, db, status);
-                // send notification to the restaurant and to the client
-                // sendNotification()
 
-                if (updatedOrder.userId.fcm || updatedOrder.userId.fcm !== null) {
-                    sendOrderPickedUp(updatedOrder.userId.fcm, orderId)
+                if (user.fcm || user.fcm !== null || user.fcm !== '') {
+                    sendNotification(user.fcm, "🚚 Order Picked Up and Out for Delivery", data, `Your order has been picked up and now getting delivered.`)
                 }
 
                 updateUser(updatedOrder, db, status);
@@ -467,7 +468,7 @@ module.exports = {
 
             if (user) {
                 if (updatedOrder) {
-                    console.log(status);
+
                     const data = {
                         orderId: updatedOrder._id.toString(),
                         messageType: 'order'
@@ -479,7 +480,9 @@ module.exports = {
                         }
                     } else if (status === 'Ready') {
                         if (user.fcm || user.fcm !== null || user.fcm !== '') {
+                            sendNotificationToTopic('delivery', "🚚 You have a new order to deliver", data,`If you are closer to the restaurant pick up the order and complete the task` )
                             sendNotification(user.fcm, "🚚 Order Awaits Pick Up", data, `Your order prepared and is waiting to be picked up`)
+
                         }
                     } else if (status === 'Out_for_Delivery' || status === 'Manual') {
                         if (user.fcm || user.fcm !== null || user.fcm !== '') {
@@ -494,7 +497,7 @@ module.exports = {
                         if (user.fcm || user.fcm !== null || user.fcm !== '') {
                             sendNotification(user.fcm, "🎊 Food Delivered 🎉", data, `Thank you for ordering from us! Your order has been successfully delivered.`)
                         }
-                    }else if (status === 'Cancelled') {
+                    } else if (status === 'Cancelled') {
                         if (user.fcm || user.fcm !== null || user.fcm !== '') {
                             sendNotification(user.fcm, `💔 Order Cancelled`, data, `Your order has been cancelled. Contact the restaurant for more information`)
                         }
@@ -513,3 +516,5 @@ module.exports = {
     },
 
 }
+
+

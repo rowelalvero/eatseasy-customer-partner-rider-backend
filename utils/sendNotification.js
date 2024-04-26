@@ -1,4 +1,4 @@
-const admin = require('firebase-admin')
+const admin = require('firebase-admin');
 
 
 async function sendPushNotification(deviceToken, messageBody, data, title) {
@@ -22,3 +22,5 @@ async function sendPushNotification(deviceToken, messageBody, data, title) {
 
 
 module.exports = sendPushNotification;
+
+
