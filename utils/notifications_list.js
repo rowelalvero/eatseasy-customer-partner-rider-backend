@@ -25,21 +25,13 @@ const sendPushNotification = require("./sendNotification");
     }
 }
 
- function sendOrderPreparing(token, orderId) {
-    if (token && token !== null) {
-        sendPushNotification(token, `Your order is being prepared and will be ready soon`, {
-            orderId: orderId.toString()
-        }, "Order Preparing")
-    }
-}
+sendOrderPreparing = (token, orderId) => {
+  if (token && token !== null) {
+    sendPushNotification(token, `Your order is being prepared and will be ready soon`, { orderId: orderId.toString() }, "Order Preparing");
+  }
+};
 
- function sendOrderCancelled(token, orderId) {
-    if (token && token !== null) {
-        sendPushNotification(token, `Your order has been cancelled. COntact the restuarant for more information`, {
-            orderId: orderId.toString()
-        }, "Order Cancelled")
-    }
-}
+
 
  function sendOrderWaitingForCourier(token, orderId) {
     if (token && token !== null) {
@@ -63,4 +55,4 @@ function sendPayoutRequestNotification(token, amount, payoutId) {
 }
 
 
-exports = {sendDeliveredOrder,sendPayoutRequestNotification, sendDeliveredOrderToRestaurant, sendOrderPickedUp, sendOrderPreparing, sendOrderCancelled, sendOrderWaitingForCourier}
+module.exports = {sendDeliveredOrder,sendPayoutRequestNotification, sendDeliveredOrderToRestaurant, sendOrderPickedUp, sendOrderPreparing, sendOrderWaitingForCourier}

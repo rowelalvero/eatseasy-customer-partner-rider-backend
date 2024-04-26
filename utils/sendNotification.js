@@ -14,8 +14,9 @@ async function sendPushNotification(deviceToken, messageBody, data, title) {
 
     try {
         await admin.messaging().send(message);
+        console.log('Push notification sent successfully');
     } catch (error) {
-        console.log('Error sending message:', error);
+        console.log('Error:', "Error sending push notification:");
     }
 }
 

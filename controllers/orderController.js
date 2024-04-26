@@ -4,7 +4,8 @@ const admin = require("firebase-admin");
 const { updateDriver, updateRestaurant, updateUser } = require("../utils/driver_update")
 const sendNotification = require('../utils/sendNotification');
 const Restaurant = require("../models/Restaurant");
-const { sendDeliveredOrder, sendOrderPreparing, sendOrderWaitingForCourier } = require("../utils/notifications_list");
+const { sendDeliveredOrder, sendOrderPreparing, sendOrderWaitingForCourier, sendOrderCancelled } = require("../utils/notifications_list");
+const User = require("../models/User");
 
 module.exports = {
     placeOrder: async (req, res) => {
@@ -96,13 +97,14 @@ module.exports = {
                 .populate({
                     path: 'orderItems.foodId',
                     select: 'imageUrl title rating time'
-                })
+                }).sort({ updatedAt: -1 })
             // .populate('driverId');
 
-            res.status(200).json(orders);
+            return res.status(200).json(orders);
         } catch (error) {
             res.status(500).json(error);
         }
+
     },
 
     deleteOrder: async (req, res) => {
@@ -371,7 +373,7 @@ module.exports = {
                 // sendNotification()
 
                 if (updatedOrder.userId.fcm || updatedOrder.userId.fcm !== null) {
-                    sendOrderPickedUp(updatedOrder.userId.fcm, orderId )
+                    sendOrderPickedUp(updatedOrder.userId.fcm, orderId)
                 }
 
                 updateUser(updatedOrder, db, status);
@@ -408,7 +410,7 @@ module.exports = {
                     select: 'addressLine1' // Replace with actual field names for courier
                 });
 
-                
+
 
             await Restaurant.findByIdAndUpdate(updatedOrder.restaurantId._id, {
                 $inc: { earnings: updatedOrder.orderTotal }
@@ -421,7 +423,7 @@ module.exports = {
                 updateUser(updatedOrder, db, status);
 
                 if (updatedOrder.userId.fcm || updatedOrder.userId.fcm !== null) {
-                   sendDeliveredOrder(updatedOrder.userId.fcm, orderId)
+                    sendDeliveredOrder(updatedOrder.userId.fcm, orderId)
                 }
 
 
@@ -457,24 +459,49 @@ module.exports = {
                     path: 'deliveryAddress',
                     select: 'addressLine1 city district' // Replace with actual field names for courier
                 });
-            if (updatedOrder) {
-                const db = admin.database()
-                if (status === 'Preparing') {
-                    if (updatedOrder.userId.fcm || updatedOrder.userId.fcm !== null) {
-                        sendOrderPreparing(updatedOrder.userId.fcm, orderId)
-                     }
-                    updateDriver(updatedOrder, db)
-                }else if (status === 'Out_for_Delivery'|| status === 'Manual'){
-                    sendOrderWaitingForCourier(updatedOrder.userId.fcm, orderId)
-                }else if(status === 'Out_for_Delivery'){
-                    
+
+            const user = await User.findById(updatedOrder.userId._id, { fcm: 1 })
+
+
+
+            if (user) {
+                if (updatedOrder) {
+                    console.log(status);
+                    const data = {
+                        orderId: updatedOrder._id.toString(),
+                        messageType: 'order'
+                    };
+
+                    if (status === 'Preparing') {
+                        if (user.fcm || user.fcm !== null || user.fcm !== '') {
+                            sendNotification(user.fcm, "👩‍🍳 Order Accepted and Preparing", data, `Your order is being prepared and will be ready soon`)
+                        }
+                    } else if (status === 'Ready') {
+                        if (user.fcm || user.fcm !== null || user.fcm !== '') {
+                            sendNotification(user.fcm, "🚚 Order Awaits Pick Up", data, `Your order prepared and is waiting to be picked up`)
+                        }
+                    } else if (status === 'Out_for_Delivery' || status === 'Manual') {
+                        if (user.fcm || user.fcm !== null || user.fcm !== '') {
+                            sendNotification(user.fcm, "🚚 Order Picked Up and Out for Delivery", data, `Your order has been picked up and now getting delivered.`)
+                        }
+                    } else if (status === 'Delivered') {
+                        if (user.fcm || user.fcm !== null || user.fcm !== '') {
+                            sendNotification(user.fcm, "🎊 Food Delivered 🎉", data, `Thank you for ordering from us! Your order has been successfully delivered.`)
+                            
+                        }
+                    }else if (status === 'Cancelled') {
+                        if (user.fcm || user.fcm !== null || user.fcm !== '') {
+                            sendNotification(user.fcm, `💔 Order Cancelled`, data, `Your order has been cancelled. Contact the restaurant for more information`)
+                        }
+                    }
+
+
+                    res.status(200).json(updatedOrder);
+                } else {
+                    res.status(404).json({ status: false, message: 'Order not found' });
                 }
-
-
-                res.status(200).json(updatedOrder);
-            } else {
-                res.status(404).json({ status: false, message: 'Order not found' });
             }
+
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }

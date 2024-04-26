@@ -54,7 +54,7 @@ app.use("/api/messaging", messagingRoute);
 app.use("/api/uploads", uploadRoute);
 
 
-const ip =  "127.0.0.1";
+const ip =  "192.168.137.228";
 
 const port = process.env.PORT || 3000; 
 
