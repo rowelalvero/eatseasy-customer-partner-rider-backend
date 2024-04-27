@@ -370,6 +370,10 @@ module.exports = {
             const user = await User.findById(updatedOrder.userId._id, { fcm: 1 })
 
             if (updatedOrder) {
+                const data = {
+                    orderId: updatedOrder._id.toString(),
+                    messageType: 'order'
+                };
                 const db = admin.database()
 
                 if (user.fcm || user.fcm !== null || user.fcm !== '') {
@@ -389,6 +393,7 @@ module.exports = {
     markAsDelivered: async (req, res) => {
         const orderId = req.params.id;
         const status = 'Delivered';
+        const userId = req.user.id;
 
         try {
 
@@ -416,8 +421,13 @@ module.exports = {
                 $inc: { earnings: updatedOrder.orderTotal }
             }, { new: true });
 
-            if (updatedOrder) {
+            const driver = await Driver.findOne({ driver: userId });
 
+            if (updatedOrder) {
+                const data = {
+                    orderId: updatedOrder._id.toString(),
+                    messageType: 'order'
+                };
                 const db = admin.database()
                 updateRestaurant(updatedOrder, db, status);
                 updateUser(updatedOrder, db, status);
@@ -428,7 +438,12 @@ module.exports = {
                     sendNotification(user.fcm, "🎊 Food Delivered 🎉", data, `Thank you for ordering from us! Your order has been successfully delivered.`)
                 }
 
+                if (driver) {
+                    driver.totalDeliveries = +1;
+                    driver.totalEarnings = updatedOrder.deliveryFee;
+                }
 
+                await driver.save()
 
                 res.status(200).json(updatedOrder);
             } else {
@@ -463,8 +478,6 @@ module.exports = {
                 });
 
             const user = await User.findById(updatedOrder.userId._id, { fcm: 1 })
-
-
 
             if (user) {
                 if (updatedOrder) {
