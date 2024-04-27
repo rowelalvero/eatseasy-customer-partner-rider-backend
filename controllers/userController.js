@@ -1,6 +1,6 @@
 const FeedBack = require("../models/FeedBack");
 const User = require("../models/User");
-
+const admin = require('firebase-admin');
 
 module.exports = {
 
@@ -139,6 +139,10 @@ module.exports = {
             }
 
             user.fcm = token;
+
+            if(user.userType == 'Driver'){
+                await admin.messaging().subscribeToTopic(user.fcm, "delivery");
+            }
 
             await user.save();
             return res.status(200).json({ status: true, message: 'FCM token updated successfully' });

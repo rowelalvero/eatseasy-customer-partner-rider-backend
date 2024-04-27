@@ -480,7 +480,7 @@ module.exports = {
                         }
                     } else if (status === 'Ready') {
                         if (user.fcm || user.fcm !== null || user.fcm !== '') {
-                            sendNotificationToTopic('delivery', "🚚 You have a new order to deliver", data,`If you are closer to the restaurant pick up the order and complete the task` )
+                            sendNotificationToTopic(data);
                             sendNotification(user.fcm, "🚚 Order Awaits Pick Up", data, `Your order prepared and is waiting to be picked up`)
 
                         }

@@ -1,18 +1,21 @@
 const admin = require('firebase-admin');
 
-
- async function sendPushNotificationToTopic(topic, messageBody, data, title) {
+async function sendPushNotificationToTopic( data) {
     const message = {
-        notification: { title: title, body: messageBody },
-        data: data,
+        notification: {
+            title: '🚚 A new order ready for delivery',
+            body: `If you are closer to the restaurant pick up the order and complete the task`
+        },
+        topic: 'delivery',
+        data: data
     };
 
     try {
-        await admin.messaging().sendToTopic(topic, message);
-        console.log('Push notification sent to topic:', topic);
+        const response = await admin.messaging().send(message);
+        console.log('Successfully sent message:', response);
     } catch (error) {
-        console.log('Error sending push notification:', error);
+        console.error('Error sending message:', error);
     }
 }
 
-exports = sendPushNotificationToTopic
+module.exports = sendPushNotificationToTopic;
