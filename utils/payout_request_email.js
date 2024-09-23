@@ -13,8 +13,8 @@ async function payoutRequestEmail(userEmail, name, payoutAmount){
     const mailOptions = {
         from: process.env.AUTH_USER,
         to: userEmail,
-        subject: "Your Payout Request from Foodly",
-        html: ` <h2>Foodly Payout Request Initiated</h2>
+        subject: "Your Payout Request from EatsEasy",
+        html: ` <h2>EatsEasy Payout Request Initiated</h2>
 
         <p>Dear ${name},</p>
     
@@ -22,11 +22,11 @@ async function payoutRequestEmail(userEmail, name, payoutAmount){
     
         <p>If you have any questions or need further assistance, please do not hesitate to contact our support team at [Your Support Email] or [Your Support Phone Number]. We are here to help.</p>
     
-        <p>Thank you for being a valued member of the Foodly community.</p>
+        <p>Thank you for being a valued member of the EatsEasy community.</p>
     
         <p>Best regards,</p>
     
-        <p>Foodly Finance Team</p>`
+        <p>EatsEasy Finance Team</p>`
 
     };
 

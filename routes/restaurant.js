@@ -5,6 +5,7 @@ const { verifyTokenAndAuthorization, verifyVendor } = require("../middlewares/ve
 
 // CREATE RESTAURANT
 router.post("/",verifyTokenAndAuthorization,  restaurantController.addRestaurant);
+router.post("/messagesByRes", restaurantController.sendMessages);
 
 
 router.get("/profile", verifyVendor, restaurantController.getRestaurantByOwner);
@@ -28,6 +29,7 @@ router.get("/byId/:id", restaurantController.getRestaurant);
 router.get("/statistics/:id", restaurantController.getStats);
 
 router.post("/payout",verifyVendor, restaurantController.createPayout);
+
 
 
 

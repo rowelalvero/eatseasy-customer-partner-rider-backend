@@ -3,6 +3,7 @@ const Payout = require("../models/Payout");
 const Restaurant =require("../models/Restaurant")
 const User =require("../models/User");
 const payoutRequestEmail = require("../utils/payout_request_email");
+const admin = require("firebase-admin");
 
 
 module.exports ={
@@ -263,6 +264,39 @@ module.exports ={
         } 
     },
 
-
+    sendMessages: async (req, res) => {
+        const body = req.body;
+        const userId = body.data.to_uid;
+        console.log(userId);
+        const user = await User.findById(userId, { fcm: 1 })
+        console.log(user);
+        if (user.fcm || user.fcm !== null || user.fcm !== '') {
+            console.log(user.fcm);
+            const message = {
+                notification: {
+                    title: body.notification.title,
+                    body: body.notification.body
+                },
+                data: body.data,
+                token: user.fcm
+            }
+        
+            try {
+                await admin.messaging().send(message);
+                console.log('Push notification sent successfully');
+            } catch (error) {
+                console.log('Error:', "Error sending push notification:");
+            }
+          //  sendPushNotification(user.fcm, "🎊 From restaurant 🎉", data, `Thank you for ordering from us! Your enquires would be met.`)
+        }
+        
+        try {
+            
+            res.status(200).json({"msg":"success"});
+            console.log("success");
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    },
     
 }
