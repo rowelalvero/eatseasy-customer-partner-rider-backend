@@ -15,7 +15,7 @@ const restaurantSchema = new mongoose.Schema({
         type: Number,
         min: 1,
         max: 5,
-        default: 3
+        default: 0
     },
     ratingCount: {type: String, default: "0"},
     verification: {type: String ,default: "Pending", enum: ["Pending", "Verified", "Rejected"]},
