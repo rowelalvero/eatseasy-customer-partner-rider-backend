@@ -13,7 +13,7 @@ const restaurantSchema = new mongoose.Schema({
     logoUrl: {type: String , required: true},
     rating: {
         type: Number,
-        min: 1,
+        min: 0,
         max: 5,
         default: 0
     },
