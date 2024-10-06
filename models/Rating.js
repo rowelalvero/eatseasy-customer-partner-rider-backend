@@ -6,7 +6,7 @@ const ratingSchema = new mongoose.Schema({
     product: { type: String, required: true },
     rating: {
         type: Number,
-        min: 0,
+        min: 1,
         max: 5
     },
 });
