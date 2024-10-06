@@ -20,7 +20,7 @@ module.exports = {
                     { $group: { _id: '$product', averageRating: { $avg: '$rating' } } }
                 ]);
     
-                if (restaurants.length > 0) {
+                if (restaurants.length >= 0) {
                     const averageRating = restaurants[0].averageRating;
                     await Restaurant.findByIdAndUpdate(req.body.product, { rating: averageRating }, { new: true });
                 }
