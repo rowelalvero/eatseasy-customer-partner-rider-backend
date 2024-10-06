@@ -22,7 +22,8 @@ module.exports = {
                     additives: req.body.additives,
                     instructions: req.body.instructions,
                     totalPrice: req.body.totalPrice,
-                    quantity: req.body.quantity
+                    quantity: req.body.quantity,
+                    restaurant: req.body.restaurant
                 });
                 await newCartEntry.save();
                  count = await Cart.countDocuments({ userId });
