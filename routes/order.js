@@ -15,6 +15,8 @@ router.post("/payment-status/:id", ordersController.updatePaymentStatus)
 router.get("/picked/:status/:driver",verifyDriver, ordersController.getPickedOrders)
 router.put("/picked-orders/:id/:driver", verifyDriver, ordersController.addDriver)
 router.put("/delivered/:id", verifyDriver, ordersController.markAsDelivered)
+router.get("/delivered/delivered", verifyDriver, ordersController.getDeliveredOrders)
+
 router.put("/process/:id/:status", verifyVendor, ordersController.processOrder)
 
 module.exports = router;

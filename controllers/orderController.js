@@ -428,7 +428,7 @@ module.exports = {
 
   addDriver: async (req, res) => {
     const orderId = req.params.id;
-    const driver = req.params.driver;
+    const driver = req.user.id;
     const status = "Out_for_Delivery";
 
     try {
@@ -681,4 +681,50 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
+
+   getDeliveredOrders: async (req, res) => {
+    const userId = req.user.id;
+    const status = "Delivered";
+    
+    try {
+      // Find the driver using the userId
+      const driver = await Driver.findOne({ driver: userId });
+  
+      if (!driver) {
+        return res.status(404).json({ status: false, message: "Driver not found" });
+      }else{
+        console.log(driver._id);
+      }
+  
+      // Fetch delivered orders for the driver
+      const deliveredOrders = await Order.find({ orderStatus: status, driverId: driver._id })
+        .select("userId orderTotal deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus")
+        .populate({
+          path: "userId",
+          select: "phone profile fcm",
+        })
+        .populate({
+          path: "restaurantId",
+          select: "title coords imageUrl logoUrl time",
+        })
+        .populate({
+          path: "orderItems.foodId",
+          select: "title imageUrl time",
+        })
+        .populate({
+          path: "deliveryAddress",
+          select: "addressLine1",
+        });
+  
+      if (deliveredOrders.length > 0) {
+        return res.status(200).json( deliveredOrders );
+      } else {
+        return res.status(404).json({ status: false, message: "No delivered orders found" });
+      }
+    } catch (error) {
+      return res.status(500).json({ status: false, message: error.message });
+    }
+  }
+  
+  
 };

@@ -13,11 +13,11 @@ const restaurantSchema = new mongoose.Schema({
     logoUrl: {type: String , required: true},
     rating: {
         type: Number,
-        min: 0,
+        min: 1,
         max: 5,
-        default: 0
+        default: 3
     },
-    ratingCount: {type: String, default: "0"},
+    ratingCount: {type: String, default: "210"},
     verification: {type: String ,default: "Pending", enum: ["Pending", "Verified", "Rejected"]},
     verificationMessage: {type: String, default: "Please allow up to 24 hours for your verification to be processed. You will receive a notification once your verification is complete."},
     coords: {

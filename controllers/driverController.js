@@ -1,5 +1,8 @@
 const Driver = require('../models/Driver');
 const User = require('../models/User');
+const Order = require("../models/Orders");
+const mongoose = require('mongoose');
+
 
 module.exports = {
     registerDriver: async (req, res) => {
@@ -89,5 +92,61 @@ module.exports = {
             res.status(500).json(error);
         }
     },
+
+     getDriversEarning: async (req, res) => {
+        const driverId = req.params.id.trim();
+        console.log("Driver ID:", driverId);
+    
+        try {
+            // Validate driver ID
+            const driver = await Driver.findById(driverId);
+            console.log("Driver:", driver);
+    
+            if (!driver) {
+                return res.status(404).json({ status: false, message: 'Driver not found' });
+            }
+    
+            // Aggregate monthly earnings
+            const monthlyEarnings = await Order.aggregate([
+                { $match: { driverId: new mongoose.Types.ObjectId(driverId), orderStatus: 'Delivered' } },
+                {
+                    $group: {
+                        _id: { year: { $year: "$orderDate" }, month: { $month: "$orderDate" } },
+                        totalEarnings: { $sum: '$deliveryFee' }
+                    }
+                },
+                { $project: { _id: 0, year: "$_id.year", month: "$_id.month", totalEarnings: 1 } },
+            ]);
+    
+            // Aggregate weekly earnings
+            const weeklyEarnings = await Order.aggregate([
+                { $match: { driverId: new mongoose.Types.ObjectId(driverId), orderStatus: 'Delivered' } },
+                {
+                    $group: {
+                        _id: { year: { $year: "$orderDate" }, week: { $week: "$orderDate" } },
+                        totalEarnings: { $sum: '$deliveryFee' }
+                    }
+                },
+                { $project: { _id: 0, year: "$_id.year", week: "$_id.week", totalEarnings: 1 } },
+            ]);
+    
+            // Aggregate daily earnings
+            const dailyEarnings = await Order.aggregate([
+                { $match: { driverId: new mongoose.Types.ObjectId(driverId), orderStatus: 'Delivered' } },
+                {
+                    $group: {
+                        _id: { year: { $year: "$orderDate" }, month: { $month: "$orderDate" }, day: { $dayOfMonth: "$orderDate" } },
+                        totalEarnings: { $sum: '$deliveryFee' }
+                    }
+                },
+                { $project: { _id: 0, year: "$_id.year", month: "$_id.month", day: "$_id.day", totalEarnings: 1 } },
+            ]);
+    
+            return res.status(200).json({ status: true, monthlyEarnings, weeklyEarnings, dailyEarnings });
+        } catch (error) {
+            console.error("Error:", error);
+            return res.status(500).json({ status: false, message: error.message });
+        }
+    }
     
 }

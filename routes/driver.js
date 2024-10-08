@@ -13,8 +13,12 @@ router.delete("/:id", driverController.deleteDriver);
 // UPDATE DRIVER
 router.put("/:id",verifyDriver, driverController.updateDriverDetails);
 
+//earnings
+router.get("/earnings/:id", verifyDriver,  driverController.getDriversEarning);
+
 // GET DRIVER
 router.get("/",verifyDriver, driverController.getDriverDetails);
+
 
 // TOGGLE DRIVER AVAILABILITY
 router.patch("/availability/:id",verifyTokenAndAuthorization, driverController.setDriverAvailability);
