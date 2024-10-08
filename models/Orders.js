@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema({
     restaurantCoords: [Number],
     recipientCoords: [Number],
     driverId: { type: mongoose.Schema.Types.ObjectId, ref: "Driver" },
-    rating: { type: Number, min: 1, max: 5 },
+    rating: { type: Number, min: 0, max: 5 },
     feedback: String,
     promoCode: String,
     discountAmount: Number,
