@@ -11,6 +11,7 @@ router.post("/decrement",verifyTokenAndAuthorization, cartController.decrementPr
 
 router.delete("/delete/:id",verifyTokenAndAuthorization, cartController.removeProductFromCart);
 
+router.delete("/delete-multiple/:id",verifyTokenAndAuthorization, cartController.removeMultipleProductFromCart);
 
 router.get("/",verifyTokenAndAuthorization, cartController.fetchUserCart);
 

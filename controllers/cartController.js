@@ -48,7 +48,18 @@ module.exports = {
         }
     },
 
+    removeMultipleProductFromCart: async (req, res) => {
+            const productId = req.params.productId;
+            const userId = req.user.id;
 
+            try {
+                await Cart.findOneAndDelete({_id:productId});
+                count = await Cart.countDocuments({ userId });
+                res.status(200).json({ status: true, count: count });
+            } catch (error) {
+                res.status(500).json({ status: false, message: error.message });
+            }
+        },
 
     fetchUserCart: async (req, res) => {
         const id = req.user.id;
