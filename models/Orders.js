@@ -7,7 +7,7 @@ const orderItemSchema = new mongoose.Schema({
     unitPrice:{type:Number, default: 0},
     additives: { type: Array },
     instructions: {type: String, default: ''},
-    cartItemId: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" default: "0"},
+    cartItemId: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
 });
 
 const orderSchema = new mongoose.Schema({
