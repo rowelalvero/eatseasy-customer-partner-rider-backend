@@ -53,7 +53,7 @@ module.exports = {
             const userId = req.user.id;
 
             try {
-                await Cart.findOneAndDelete({_id:productId});
+                await Cart.findOneAndDelete({productId:productId});
                 count = await Cart.countDocuments({ userId });
                 res.status(200).json({ status: true, count: count });
             } catch (error) {
