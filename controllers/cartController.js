@@ -5,7 +5,7 @@ module.exports = {
 
     addProductToCart: async (req, res) => {
         const userId = req.user.id;
-        const {  productId, totalPrice, quantity } = req.body;
+        const {  productId, totalPrice, quantity, prepTime } = req.body;
         let count;
         try {
             const existingProduct = await Cart.findOne({ userId, productId });
