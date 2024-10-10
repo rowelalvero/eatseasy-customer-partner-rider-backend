@@ -16,6 +16,7 @@ const orderSchema = new mongoose.Schema({
     orderTotal: { type: Number, required: true },
     deliveryFee: { type: Number, required: true },
     grandTotal: { type: Number, required: true },
+    deliveryOption: { type: String },
     deliveryAddress: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Address", 

@@ -26,6 +26,7 @@ module.exports = {
       restaurantCoords: req.body.restaurantCoords,
       recipientCoords: req.body.recipientCoords,
       deliveryAddress: req.body.deliveryAddress,
+      deliveryOption: req.body.deliveryOption,
     });
 
     try {
