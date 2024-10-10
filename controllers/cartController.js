@@ -23,6 +23,7 @@ module.exports = {
                     instructions: req.body.instructions,
                     totalPrice: req.body.totalPrice,
                     quantity: req.body.quantity,
+                    prepTime: req.body.prepTime,
                     restaurant: req.body.restaurant
                 });
                 await newCartEntry.save();

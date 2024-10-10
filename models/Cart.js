@@ -7,6 +7,7 @@ const cartSchema = new mongoose.Schema({
     instructions: {type: String, default: ''},
     totalPrice: {type: Number , required: true},
     quantity: {type: Number , required: true},
+    prepTime: {type: Number , required: true},
     restaurant: { type: mongoose.Schema.Types.ObjectId, ref: "Restaurant" },
 });
 
