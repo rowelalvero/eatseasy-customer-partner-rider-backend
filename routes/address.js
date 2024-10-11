@@ -6,11 +6,9 @@ const {verifyTokenAndAuthorization, verifyAdmin}= require("../middlewares/verify
 router.post("/",verifyTokenAndAuthorization, addressController.createAddress);
 
 // DELETE USER
-
 router.delete("/:id",verifyTokenAndAuthorization, addressController.deleteAddress);
 
 // GET USER
-
 router.get("/default",verifyTokenAndAuthorization, addressController.getDefaultAddress);
 
 router.get("/all",verifyTokenAndAuthorization, addressController.getUserAddresses);

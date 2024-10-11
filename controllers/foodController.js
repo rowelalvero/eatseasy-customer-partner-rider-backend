@@ -276,4 +276,27 @@ module.exports = {
         }
     },
 
+    searchRestaurants: async (req, res) => {
+        const search = req.params.query;  // You can search for the restaurant name or any relevant field
+        try {
+            const results = await Restaurant.aggregate([
+                {
+                    $search: {
+                        index: "restaurants",  // The search index for restaurants in your MongoDB Atlas setup
+                        text: {
+                            query: search,
+                            path: {
+                                wildcard: "*"  // Searches across all fields, or you can specify particular fields like 'name' or 'cuisine'
+                            }
+                        }
+                    }
+                }
+            ]);
+            res.status(200).json(results);
+        } catch (error) {
+            res.status(500).json({ error: error.message, status: false });
+        }
+    },
+
+
 }
