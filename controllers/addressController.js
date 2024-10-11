@@ -5,6 +5,7 @@ module.exports = {
     createAddress: async (req, res) => {
 
         const address = new Address({
+            addressName: req.body.addressName,
             userId: req.user.id,
             addressLine1: req.body.addressLine1,
             postalCode: req.body.postalCode,
