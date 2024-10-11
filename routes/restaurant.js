@@ -30,7 +30,7 @@ router.get("/statistics/:id", restaurantController.getStats);
 
 router.post("/payout",verifyVendor, restaurantController.createPayout);
 
-router.get("/search/:restaurant", restaurantController.searchRestaurants);
+router.get("/search/:query", restaurantController.searchRestaurants);
 
 
 
