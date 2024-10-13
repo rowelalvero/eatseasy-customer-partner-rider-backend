@@ -78,7 +78,6 @@ module.exports = {
             res.status(500).json({status: false, message: error.message });
         }
     },
-
   
     getUser: async (req, res) => {
         try {
@@ -116,7 +115,6 @@ module.exports = {
         }
     },
 
-
     getAllUsers: async (req, res) => {
         try {
             const allUser = await User.find();
@@ -126,7 +124,6 @@ module.exports = {
             res.status(500).json(error)
         }
     },
-
 
     updateFcm: async (req, res) => {
         const token = req.params.token;

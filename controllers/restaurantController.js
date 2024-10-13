@@ -38,7 +38,6 @@ module.exports ={
         }
     },
 
-
     getRestaurantByOwner: async (req, res) => {
         const id = req.user.id;
 
@@ -55,9 +54,8 @@ module.exports ={
             res.status(500).json({status: false, message: error.message });
         }
     },
-    
 
-     getRandomRestaurants: async (req, res) => {
+    getRandomRestaurants: async (req, res) => {
         try {
             let randomRestaurants = [];
     
@@ -88,8 +86,6 @@ module.exports ={
             res.status(500).json({status: false, message: error.message });
         }
     },
-
-    
 
     getAllRandomRestaurants: async (req, res) => {
         try {
@@ -121,7 +117,7 @@ module.exports ={
         }
     },
 
-     serviceAvailability: async (req, res) => {
+    serviceAvailability: async (req, res) => {
         const restaurantId = req.params.id; 
     
         try {
@@ -300,7 +296,7 @@ module.exports ={
     },
 
     searchRestaurants: async (req, res) => {
-            const search = req.params.query;  // You can search for the restaurant name or any relevant field
+            const search = req.params.key;  // You can search for the restaurant name or any relevant field
             try {
                 const results = await Restaurant.aggregate([
                     {

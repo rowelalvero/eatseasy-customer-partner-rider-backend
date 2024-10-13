@@ -64,7 +64,6 @@ module.exports = {
         }
       },
 
-
     deleteFoodById: async (req, res) => {
         const foodId = req.params.id;
 
@@ -149,7 +148,6 @@ module.exports = {
         }
     },
 
-
     getRandomFoodsByCode: async (req, res) => {
         try {
             let randomFoodList = [];
@@ -181,7 +179,6 @@ module.exports = {
             res.status(500).json(error);
         }
     },
-
 
     addFoodType: async (req, res) => {
         const foodId = req.params.id;
@@ -275,4 +272,7 @@ module.exports = {
             res.status(500).json({ error: error.message, status: false });
         }
     },
+
+
+
 }

@@ -6,35 +6,17 @@ const { verifyTokenAndAuthorization, verifyVendor } = require("../middlewares/ve
 // CREATE RESTAURANT
 router.post("/",verifyTokenAndAuthorization,  restaurantController.addRestaurant);
 router.post("/messagesByRes", restaurantController.sendMessages);
-
-
 router.get("/profile", verifyVendor, restaurantController.getRestaurantByOwner);
-
-
 // Sevices availability
 router.patch("/:id",verifyVendor, restaurantController.serviceAvailability);
-
-
-
 // GET RESTAURANT BY ID
 router.get("/:code", restaurantController.getRandomRestaurants);
-
-
 // GET RESTAURANT BY ID
 router.get("/all/:code", restaurantController.getAllRandomRestaurants);
-
 // // GET ALL RESTAURANT
 router.get("/byId/:id", restaurantController.getRestaurant);
-
 router.get("/statistics/:id", restaurantController.getStats);
-
 router.post("/payout",verifyVendor, restaurantController.createPayout);
-
-router.get("/search/:query", restaurantController.searchRestaurants);
-
-
-
-
-
+router.get("/search/:key", restaurantController.searchRestaurants);
 
 module.exports = router

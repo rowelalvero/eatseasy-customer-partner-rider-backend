@@ -26,6 +26,7 @@ module.exports = {
             res.status(500).json({ status: false, message: error.message });
         }
     },
+
     setDefaultAddress: async (req, res) => {
         const userId = req.user.id;
         const addressId = req.params.address;
@@ -49,7 +50,6 @@ module.exports = {
             res.status(500).json({ status: false, message: error.message });
         }
     },
-
 
     deleteAddress: async (req, res) => {
         const addressId = req.params.id;
@@ -100,8 +100,5 @@ module.exports = {
             res.status(500).json(error);
         }
     },
-
-
-
 
 }
