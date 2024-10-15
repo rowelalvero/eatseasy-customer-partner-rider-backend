@@ -8,7 +8,7 @@ router.get('/restaurant-foods/:id', foodController.getFoodList)
 
 router.post("/", verifyVendor , foodController.addFood);
 
-router.post("/:id",  foodController.addFood);
+router.post("/:id",  foodController.updateFoodById);
 
 router.post("/tags/:id", foodController.addFoodTag);
 
