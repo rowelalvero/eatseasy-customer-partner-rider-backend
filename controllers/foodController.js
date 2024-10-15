@@ -126,7 +126,6 @@ module.exports = {
         }
     },
 
-
     addFoodTag: async (req, res) => {
         const foodId = req.params.id;
         const { tag } = req.body;  // Assuming the tag to be added is sent in the request body
