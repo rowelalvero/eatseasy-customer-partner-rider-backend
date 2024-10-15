@@ -27,6 +27,7 @@ module.exports = {
       recipientCoords: req.body.recipientCoords,
       deliveryAddress: req.body.deliveryAddress,
       deliveryOption: req.body.deliveryOption,
+      deliveryDate: req.body.deliveryDate,
     });
 
     try {

@@ -17,6 +17,7 @@ const orderSchema = new mongoose.Schema({
     deliveryFee: { type: Number, required: true },
     grandTotal: { type: Number, required: true },
     deliveryOption: { type: String },
+    deliveryDate: { type: String },
     deliveryAddress: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Address", 
