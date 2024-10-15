@@ -684,7 +684,7 @@ module.exports = {
     }
   },
 
-   getDeliveredOrders: async (req, res) => {
+  getDeliveredOrders: async (req, res) => {
     const userId = req.user.id;
     const status = "Delivered";
     
