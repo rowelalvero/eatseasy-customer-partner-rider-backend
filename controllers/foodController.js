@@ -103,29 +103,21 @@ module.exports = {
         }
     },
 
-    // Function to update a food item
     updateFoodById: async (req, res) => {
         const foodId = req.params.id;
 
         try {
-            // Use findByIdAndUpdate to update the food item in the database
-            const updatedFood = await Food.findByIdAndUpdate(
-                foodId,
-                req.body,
-                { new: true, runValidators: true }  // Returns the updated document
-            );
+            const updatedFood = await Food.findByIdAndUpdate(foodId, req.body, { new: true, runValidators: true });
 
             if (!updatedFood) {
                 return res.status(404).json({ status: false, message: 'Food item not found' });
             }
 
-            // Respond with success
-            res.status(200).json({ status: true, message: 'Food item successfully updated', food: updatedFood });
+            res.status(200).json({ status: true, message: 'Food item successfully updated' });
         } catch (error) {
-            res.status(500).json({ status: false, message: 'An error occurred while updating the food item', error });
+            res.status(500).json(error);
         }
     },
-
 
     addFoodTag: async (req, res) => {
         const foodId = req.params.id;
