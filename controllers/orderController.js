@@ -428,7 +428,67 @@ module.exports = {
     }
   },
 
-  addDriver: async (req, res) => {
+  orderAccepted: async (req, res) => {
+      const orderId = req.params.id;
+      const driver = req.user.id;
+      const status = "Accepted";
+
+      try {
+          const updatedOrder = await Order.findByIdAndUpdate(
+              orderId,
+              { orderStatus: "Accepted", driverId: driver },
+              { new: true }
+          )
+          .select(
+              "userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus"
+          )
+          .populate({
+              path: "userId",
+              select: "phone profile fcm", // Replace with actual field names for suid
+          })
+          .populate({
+              path: "restaurantId",
+              select: "title coords imageUrl logoUrl time", // Replace with actual field names for courier
+          })
+          .populate({
+              path: "orderItems.foodId",
+              select: "title imageUrl time", // Replace with actual field names for courier
+          })
+          .populate({
+              path: "deliveryAddress",
+              select: "addressLine1 city district", // Replace with actual field names for courier
+          });
+
+          const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
+
+          if (updatedOrder) {
+              const data = {
+                  orderId: updatedOrder._id.toString(),
+                  messageType: "order",
+              };
+              const db = admin.database();
+
+              if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                  sendNotification(
+                      user.fcm,
+                      "📦 Order Accepted",
+                      data,
+                      `Your order has been accepted and is being prepared.`
+                  );
+              }
+
+              updateUser(updatedOrder, db, status);
+              res.status(200).json(updatedOrder);
+          } else {
+              res.status(404).json({ status: false, message: "Order not found" });
+          }
+      } catch (error) {
+          res.status(500).json({ status: false, message: error.message });
+      }
+  },
+
+
+  orderPicked: async (req, res) => {
     const orderId = req.params.id;
     const driver = req.user.id;
     const status = "Out_for_Delivery";
@@ -487,7 +547,7 @@ module.exports = {
     }
   },
 
-  markAsDelivered: async (req, res) => {
+  orderDelivered: async (req, res) => {
     const orderId = req.params.id;
     const status = "Delivered";
     const userId = req.user.id;
