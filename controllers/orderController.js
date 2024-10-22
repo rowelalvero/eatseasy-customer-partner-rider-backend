@@ -386,6 +386,8 @@ module.exports = {
       status = "Out_for_Delivery";
     } else if (req.params.status === "Delivered") {
       status = "Delivered";
+    } else if (req.params.status === "Accepted") {
+      status = "Accepted";
     } else if (req.params.status === "Manual") {
       status = "Manual";
     } else {
