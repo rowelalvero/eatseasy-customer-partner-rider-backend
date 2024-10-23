@@ -353,7 +353,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile", // Replace with actual field names for suid
+          select: "phone profile username", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -403,7 +403,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile", // Replace with actual field names for suid
+          select: "phone profile username", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -446,7 +446,7 @@ module.exports = {
           )
           .populate({
               path: "userId",
-              select: "phone profile fcm", // Replace with actual field names for suid
+              select: "phone profile fcm username", // Replace with actual field names for suid
           })
           .populate({
               path: "restaurantId",
@@ -505,7 +505,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile fcm", // Replace with actual field names for suid
+          select: "phone profile fcm username", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -564,7 +564,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile fcm", // Replace with actual field names for suid
+          select: "phone profile fcm username", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -639,7 +639,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile", // Replace with actual field names for suid
+          select: "phone profile username", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -764,7 +764,7 @@ module.exports = {
         .select("userId orderTotal deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus")
         .populate({
           path: "userId",
-          select: "phone profile fcm",
+          select: "phone profile fcm username",
         })
         .populate({
           path: "restaurantId",
