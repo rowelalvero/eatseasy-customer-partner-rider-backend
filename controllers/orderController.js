@@ -365,7 +365,7 @@ module.exports = {
         })
         .populate({
           path: "deliveryAddress",
-          select: "addressLine1 city district", // Replace with actual field names for courier
+          select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
         });
 
       res.status(200).json(parcels);
@@ -415,7 +415,7 @@ module.exports = {
         })
         .populate({
           path: "deliveryAddress",
-          select: "addressLine1", // Replace with actual field names for courier
+          select: "addressLine1 deliveryInstructions", // Replace with actual field names for courier
         });
 
       res.status(200).json(parcels);
@@ -458,7 +458,7 @@ module.exports = {
           })
           .populate({
               path: "deliveryAddress",
-              select: "addressLine1 city district", // Replace with actual field names for courier
+              select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
           });
 
           const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
@@ -489,7 +489,6 @@ module.exports = {
       }
   },
 
-
   orderPicked: async (req, res) => {
     const orderId = req.params.id;
     const driver = req.user.id;
@@ -518,7 +517,7 @@ module.exports = {
         })
         .populate({
           path: "deliveryAddress",
-          select: "addressLine1 city district", // Replace with actual field names for courier
+          select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
         });
 
       const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
@@ -577,7 +576,7 @@ module.exports = {
         })
         .populate({
           path: "deliveryAddress",
-          select: "addressLine1", // Replace with actual field names for courier
+          select: "addressLine1 deliveryInstructions", // Replace with actual field names for courier
         });
 
       await Restaurant.findByIdAndUpdate(
@@ -652,7 +651,7 @@ module.exports = {
         })
         .populate({
           path: "deliveryAddress",
-          select: "addressLine1 city district", // Replace with actual field names for courier
+          select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
         });
       const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
@@ -777,7 +776,7 @@ module.exports = {
         })
         .populate({
           path: "deliveryAddress",
-          select: "addressLine1",
+          select: "addressLine1 deliveryInstructions",
         });
   
       if (deliveredOrders.length > 0) {
