@@ -62,6 +62,30 @@ module.exports = {
         }
     },
 
+    updateDriverLocation: async (req, res) => {
+        const driverId = req.params.id;
+        const { latitude, longitude } = req.body;
+
+        try {
+            const updatedDriver = await Driver.findByIdAndUpdate(
+                driverId,
+                {
+                    'currentLocation.latitude': latitude,
+                    'currentLocation.longitude': longitude
+                },
+                { new: true }
+            );
+            if (updatedDriver) {
+                res.status(200).json({ status: true, message: 'Driver location updated successfully', driver: updatedDriver });
+            } else {
+                res.status(404).json({ status: false, message: 'Driver not found' });
+            }
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
+
     deleteDriver: async (req, res) => {
         const driverId = req.params.id;
     

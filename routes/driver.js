@@ -13,6 +13,9 @@ router.delete("/:id", driverController.deleteDriver);
 // UPDATE DRIVER
 router.put("/:id",verifyDriver, driverController.updateDriverDetails);
 
+// UPDATE LOCATION
+router.put("/location/:id", verifyDriver, driverController.updateDriverLocation);
+
 //earnings
 router.get("/earnings/:id", verifyDriver,  driverController.getDriversEarning);
 
