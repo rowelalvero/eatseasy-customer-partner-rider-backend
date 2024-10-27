@@ -491,13 +491,12 @@ module.exports = {
 
   orderPicked: async (req, res) => {
     const orderId = req.params.id;
-    const driver = req.user.id;
     const status = "Out_for_Delivery";
 
     try {
       const updatedOrder = await Order.findByIdAndUpdate(
         orderId,
-        { orderStatus: "Out_for_Delivery", driverId: driver },
+        { orderStatus: "Out_for_Delivery" },
         { new: true }
       )
         .select(
@@ -788,6 +787,4 @@ module.exports = {
       return res.status(500).json({ status: false, message: error.message });
     }
   }
-  
-  
 };

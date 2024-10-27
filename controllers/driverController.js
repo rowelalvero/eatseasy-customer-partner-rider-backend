@@ -8,7 +8,7 @@ module.exports = {
     registerDriver: async (req, res) => {
         const userId = req.user.id;
         const newDriver = new Driver({
-            driver: userId, 
+            driver: userId,
             vehicleType: req.body.vehicleType,
             phone: req.body.phone,
             vehicleNumber: req.body.vehicleNumber,
@@ -85,7 +85,6 @@ module.exports = {
         }
     },
 
-
     deleteDriver: async (req, res) => {
         const driverId = req.params.id;
     
@@ -117,7 +116,7 @@ module.exports = {
         }
     },
 
-     getDriversEarning: async (req, res) => {
+    getDriversEarning: async (req, res) => {
         const driverId = req.params.id.trim();
         console.log("Driver ID:", driverId);
     
