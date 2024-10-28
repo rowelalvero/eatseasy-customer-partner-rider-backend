@@ -51,7 +51,7 @@ module.exports = {
       try {
           let order = await Order.findById(orderId)
               .select(
-                  "userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus driverId"
+                  "userId deliveryAddress orderItems deliveryFee orderTotal grandTotal restaurantId restaurantCoords recipientCoords orderStatus driverId"
               )
               .populate({ path: "userId", select: "phone profile" })
               .populate({ path: "restaurantId", select: "title coords imageUrl logoUrl time" })
