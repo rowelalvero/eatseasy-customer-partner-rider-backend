@@ -70,10 +70,10 @@ module.exports = {
           select: "addressLine1", // Replace with actual field names for courier
         })
         .populate({
-          path: "driver",
+          path: "driverId",
           select: "phone vehicleNumber currentLocation driver", // Replace with actual field names for courier
           populate: {
-            path: "driverId",
+            path: "driver",
             select: "phone username profile",
           },
         });
