@@ -459,15 +459,7 @@ module.exports = {
           .populate({
               path: "deliveryAddress",
               select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
-          })
-          .populate({
-              path: "driverId",
-              select: "phone vehicleNumber currentLocation driver", // Replace with actual field names for courier
-              populate: {
-                path: "driver",
-                select: "phone username profile",
-              },
-         });
+          });
 
           const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
