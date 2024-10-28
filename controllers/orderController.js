@@ -432,7 +432,7 @@ module.exports = {
 
   orderAccepted: async (req, res) => {
       const orderId = req.params.id;
-      const driver = req.driver.id;
+      const driver = req.params.driverId;
       const status = "Accepted";
 
       try {
