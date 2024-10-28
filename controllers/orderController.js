@@ -79,6 +79,7 @@ module.exports = {
       }
   },
 
+
   getUserOrders: async (req, res) => {
     const userId = req.user.id;
     const { paymentStatus, orderStatus } = req.query;
@@ -384,7 +385,7 @@ module.exports = {
         driverId: req.params.driver,
       })
         .select(
-          "userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus driverId"
+          "userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus"
         )
         .populate({
           path: "userId",
@@ -397,11 +398,6 @@ module.exports = {
         .populate({
           path: "orderItems.foodId",
           select: "title imageUrl time", // Replace with actual field names for courier
-        })
-        .populate({
-          path: "driverId",
-          select: "phone vehicleNumber currentLocation driver",
-          populate: { path: "driver", select: "username profile" }
         })
         .populate({
           path: "deliveryAddress",
@@ -449,11 +445,6 @@ module.exports = {
           .populate({
               path: "deliveryAddress",
               select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
-          })
-          .populate({
-              path: "driverId",
-              select: "phone vehicleNumber currentLocation driver",
-              populate: { path: "driver", select: "username profile" }
           });
 
           const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
