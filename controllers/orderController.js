@@ -328,6 +328,21 @@ module.exports = {
     }
   },
 
+  getOrderStatus: async (req, res) => {
+    const { orderId } = req.params;
+
+      try {
+        const order = await Order.findById(orderId).select('orderStatus'); // Fetch only the orderStatus field
+        if (!order) {
+          return res.status(404).json({ message: 'Order not found' });
+        }
+        res.status(200).json({ status: order.orderStatus }); // Return the status
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+      }
+  },
+
   getNearbyOrders: async (req, res) => {
     try {
       const parcels = await Order.find({
