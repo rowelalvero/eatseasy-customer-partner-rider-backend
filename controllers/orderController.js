@@ -384,7 +384,7 @@ module.exports = {
         driverId: req.params.driver,
       })
         .select(
-          "userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus driverId"
         )
         .populate({
           path: "userId",
