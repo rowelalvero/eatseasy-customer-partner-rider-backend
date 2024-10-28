@@ -80,7 +80,7 @@ module.exports = {
 
       if (order.status === "Out_for_Delivery" || order.status === "Delivered") {
         const driver = await Driver.findById(order.driverId).select(
-          "phone vehicleNumber driver"
+          "phone vehicleNumber currentLocation driver"
         );
       }
 
