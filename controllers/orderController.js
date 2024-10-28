@@ -399,6 +399,11 @@ module.exports = {
           select: "title imageUrl time", // Replace with actual field names for courier
         })
         .populate({
+          path: "driverId",
+          select: "phone vehicleNumber currentLocation driver",
+          populate: { path: "driver", select: "username profile" }
+        })
+        .populate({
           path: "deliveryAddress",
           select: "addressLine1 deliveryInstructions", // Replace with actual field names for courier
         });
