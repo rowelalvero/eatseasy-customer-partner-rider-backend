@@ -17,7 +17,6 @@ router.put("/picked-orders/:id", verifyDriver, ordersController.orderPicked)
 router.put("/accepted/:id/:driver", verifyDriver, ordersController.orderAccepted)
 router.put("/delivered/:id", verifyDriver, ordersController.orderDelivered)
 router.get("/delivered/delivered", verifyDriver, ordersController.getDeliveredOrders)
-
 router.put("/process/:id/:status", verifyVendor, ordersController.processOrder)
 
 module.exports = router;
