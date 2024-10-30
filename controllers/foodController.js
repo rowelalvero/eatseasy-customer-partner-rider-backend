@@ -22,6 +22,7 @@ module.exports = {
             price: req.body.price,
             additives: req.body.additives,
             imageUrl: req.body.imageUrl
+            customAdditives: req.body.customAdditives,
         });
     
         try {
