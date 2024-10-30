@@ -21,9 +21,10 @@ module.exports = {
             time: req.body.time,
             price: req.body.price,
             additives: req.body.additives,
-            imageUrl: req.body.imageUrl
-            customAdditives: req.body.customAdditives,
+            imageUrl: req.body.imageUrl,
+            customAdditives: req.body.customAdditives, // Ensure this is included
         });
+
     
         try {
             await newFood.save();
