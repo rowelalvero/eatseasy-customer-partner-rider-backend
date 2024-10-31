@@ -9,6 +9,7 @@ const cartSchema = new mongoose.Schema({
     quantity: {type: Number , required: true},
     prepTime: {type: String , default: ''},
     restaurant: { type: mongoose.Schema.Types.ObjectId, ref: "Restaurant" },
+    customAdditives: {type: [] },
 });
 
 module.exports = mongoose.model('Cart', cartSchema);
