@@ -29,25 +29,25 @@ const customAdditivesSchema = new mongoose.Schema({
 
 const foodSchema = new mongoose.Schema({
     title: { type: String, required: true },
-    foodTags: { type: [String], required: true }, // Array of strings
-    foodType: { type: [String], required: true }, // Array of strings
-    code: { type: String, required: false },
-    isAvailable: { type: Boolean, required: false, default: true },
-    restaurant: { type: String, required: false },
+    foodTags: {type: Array, required: true},
+    foodType: {type: Array, required: true},
+    code: {type: String, required: true},
+    isAvailable: {type: Boolean , required: true, default: true},
+    restaurant: { type: mongoose.Schema.Types.ObjectId, ref: "Restaurant" },
     rating: {
             type: Number,
             min: 1,
             max: 5,
             default: 3,
         },
-        ratingCount: {type: String, default: "302"},
+    ratingCount: {type: String, default: "302"},
     description: { type: String, required: true },
     price: { type: Number, required: true },
     additives: { type: [additiveSchema], required: true }, // Array of Additive subdocuments
-    imageUrl: { type: [String], required: true }, // Array of strings
+    imageUrl: { type: Array, required: true },
     v: { type: Number, required: false },
-    category: { type: String, required: false },
-    time: { type: String, required: false },
+    category: {type: String, required: true},
+    time: { type: String, required: true },
     customAdditives: { type: [customAdditivesSchema], required: true } // Array of CustomAdditives subdocuments
 });
 

@@ -65,6 +65,7 @@ module.exports = {
                     select: "time coords" // Add the fields you want to select from the restaurant
                 }
             })
+
             const count = await Cart.countDocuments({userId: id });
 
             res.status(200).json(userCart);
