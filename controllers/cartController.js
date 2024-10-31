@@ -25,6 +25,7 @@ module.exports = {
                     quantity: req.body.quantity,
                     prepTime: req.body.prepTime,
                     restaurant: req.body.restaurant
+                    customAdditives: req.body.customAdditives
                 });
                 await newCartEntry.save();
                  count = await Cart.countDocuments({ userId });
