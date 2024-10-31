@@ -34,8 +34,13 @@ const foodSchema = new mongoose.Schema({
     code: { type: String, required: false },
     isAvailable: { type: Boolean, required: false, default: true },
     restaurant: { type: String, required: false },
-    rating: { type: Number, required: false },
-    ratingCount: { type: String, required: false },
+    rating: {
+            type: Number,
+            min: 1,
+            max: 5,
+            default: 3,
+        },
+        ratingCount: {type: String, default: "302"},
     description: { type: String, required: true },
     price: { type: Number, required: true },
     additives: { type: [additiveSchema], required: true }, // Array of Additive subdocuments
