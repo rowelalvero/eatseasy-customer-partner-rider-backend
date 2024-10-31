@@ -8,6 +8,7 @@ const orderItemSchema = new mongoose.Schema({
     additives: { type: Array },
     instructions: {type: String, default: ''},
     cartItemId: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
+    customAdditives: { type: Map, of: mongoose.Schema.Types.Mixed }, // Update here
 });
 
 const orderSchema = new mongoose.Schema({

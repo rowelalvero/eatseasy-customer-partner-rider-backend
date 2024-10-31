@@ -28,6 +28,7 @@ module.exports = {
       deliveryAddress: req.body.deliveryAddress,
       deliveryOption: req.body.deliveryOption,
       deliveryDate: req.body.deliveryDate,
+      customAdditives: req.body.customAdditives
     });
 
     try {
