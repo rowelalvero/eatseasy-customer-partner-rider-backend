@@ -10,19 +10,19 @@ module.exports = {
             return res.status(400).json({ status: false, message: 'Missing required fields' });
         }
         const newFood = new Food({
-                    title: req.body.title,
-                    foodTags: req.body.foodTags,
-                    category: req.body.category,
-                    foodType: req.body.foodType,
-                    code: req.body.code,
-                    isAvailable: req.body.isAvailable,
-                    restaurant: req.body.restaurant,
-                    description: req.body.description,
-                    time: req.body.time,
-                    price: req.body.price,
-                    additives: req.body.additives,
-                    imageUrl: req.body.imageUrl,
-                    customAdditives: req.body.customAdditives, // Ensure this is included
+            title: req.body.title,
+            foodTags: req.body.foodTags,
+            category: req.body.category,
+            foodType: req.body.foodType,
+            code: req.body.code,
+            isAvailable: req.body.isAvailable,
+            restaurant: req.body.restaurant,
+            description: req.body.description,
+            time: req.body.time,
+            price: req.body.price,
+            additives: req.body.additives,
+            imageUrl: req.body.imageUrl,
+            customAdditives: req.body.customAdditives, // Ensure this is included
         });
 
     
