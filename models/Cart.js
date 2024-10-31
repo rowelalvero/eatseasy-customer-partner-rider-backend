@@ -9,7 +9,7 @@ const cartSchema = new mongoose.Schema({
     quantity: { type: Number, required: true },
     prepTime: { type: String, default: '' },
     restaurant: { type: mongoose.Schema.Types.ObjectId, ref: "Restaurant" },
-    customAdditives: { type: Map }, // Update here
+    customAdditives: { type: Map, of: mongoose.Schema.Types.Mixed }, // Update here
 });
 
 module.exports = mongoose.model('Cart', cartSchema);
