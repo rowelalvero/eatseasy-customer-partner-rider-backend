@@ -419,14 +419,14 @@ module.exports = {
 
   orderAccepted: async (req, res) => {
       const orderId = req.params.id;
-      const driverId = req.params.driverId; // renamed for clarity
+      const driver = req.params.driverId;
       const status = "Accepted";
       const userId = req.user.id;
 
       try {
           const updatedOrder = await Order.findByIdAndUpdate(
               orderId,
-              { orderStatus: "Accepted", driverId: driverId },
+              { orderStatus: "Accepted", driverId: driver },
               { new: true }
           )
           .select(
@@ -434,51 +434,55 @@ module.exports = {
           )
           .populate({
               path: "userId",
-              select: "phone profile fcm username",
+              select: "phone profile fcm username", // Replace with actual field names for suid
           })
           .populate({
               path: "restaurantId",
-              select: "title coords imageUrl logoUrl time",
+              select: "title coords imageUrl logoUrl time", // Replace with actual field names for courier
           })
           .populate({
               path: "orderItems.foodId",
-              select: "title imageUrl time",
+              select: "title imageUrl time", // Replace with actual field names for courier
           })
           .populate({
               path: "deliveryAddress",
-              select: "addressLine1 city district deliveryInstructions",
+              select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
           });
 
-          // Ensure we have an updated order
-          if (!updatedOrder) {
-              return res.status(404).json({ status: false, message: "Order not found" });
-          }
+          const driverUserId = await Driver.findOne({ driver: userId });
 
-          // Fetch user details for notification
-          const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
+          if (updatedOrder) {
+              const data = {
+                  orderId: updatedOrder._id.toString(),
+                  messageType: "order",
+              };
+              const db = admin.database();
 
-          if (user?.fcm) {
-              sendNotification(
-                  user.fcm,
-                  "📦 Order Accepted",
-                  { orderId: updatedOrder._id.toString(), messageType: "order" },
-                  `Your order has been accepted and is being prepared.`
-              );
-          }
+              updateUser(updatedOrder, db, status);
+              const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
-          // Update driver's status and save
-          const driver = await Driver.findById(driverId);
-          if (driver) {
-              driver.isActive = true;
+              if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                  sendNotification(
+                      user.fcm,
+                      "📦 Order Accepted",
+                      data,
+                      `Your order has been accepted and is being prepared.`
+                  );
+              }
+
+              if (driverUserId) {
+                  driver.isActive = true;
+              }
+
               await driver.save();
+              res.status(200).json(updatedOrder);
+          } else {
+              res.status(404).json({ status: false, message: "Order not found" });
           }
-
-          res.status(200).json(updatedOrder);
-
       } catch (error) {
           res.status(500).json({ status: false, message: error.message });
       }
-  }
+  },
 
   orderPicked: async (req, res) => {
     const orderId = req.params.id;
