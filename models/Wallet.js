@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const Driver = require('./Driver');
-
 const walletSchema = new mongoose.Schema({
     driver: { type: mongoose.Schema.Types.ObjectId, ref: "Driver", required: true },
     balance: { type: Number, default: 0.0 },
@@ -13,5 +11,4 @@ const walletSchema = new mongoose.Schema({
         }
     ]
 });
-
 module.exports = mongoose.model('Wallet', walletSchema);
