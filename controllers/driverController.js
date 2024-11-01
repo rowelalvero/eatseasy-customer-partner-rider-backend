@@ -47,6 +47,35 @@ module.exports = {
         }
     },
 
+    topUpWallet: async (req, res) => {
+        const driverId = req.user.id; // Assuming the user ID comes from a verified token
+        const { amount, paymentMethod } = req.body;
+
+        try {
+            const driver = await Driver.findById(driverId);
+            if (!driver) {
+                return res.status(404).json({ status: false, message: 'Driver not found' });
+            }
+
+            // Create a new wallet transaction
+            const newTransaction = {
+                amount: amount,
+                paymentMethod: paymentMethod,
+            };
+
+            // Update the driver wallet balance and add the transaction
+            driver.walletTransactions.push(newTransaction);
+            driver.walletBalance += amount; // Update the wallet balance
+
+            // Save the updated driver document
+            await driver.save();
+
+            res.status(200).json({ status: true, message: 'Wallet top-up successful', driver });
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
     updateDriverDetails: async (req, res) => {
         const driverId  = req.params.id;
     
