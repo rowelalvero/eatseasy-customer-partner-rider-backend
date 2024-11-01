@@ -474,7 +474,7 @@ module.exports = {
                   driver.isActive = true;
               }
 
-              await driver.save();
+              await driverUserId.save();
               res.status(200).json(updatedOrder);
           } else {
               res.status(404).json({ status: false, message: "Order not found" });
