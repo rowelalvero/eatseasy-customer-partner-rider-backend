@@ -1,6 +1,7 @@
 // routes/walletRoutes.js
-const express = require('express');
+const router = require("express").Router();
 const walletController = require('../controllers/walletController');
+const {verifyTokenAndAuthorization, verifyDriver}= require("../middlewares/verifyToken")
 
 const router = express.Router();
 router.post('/', walletController.createWallet);
