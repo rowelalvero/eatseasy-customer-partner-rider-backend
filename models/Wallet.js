@@ -1,5 +1,5 @@
-// models/wallet.js
 const mongoose = require('mongoose');
+const Driver = require('./Driver');
 
 const walletSchema = new mongoose.Schema({
     driver: { type: mongoose.Schema.Types.ObjectId, ref: "Driver", required: true },
@@ -7,9 +7,9 @@ const walletSchema = new mongoose.Schema({
     transactions: [
         {
             amount: { type: Number, required: true },
-            type: { type: String, enum: ['credit', 'debit'], required: true },
-            date: { type: Date, default: Date.now },
-            description: { type: String }
+            type: { type: String, required: true, enum: ['Top-up', 'Withdrawal'] },
+            paymentMethod: { type: String, required: true },
+            transactionDate: { type: Date, default: Date.now }
         }
     ]
 });
