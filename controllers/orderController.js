@@ -596,9 +596,8 @@ module.exports = {
         }
 
         if (driver) {
-          driver.totalDeliveries = +1;
-          driver.totalEarnings =
-            driver.totalEarnings + updatedOrder.deliveryFee;
+          driver.totalDeliveries = driver.totalDeliveries + 1;
+          driver.totalEarnings = driver.totalEarnings + updatedOrder.deliveryFee;
         }
 
         await driver.save();
