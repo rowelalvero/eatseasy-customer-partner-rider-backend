@@ -419,14 +419,14 @@ module.exports = {
 
   orderAccepted: async (req, res) => {
       const orderId = req.params.id;
-      const driver = req.params.driverId;
+      const driverId = req.params.driverId;
       const status = "Accepted";
       const userId = req.user.id;
 
       try {
           const updatedOrder = await Order.findByIdAndUpdate(
               orderId,
-              { orderStatus: "Accepted", driverId: driver },
+              { orderStatus: "Accepted", driverId: driverId },
               { new: true }
           )
           .select(
@@ -449,7 +449,8 @@ module.exports = {
               select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
           });
 
-          const driverUserId = await Driver.findOne({ driver: driver });
+          const driver = await Driver.findOne({ driver: userId });
+          const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
           if (updatedOrder) {
               const data = {
@@ -457,9 +458,6 @@ module.exports = {
                   messageType: "order",
               };
               const db = admin.database();
-
-              updateUser(updatedOrder, db, status);
-              const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
               if (user.fcm || user.fcm !== null || user.fcm !== "") {
                   sendNotification(
@@ -470,11 +468,12 @@ module.exports = {
                   );
               }
 
-              if (driverUserId) {
-                  driver.isActive = true;
+              if (driver) {
+                 driver.isActive = true;
               }
 
-              await driverUserId.save();
+              await driver.save();
+              updateUser(updatedOrder, db, status);
               res.status(200).json(updatedOrder);
           } else {
               res.status(404).json({ status: false, message: "Order not found" });
