@@ -10,7 +10,7 @@ router.post("/",verifyTokenAndAuthorization, driverController.registerDriver);
 // DELETE DRIVER
 router.delete("/:id", driverController.deleteDriver);
 
-router.post("/wallet/topup", verifyTokenAndAuthorization, driverController.topUpWallet);
+router.post("/wallet/:id/topup", verifyTokenAndAuthorization, driverController.topUpWallet);
 
 // UPDATE DRIVER
 router.put("/:id",verifyDriver, driverController.updateDriverDetails);

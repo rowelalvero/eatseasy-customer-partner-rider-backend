@@ -48,7 +48,7 @@ module.exports = {
     },
 
     topUpWallet: async (req, res) => {
-        const driverId = req.user.id; // Assuming the user ID comes from a verified token
+        const driverId = req.params.id; // Assuming the user ID comes from a verified token
         const { amount, paymentMethod } = req.body;
 
         try {
