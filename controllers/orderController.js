@@ -449,7 +449,7 @@ module.exports = {
               select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
           });
 
-          const driverUserId = await Driver.findOne({ driver: userId });
+          const driverUserId = await Driver.findOne({ driver: driver });
 
           if (updatedOrder) {
               const data = {
