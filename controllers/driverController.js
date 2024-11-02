@@ -111,7 +111,7 @@ module.exports = {
         } catch (error) {
             return { success: false, message: error.message };
         }
-    };
+    },
 
     updateDriverDetails: async (req, res) => {
         const driverId  = req.params.id;
