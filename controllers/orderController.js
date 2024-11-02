@@ -7,8 +7,6 @@ const {
   updateUser,
 } = require("../utils/driver_update");
 
-const { withdraw } = require('../controllers/driverController');
-
 const sendNotification = require("../utils/sendNotification");
 const Restaurant = require("../models/Restaurant");
 const User = require("../models/User");
@@ -454,7 +452,7 @@ module.exports = {
                 driver.walletBalance -= amount;
                 driver.walletTransactions.push({
                     amount: -amount,
-                    paymentMethod: 'Withdrawal',
+                    paymentMethod: 'Order payed',
                     date: new Date()
                 });
                 await driver.save();
