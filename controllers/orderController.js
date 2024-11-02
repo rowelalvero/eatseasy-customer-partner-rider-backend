@@ -479,7 +479,7 @@ module.exports = {
 
             if (paymentMethod === 'COD') {
                 const withdrawalResult = await withdraw(driverId, orderTotal);
-                if (withdrawalResult) {
+                if (withdrawalResult.success) {
                     await Restaurant.findByIdAndUpdate(
                         restaurantId,
                         { $inc: { earnings: orderTotal } },
