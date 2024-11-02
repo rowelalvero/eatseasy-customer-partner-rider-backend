@@ -76,7 +76,7 @@ module.exports = {
         }
     },
 
-    const withdraw = async (driverId, amount) => {
+    withdraw: async (driverId, amount) => {
         try {
             const driver = await Driver.findById(driverId);
             if (!driver) {
