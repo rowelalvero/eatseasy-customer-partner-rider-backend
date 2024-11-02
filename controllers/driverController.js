@@ -76,22 +76,19 @@ module.exports = {
         }
     },
 
-    withdraw: async (req, res) => {
-        const driverId = req.params.id; // Get the driver ID from the request parameters
-        const { amount } = req.body; // Get the withdrawal amount from the request body
-
+    const withdraw = async (driverId, amount) => {
         try {
             const driver = await Driver.findById(driverId);
             if (!driver) {
-                return res.status(404).json({ status: false, message: 'Driver not found' });
+                return { success: false, message: 'Driver not found' };
             }
 
             // Check if the withdrawal amount is valid
             if (amount <= 0) {
-                return res.status(400).json({ status: false, message: 'Amount must be greater than zero' });
+                return { success: false, message: 'Amount must be greater than zero' };
             }
             if (amount > driver.walletBalance) {
-                return res.status(400).json({ status: false, message: 'Insufficient balance' });
+                return { success: false, message: 'Insufficient balance' };
             }
 
             // Deduct the amount from the driver's wallet balance
@@ -99,9 +96,9 @@ module.exports = {
 
             // Create a new wallet transaction for the withdrawal
             const withdrawalTransaction = {
-                amount: -amount, // Negative amount to indicate a withdrawal
-                paymentMethod: 'Withdrawal', // You can adjust this as necessary
-                date: new Date() // Optional: record the date of the transaction
+                amount: -amount,
+                paymentMethod: 'Withdrawal',
+                date: new Date()
             };
 
             // Add the withdrawal transaction to the driver's wallet transactions
@@ -110,11 +107,11 @@ module.exports = {
             // Save the updated driver document
             await driver.save();
 
-            res.status(200).json({ status: true, message: 'Withdrawal successful', driver });
+            return { success: true, driver };
         } catch (error) {
-            res.status(500).json({ status: false, message: error.message });
+            return { success: false, message: error.message };
         }
-    },
+    };
 
     updateDriverDetails: async (req, res) => {
         const driverId  = req.params.id;
