@@ -437,6 +437,33 @@ module.exports = {
       const userId = req.user.id;
       const { paymentMethod, orderTotal, restaurantId } = req.body;
 
+      // Helper function for withdrawing funds
+      const withdraw = async (driverId, amount) => {
+          try {
+              const driver = await Driver.findById(driverId);
+              if (!driver) {
+                  return { success: false, message: 'Driver not found' };
+              }
+              if (amount <= 0) {
+                  return { success: false, message: 'Amount must be greater than zero' };
+              }
+              if (amount > driver.walletBalance) {
+                  return { success: false, message: 'Insufficient balance' };
+              }
+
+              driver.walletBalance -= amount;
+              driver.walletTransactions.push({
+                  amount: -amount,
+                  paymentMethod: 'Withdrawal',
+                  date: new Date()
+              });
+              await driver.save();
+              return { success: true, driver };
+          } catch (error) {
+              return { success: false, message: error.message };
+          }
+      };
+
       try {
           const updatedOrder = await Order.findByIdAndUpdate(
               orderId,
@@ -455,13 +482,9 @@ module.exports = {
 
           if (paymentMethod === 'COD') {
               const withdrawalResult = await withdraw(driverId, orderTotal);
-
               if (!withdrawalResult.success) {
-                  // Return early if the withdrawal fails
                   return res.status(400).json({ status: false, message: withdrawalResult.message });
               }
-
-              // If withdrawal is successful, update restaurant earnings
               await Restaurant.findByIdAndUpdate(
                   restaurantId,
                   { $inc: { earnings: orderTotal } },
@@ -469,8 +492,7 @@ module.exports = {
               );
           }
 
-          // Proceed with the rest of the code only if paymentMethod is not 'COD' or if withdrawal is successful
-          const driver = await Driver.findOne({ driver: userId });
+          const driver = await Driver.findById(driverId);
           const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
           const data = {
@@ -500,6 +522,7 @@ module.exports = {
           res.status(500).json({ status: false, message: error.message });
       }
   }
+
 
 
   orderPicked: async (req, res) => {
