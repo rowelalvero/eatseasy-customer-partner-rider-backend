@@ -433,6 +433,9 @@ module.exports = {
       const driverId = req.params.driverId;
       const status = "Accepted";
       const userId = req.user.id;
+      const { paymentMethod } = req.body;
+      const { orderTotal } = req.body;
+      const { restaurantId } = req.body;
 
       try {
           const updatedOrder = await Order.findByIdAndUpdate(
@@ -460,11 +463,11 @@ module.exports = {
               select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
           });
 
-          if (paymentMethod == 'STRIPE') {
+          if (paymentMethod == 'COD') {
               await Restaurant.findByIdAndUpdate(
-                  order.restaurantId._id,
+                  restaurantId,
                   {
-                     $inc: { earnings: order.orderTotal },
+                     $inc: { earnings: orderTotal },
                   },
                   { new: true }
               );
