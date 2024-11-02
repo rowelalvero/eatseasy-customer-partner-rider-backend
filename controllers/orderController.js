@@ -481,7 +481,7 @@ module.exports = {
             if (paymentMethod === 'COD') {
                 const withdrawalResult = await withdraw(driverId, orderTotal);
                 if (!withdrawalResult.success) {
-                    return res.status(400).json({ status: false, message: withdrawalResult.message });
+                    res.status(400).json({ status: false, message: withdrawalResult.message });
                 }
                 await Restaurant.findByIdAndUpdate(
                     restaurantId,
