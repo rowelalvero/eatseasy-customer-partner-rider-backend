@@ -304,7 +304,7 @@ module.exports = {
       const parcels = await Order.find({
         orderStatus: status,
         restaurantId: req.params.id,
-        //paymentStatus: "Completed",
+        paymentStatus: "Completed",
       })
         .select(
           "userId deliveryAddress deliveryOption paymentStatus deliveryDate orderItems orderTotal deliveryFee restaurantId orderStatus restaurantCoords recipientCoords orderDate"
@@ -347,7 +347,7 @@ module.exports = {
         //paymentStatus: "Completed",
       })
         .select(
-          "userId deliveryAddress orderItems deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
         )
         .populate({
           path: "userId",
@@ -397,7 +397,7 @@ module.exports = {
         driverId: req.params.driver,
       })
         .select(
-          "userId deliveryAddress orderItems deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
         )
         .populate({
           path: "userId",
@@ -441,7 +441,7 @@ module.exports = {
               { new: true }
           )
           .select(
-              "userId deliveryAddress orderItems deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
+              "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
           )
           .populate({
               path: "userId",
@@ -459,6 +459,16 @@ module.exports = {
               path: "deliveryAddress",
               select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
           });
+
+          if (paymentMethod == 'STRIPE') {
+              await Restaurant.findByIdAndUpdate(
+                  order.restaurantId._id,
+                  {
+                     $inc: { earnings: order.orderTotal },
+                  },
+                  { new: true }
+              );
+          }
 
           const driver = await Driver.findOne({ driver: userId });
           const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
@@ -505,7 +515,7 @@ module.exports = {
         { new: true }
       )
         .select(
-          "userId deliveryAddress orderItems deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
         )
         .populate({
           path: "userId",
@@ -564,7 +574,7 @@ module.exports = {
         { new: true }
       )
         .select(
-          "userId orderTotal deliveryAddress orderItems deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId orderTotal deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
         )
         .populate({
           path: "userId",
@@ -638,7 +648,7 @@ module.exports = {
         { new: true }
       )
         .select(
-          "userId deliveryAddress orderItems deliveryFee restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee restaurantId restaurantCoords recipientCoords orderStatus"
         )
         .populate({
           path: "userId",
@@ -764,7 +774,7 @@ module.exports = {
   
       // Fetch delivered orders for the driver
       const deliveredOrders = await Order.find({ orderStatus: status, driverId: driver._id })
-        .select("userId orderTotal deliveryAddress orderItems paymentMethod deliveryFee restaurantId restaurantCoords recipientCoords orderStatus")
+        .select("userId orderTotal deliveryAddress orderItems orderTotal paymentMethod deliveryFee restaurantId restaurantCoords recipientCoords orderStatus")
         .populate({
           path: "userId",
           select: "phone profile fcm username",
