@@ -13,6 +13,8 @@ const sendNotificationToTopic = require("../utils/send_to_topic");
 
 module.exports = {
   placeOrder: async (req, res) => {
+    const { paymentMethod } = req.body;
+
     const order = new Order({
       userId: req.body.userId,
       orderItems: req.body.orderItems,
@@ -32,6 +34,16 @@ module.exports = {
     });
 
     try {
+      if (paymentMethod == 'STRIPE') {
+         await Restaurant.findByIdAndUpdate(
+            order.restaurantId._id,
+            {
+              $inc: { earnings: updatedOrder.orderTotal },
+            },
+            { new: true }
+         );
+      }
+
       await order.save();
       const orderId = order.id;
       res
