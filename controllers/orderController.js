@@ -475,7 +475,7 @@ module.exports = {
             .populate("deliveryAddress", "addressLine1 city district deliveryInstructions");
 
             const driver = await Driver.findOne({ driver: userId });
-            onst user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
+            const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
             if (paymentMethod === 'COD') {
                 const withdrawalResult = await withdraw(driverId, orderTotal);
