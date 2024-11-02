@@ -477,14 +477,12 @@ module.exports = {
           const driver = await Driver.findOne({ driver: userId });
           const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
-          // Only handle withdrawal and updates for COD payment
           if (paymentMethod === 'COD') {
               const withdrawalResult = await withdraw(driverId, orderTotal);
               if (!withdrawalResult.success) {
                   return res.status(400).json({ status: false, message: withdrawalResult.message });
               }
-
-              // Increase restaurant earnings only if withdrawal succeeds
+              // Only proceed if withdrawal is successful
               await Restaurant.findByIdAndUpdate(
                   restaurantId,
                   { $inc: { earnings: orderTotal } },
@@ -499,7 +497,7 @@ module.exports = {
               };
               const db = admin.database();
 
-              if (user.fcm) {
+              if (user.fcm && user.fcm !== null && user.fcm !== "") {
                   sendNotification(
                       user.fcm,
                       "📦 Order Accepted",
@@ -522,6 +520,7 @@ module.exports = {
           res.status(500).json({ status: false, message: error.message });
       }
   },
+
 
   orderPicked: async (req, res) => {
     const orderId = req.params.id;
