@@ -80,7 +80,6 @@ module.exports = {
       }
   },
 
-
   getUserOrders: async (req, res) => {
     const userId = req.user.id;
     const { paymentStatus, orderStatus } = req.query;
@@ -293,7 +292,7 @@ module.exports = {
       const parcels = await Order.find({
         orderStatus: status,
         restaurantId: req.params.id,
-        paymentStatus: "Completed",
+        //paymentStatus: "Completed",
       })
         .select(
           "userId deliveryAddress deliveryOption deliveryDate orderItems orderTotal deliveryFee restaurantId orderStatus restaurantCoords recipientCoords orderDate"
