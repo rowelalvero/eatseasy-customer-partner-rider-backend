@@ -38,7 +38,7 @@ module.exports = {
          await Restaurant.findByIdAndUpdate(
             order.restaurantId._id,
             {
-              $inc: { earnings: updatedOrder.orderTotal },
+              $inc: { earnings: order.orderTotal },
             },
             { new: true }
          );
