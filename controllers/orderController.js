@@ -474,10 +474,6 @@ module.exports = {
             .populate("orderItems.foodId", "title imageUrl time")
             .populate("deliveryAddress", "addressLine1 city district deliveryInstructions");
 
-            if (!updatedOrder) {
-                return res.status(404).json({ status: false, message: "Order not found" });
-            }
-
             if (paymentMethod === 'COD') {
                 const withdrawalResult = await withdraw(driverId, orderTotal);
                 if (!withdrawalResult.success) {
@@ -490,31 +486,35 @@ module.exports = {
                 );
             }
 
-            const driver = await Driver.findById(driverId);
-            const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
+          const driver = await Driver.findOne({ driver: userId });
+          const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
-            const data = {
-                orderId: updatedOrder._id.toString(),
-                messageType: "order",
-            };
-            const db = admin.database();
+          if (updatedOrder) {
+              const data = {
+                  orderId: updatedOrder._id.toString(),
+                  messageType: "order",
+              };
+              const db = admin.database();
 
-            if (user.fcm) {
-                sendNotification(
-                    user.fcm,
-                    "📦 Order Accepted",
-                    data,
-                    "Your order has been accepted and is being prepared."
-                );
-            }
+              if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                  sendNotification(
+                      user.fcm,
+                      "📦 Order Accepted",
+                      data,
+                      `Your order has been accepted and is being prepared.`
+                  );
+              }
 
-            if (driver) {
-                driver.isActive = true;
-                await driver.save();
-            }
+              if (driver) {
+                 driver.isActive = true;
+              }
 
-            updateUser(updatedOrder, db, "Accepted");
-            res.status(200).json(updatedOrder);
+              await driver.save();
+              updateUser(updatedOrder, db, status);
+              res.status(200).json(updatedOrder);
+          } else {
+              res.status(404).json({ status: false, message: "Order not found" });
+          }
 
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
