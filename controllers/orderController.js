@@ -295,7 +295,7 @@ module.exports = {
         //paymentStatus: "Completed",
       })
         .select(
-          "userId deliveryAddress deliveryOption deliveryDate orderItems orderTotal deliveryFee restaurantId orderStatus restaurantCoords recipientCoords orderDate"
+          "userId deliveryAddress deliveryOption paymentStatus deliveryDate orderItems orderTotal deliveryFee restaurantId orderStatus restaurantCoords recipientCoords orderDate"
         )
         .populate({
           path: "userId",
