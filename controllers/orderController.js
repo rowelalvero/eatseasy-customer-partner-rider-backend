@@ -482,44 +482,72 @@ module.exports = {
               if (!withdrawalResult.success) {
                   return res.status(400).json({ status: false, message: withdrawalResult.message });
               }
-              // Only proceed if withdrawal is successful
+
               await Restaurant.findByIdAndUpdate(
                   restaurantId,
                   { $inc: { earnings: orderTotal } },
                   { new: true }
               );
-          }
 
-          if (updatedOrder) {
-              const data = {
-                  orderId: updatedOrder._id.toString(),
-                  messageType: "order",
-              };
-              const db = admin.database();
+              if (updatedOrder) {
+                  const data = {
+                      orderId: updatedOrder._id.toString(),
+                      messageType: "order",
+                  };
+                  const db = admin.database();
 
-              if (user.fcm && user.fcm !== null && user.fcm !== "") {
-                  sendNotification(
-                      user.fcm,
-                      "📦 Order Accepted",
-                      data,
-                      `Your order has been accepted and is being prepared.`
-                  );
-              }
+                  if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                      sendNotification(
+                          user.fcm,
+                          "📦 Order Accepted",
+                          data,
+                          `Your order has been accepted and is being prepared.`
+                      );
+                  }
 
-              if (driver) {
-                  driver.isActive = true;
+                  if (driver) {
+                      driver.isActive = true;
+                  }
+
                   await driver.save();
+                  updateUser(updatedOrder, db, status);
+                  return res.status(200).json(updatedOrder);
+              } else {
+                  return res.status(404).json({ status: false, message: "Order not found" });
               }
-
-              updateUser(updatedOrder, db, status);
-              res.status(200).json(updatedOrder);
           } else {
-              res.status(404).json({ status: false, message: "Order not found" });
+              if (updatedOrder) {
+                  const data = {
+                      orderId: updatedOrder._id.toString(),
+                      messageType: "order",
+                  };
+                  const db = admin.database();
+
+                  if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                      sendNotification(
+                          user.fcm,
+                          "📦 Order Accepted",
+                          data,
+                          `Your order has been accepted and is being prepared.`
+                      );
+                  }
+
+                  if (driver) {
+                      driver.isActive = true;
+                  }
+
+                  await driver.save();
+                  updateUser(updatedOrder, db, status);
+                  return res.status(200).json(updatedOrder);
+              } else {
+                  return res.status(404).json({ status: false, message: "Order not found" });
+              }
           }
       } catch (error) {
-          res.status(500).json({ status: false, message: error.message });
+          return res.status(500).json({ status: false, message: error.message });
       }
   },
+
 
 
   orderPicked: async (req, res) => {
