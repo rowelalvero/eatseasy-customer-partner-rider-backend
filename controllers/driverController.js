@@ -94,18 +94,15 @@ module.exports = {
                 return res.status(400).json({ status: false, message: 'Insufficient balance' });
             }
 
-            // Deduct the amount from the driver's wallet balance
-            driver.walletBalance -= amount;
-
-            // Create a new wallet transaction for the withdrawal
-            const withdrawalTransaction = {
-                amount: -amount, // Negative amount to indicate a withdrawal
-                paymentMethod: 'Withdrawal', // You can adjust this as necessary
-                date: new Date() // Optional: record the date of the transaction
+            // Create a new wallet transaction
+            const newTransaction = {
+                amount: amount,
+                paymentMethod: paymentMethod,
             };
 
-            // Add the withdrawal transaction to the driver's wallet transactions
-            driver.walletTransactions.push(withdrawalTransaction);
+            // Update the driver wallet balance and add the transaction
+            driver.walletTransactions.push(newTransaction);
+            driver.walletBalance -= amount; // Update the wallet balance
 
             // Save the updated driver document
             await driver.save();
