@@ -431,7 +431,7 @@ module.exports = {
 
     initiateRiderPay: async (req, res) => {
         const orderId = req.params.id;
-        const driverId = req.params.id;
+        const driverId = req.params.driverId;
         const { paymentMethod, orderTotal, restaurantId } = req.body;
 
         try {
@@ -460,11 +460,11 @@ module.exports = {
                 { $inc: { earnings: orderTotal } },
                 { new: true }
             );
-            /*await Order.findByIdAndUpdate(
+            await Order.findByIdAndUpdate(
                 orderId,
                 { paymentStatus: "Completed" },
                 { new: true }
-            );*/
+            );
 
             // Save the updated driver document
             await driver.save();
