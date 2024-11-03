@@ -493,9 +493,14 @@ module.exports = {
           };
           const db = admin.database();
 
-          if (user?.fcm) {
-              await sendNotification(user.fcm, "📦 Order Accepted", data, `Your order has been accepted and is being prepared.`);
-          }
+         if (user.fcm || user.fcm !== null || user.fcm !== "") {
+           sendNotification(
+             user.fcm,
+             "🚚 Order Picked Up and Out for Delivery",
+             data,
+             `Your order has been picked up and now getting delivered.`
+           );
+         }
 
           if (driver) {
               driver.isActive = true;
