@@ -47,13 +47,7 @@ module.exports = {
 
       await order.save();
       const orderId = order.id;
-      res
-        .status(201)
-        .json({
-          status: true,
-          message: "Order placed successfully",
-          orderId: orderId,
-        });
+      res.status(201).json({status: true, message: "Order placed successfully",orderId: orderId,});
     } catch (error) {
       res.status(500).json({ status: false, message: error.message });
     }
@@ -479,17 +473,15 @@ module.exports = {
     }
   },
 
-
   orderAccepted: async (req, res) => {
         const orderId = req.params.id;
         const driverId = req.params.driverId;
         const userId = req.user.id;
-        const status = "Accepted";
 
         try {
             const updatedOrder = await Order.findByIdAndUpdate(
                 orderId,
-                { orderStatus: "Accepted", driverId: driverId },
+                { driverId: driverId },
                 { new: true }
             )
             .select("userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus")
@@ -522,7 +514,7 @@ module.exports = {
               }
 
               await driver.save();
-              updateUser(updatedOrder, db, status);
+              updateUser(updatedOrder, db);
               res.status(200).json(updatedOrder);
           } else {
               res.status(404).json({ status: false, message: "Order not found" });
