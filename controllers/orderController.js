@@ -429,51 +429,56 @@ module.exports = {
     }
   },
 
-    initiateRiderPay: async (req, res) => {
-        const orderId = req.params.id;
-        const driverId = req.params.driverId;
-        const { paymentMethod, orderTotal, restaurantId } = req.body;
+  initiateRiderPay: async (req, res) => {
+    const orderId = req.params.id;
+    const driverId = req.params.driverId;
+    const { paymentMethod, orderTotal, restaurantId } = req.body;
 
-        try {
-            const driver = await Driver.findById(driverId);
-            if (!driver) {
-                return res.status(404).json({ status: false, message: 'Driver not found' });
-            }
+    try {
+      const driver = await Driver.findById(driverId);
+      if (!driver) {
+        return res.status(404).json({ status: false, message: 'Driver not found' });
+      }
 
-            if (amount <= 0) {
-                return res.status(400).json({ status: false, message: 'Amount must be greater than zero' });
-            }
-            if (amount > driver.walletBalance) {
-                return res.status(400).json({ status: false, message: 'Insufficient balance' });
-            }
+      if (orderTotal <= 0) {
+        return res.status(400).json({ status: false, message: 'Amount must be greater than zero' });
+      }
+      if (orderTotal > driver.walletBalance) {
+        return res.status(400).json({ status: false, message: 'Insufficient balance' });
+      }
 
-            driver.walletBalance -= orderTotal;
-            const withdrawalTransaction = {
-                amount: -orderTotal,
-                paymentMethod: 'Order payed',
-                date: new Date()
-            };
-            driver.walletTransactions.push(withdrawalTransaction);
+      // Deduct the orderTotal from the driver's wallet
+      driver.walletBalance -= orderTotal;
+      const withdrawalTransaction = {
+        amount: -orderTotal,
+        paymentMethod: 'Order paid',
+        date: new Date(),
+      };
+      driver.walletTransactions.push(withdrawalTransaction);
 
-            await Restaurant.findByIdAndUpdate(
-                restaurantId,
-                { $inc: { earnings: orderTotal } },
-                { new: true }
-            );
-            await Order.findByIdAndUpdate(
-                orderId,
-                { paymentStatus: "Completed" },
-                { new: true }
-            );
+      // Update the restaurant's earnings
+      await Restaurant.findByIdAndUpdate(
+        restaurantId,
+        { $inc: { earnings: orderTotal } },
+        { new: true }
+      );
 
-            // Save the updated driver document
-            await driver.save();
+      // Update the order's payment status
+      await Order.findByIdAndUpdate(
+        orderId,
+        { paymentStatus: "Completed" },
+        { new: true }
+      );
 
-            res.status(200).json({ status: true, message: 'Payment successful', driver });
-        } catch (error) {
-            res.status(500).json({ status: false, message: error.message });
-        }
-    },
+      // Save the updated driver document
+      await driver.save();
+
+      res.status(200).json({ status: true, message: 'Payment successful', driver });
+    } catch (error) {
+      res.status(500).json({ status: false, message: error.message });
+    }
+  }
+
 
   orderAccepted: async (req, res) => {
         const orderId = req.params.id;
