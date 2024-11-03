@@ -460,11 +460,11 @@ module.exports = {
                 { $inc: { earnings: orderTotal } },
                 { new: true }
             );
-            await Order.findByIdAndUpdate(
+            /*await Order.findByIdAndUpdate(
                 orderId,
                 { paymentStatus: "Completed" },
                 { new: true }
-            );
+            );*/
 
             // Save the updated driver document
             await driver.save();
