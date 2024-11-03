@@ -435,27 +435,40 @@ module.exports = {
       const userId = req.user.id;
       const { paymentMethod, orderTotal, restaurantId } = req.body;
 
-      const withdraw = async (driverId, amount) => {
-          try {
-              const driver = await Driver.findById(driverId);
-              if (!driver) return { success: false, message: 'Driver not found' };
-              if (amount <= 0 || amount > driver.walletBalance)
-                  return { success: false, message: 'Insufficient balance' };
-
-              driver.walletBalance -= amount;
-              driver.walletTransactions.push({
-                  amount: -amount,
-                  paymentMethod: 'Order payed',
-                  date: new Date()
-              });
-              await driver.save();
-              return { success: true, driver };
-          } catch (error) {
-              return { success: false, message: error.message };
-          }
-      };
-
       try {
+          const withdraw = async (driverId, amount) => {
+              try {
+                  const driver = await Driver.findById(driverId);
+                  if (!driver) return { success: false, message: 'Driver not found' };
+                  if (amount <= 0 || amount > driver.walletBalance)
+                      return { success: false, message: 'Insufficient balance' };
+
+                  driver.walletBalance -= amount;
+                  driver.walletTransactions.push({
+                      amount: -amount,
+                      paymentMethod: 'Order payed',
+                      date: new Date()
+                  });
+                  await driver.save();
+                  return { success: true, driver };
+              } catch (error) {
+                  return { success: false, message: error.message };
+              }
+          };
+
+           if (paymentMethod === 'COD') {
+               const withdrawalResult = await withdraw(driverId, orderTotal);
+               if (!withdrawalResult.success) {
+                   return res.status(400).json({ status: false, message: withdrawalResult.message });
+               }
+
+               await Restaurant.findByIdAndUpdate(
+                   restaurantId,
+                   { $inc: { earnings: orderTotal } },
+                   { new: true }
+               );
+           }
+
           const updatedOrder = await Order.findByIdAndUpdate(
               orderId,
               { orderStatus: "Accepted", driverId },
@@ -474,20 +487,7 @@ module.exports = {
           const driver = await Driver.findById(driverId);
           const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
-          if (paymentMethod === 'COD') {
-              const withdrawalResult = await withdraw(driverId, orderTotal);
-              if (!withdrawalResult.success) {
-                  return res.status(400).json({ status: false, message: withdrawalResult.message });
-              }
-
-              await Restaurant.findByIdAndUpdate(
-                  restaurantId,
-                  { $inc: { earnings: orderTotal } },
-                  { new: true }
-              );
-          }
-
-          /*const data = {
+          const data = {
               orderId: updatedOrder._id.toString(),
               messageType: "order",
           };
@@ -503,7 +503,7 @@ module.exports = {
           }
 
           updateUser(updatedOrder, db, "Accepted"); // Define "status" properly or replace with hardcoded status
-          res.status(200).json(updatedOrder);*/
+          res.status(200).json(updatedOrder);
 
       } catch (error) {
           res.status(500).json({ status: false, message: error.message });
