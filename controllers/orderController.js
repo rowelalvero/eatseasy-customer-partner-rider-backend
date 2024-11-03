@@ -429,94 +429,103 @@ module.exports = {
     }
   },
 
+    initiateRiderPay: async (req, res) => {
+        const orderId = req.params.id;
+        const driverId = req.params.id;
+        const { paymentMethod, orderTotal, restaurantId } = req.body;
+
+        try {
+            const driver = await Driver.findById(driverId);
+            if (!driver) {
+                return res.status(404).json({ status: false, message: 'Driver not found' });
+            }
+
+            if (amount <= 0) {
+                return res.status(400).json({ status: false, message: 'Amount must be greater than zero' });
+            }
+            if (amount > driver.walletBalance) {
+                return res.status(400).json({ status: false, message: 'Insufficient balance' });
+            }
+
+            driver.walletBalance -= orderTotal;
+            const withdrawalTransaction = {
+                amount: -orderTotal,
+                paymentMethod: 'Order payed',
+                date: new Date()
+            };
+            driver.walletTransactions.push(withdrawalTransaction);
+
+            await Restaurant.findByIdAndUpdate(
+                restaurantId,
+                { $inc: { earnings: orderTotal } },
+                { new: true }
+            );
+            await Order.findByIdAndUpdate(
+                orderId,
+                { paymentStatus: "Completed" },
+                { new: true }
+            );
+
+            // Save the updated driver document
+            await driver.save();
+
+            res.status(200).json({ status: true, message: 'Payment successful', driver });
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
   orderAccepted: async (req, res) => {
-      const orderId = req.params.id;
-      const driverId = req.params.driverId;
-      const userId = req.user.id;
-      const { paymentMethod, orderTotal, restaurantId } = req.body;
+        const orderId = req.params.id;
+        const driverId = req.params.driverId;
+        const userId = req.user.id;
 
-      try {
-          const riderPay = async (driverId, amount) => {
-              try {
-                  const driver = await Driver.findById(driverId);
-                  if (!driver) return { success: false, message: 'Driver not found' };
-                  if (amount <= 0 || amount > driver.walletBalance)
-                      return { success: false, message: 'Insufficient balance' };
+        try {
+            const updatedOrder = await Order.findByIdAndUpdate(
+                orderId,
+                { orderStatus: "Accepted", driverId: driverId },
+                { new: true }
+            )
+            .select("userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus")
+            .populate("userId", "phone profile fcm username")
+            .populate("restaurantId", "title coords imageUrl logoUrl time")
+            .populate("orderItems.foodId", "title imageUrl time")
+            .populate("deliveryAddress", "addressLine1 city district deliveryInstructions");
 
-                  driver.walletBalance -= amount;
-                  const withdrawalTransaction = {
-                      amount: -amount, // Negative amount to indicate a withdrawal
-                      paymentMethod: 'Withdrawal', // You can adjust this as necessary
-                      date: new Date() // Optional: record the date of the transaction
-                  };
-                  driver.walletTransactions.push(withdrawalTransaction);
-                  await driver.save();
-                  return { success: true, driver };
-              } catch (error) {
-                  return { success: false, message: error.message };
-              }
-          };
-
-           if (paymentMethod === 'COD') {
-               const riderPayResult = await riderPay(driverId, orderTotal);
-               if (!riderPayResult.success) {
-                   return res.status(400).json({ status: false, message: riderPayResult.message });
-               }
-
-               await Restaurant.findByIdAndUpdate(
-                   restaurantId,
-                   { $inc: { earnings: orderTotal } },
-                   { new: true }
-               );
-           }
-
-          const updatedOrder = await Order.findByIdAndUpdate(
-              orderId,
-              { orderStatus: "Accepted", driverId },
-              { new: true }
-          )
-          .select("userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus")
-          .populate("userId", "phone profile fcm username")
-          .populate("restaurantId", "title coords imageUrl logoUrl time")
-          .populate("orderItems.foodId", "title imageUrl time")
-          .populate("deliveryAddress", "addressLine1 city district deliveryInstructions");
-
-          if (!updatedOrder) {
-              return res.status(404).json({ status: false, message: "Order not found" });
-          }
-
-          const driver = await Driver.findById(driverId);
+          const driver = await Driver.findOne({ driver: userId });
           const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
-          const data = {
-              orderId: updatedOrder._id.toString(),
-              messageType: "order",
-          };
-          const db = admin.database();
+          if (updatedOrder) {
+              const data = {
+                  orderId: updatedOrder._id.toString(),
+                  messageType: "order",
+              };
+              const db = admin.database();
 
-         if (user.fcm || user.fcm !== null || user.fcm !== "") {
-           sendNotification(
-             user.fcm,
-             "🚚 Order Picked Up and Out for Delivery",
-             data,
-             `Your order has been picked up and now getting delivered.`
-           );
-         }
+              if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                  sendNotification(
+                      user.fcm,
+                      "📦 Order Accepted",
+                      data,
+                      `Your order has been accepted and is being prepared.`
+                  );
+              }
 
-          if (driver) {
-              driver.isActive = true;
+              if (driver) {
+                 driver.isActive = true;
+              }
+
               await driver.save();
+              updateUser(updatedOrder, db, status);
+              res.status(200).json(updatedOrder);
+          } else {
+              res.status(404).json({ status: false, message: "Order not found" });
           }
 
-          updateUser(updatedOrder, db, "Accepted"); // Define "status" properly or replace with hardcoded status
-          res.status(200).json(updatedOrder);
-
-      } catch (error) {
-          res.status(500).json({ status: false, message: error.message });
-      }
-  },
-
-
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
 
   orderPicked: async (req, res) => {
     const orderId = req.params.id;
