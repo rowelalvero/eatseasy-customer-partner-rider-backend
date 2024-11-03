@@ -436,7 +436,7 @@ module.exports = {
       const { paymentMethod, orderTotal, restaurantId } = req.body;
 
       try {
-          const withdraw = async (driverId, amount) => {
+          const riderPay = async (driverId, amount) => {
               try {
                   const driver = await Driver.findById(driverId);
                   if (!driver) return { success: false, message: 'Driver not found' };
@@ -444,11 +444,12 @@ module.exports = {
                       return { success: false, message: 'Insufficient balance' };
 
                   driver.walletBalance -= amount;
-                  driver.walletTransactions.push({
-                      amount: -amount,
-                      paymentMethod: 'Order payed',
-                      date: new Date()
-                  });
+                  const withdrawalTransaction = {
+                      amount: -amount, // Negative amount to indicate a withdrawal
+                      paymentMethod: 'Withdrawal', // You can adjust this as necessary
+                      date: new Date() // Optional: record the date of the transaction
+                  };
+                  driver.walletTransactions.push(withdrawalTransaction);
                   await driver.save();
                   return { success: true, driver };
               } catch (error) {
@@ -457,9 +458,9 @@ module.exports = {
           };
 
            if (paymentMethod === 'COD') {
-               const withdrawalResult = await withdraw(driverId, orderTotal);
-               if (!withdrawalResult.success) {
-                   return res.status(400).json({ status: false, message: withdrawalResult.message });
+               const riderPayResult = await riderPay(driverId, orderTotal);
+               if (!riderPayResult.success) {
+                   return res.status(400).json({ status: false, message: riderPayResult.message });
                }
 
                await Restaurant.findByIdAndUpdate(
