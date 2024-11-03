@@ -338,11 +338,11 @@ module.exports = {
   getNearbyOrders: async (req, res) => {
     try {
       const parcels = await Order.find({
-        orderStatus: req.params.status,
+        driverStatus: req.params.status,
         //paymentStatus: "Completed",
       })
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus"
         )
         .populate({
           path: "userId",
@@ -375,24 +375,26 @@ module.exports = {
 
   getPickedOrders: async (req, res) => {
     let status;
-    if (req.params.status === "Out_for_Delivery") {
-      status = "Out_for_Delivery";
+    if (req.params.status === "Vacant") {
+      status = "Vacant";
+    } else if (req.params.status === "Assigned") {
+      status = "Assigned";
+    } else if (req.params.status === "Picking") {
+      status = "Picking";
+    } else if (req.params.status === "Delivering") {
+      status = "Delivering";
     } else if (req.params.status === "Delivered") {
       status = "Delivered";
-    } else if (req.params.status === "Accepted") {
-      status = "Accepted";
-    } else if (req.params.status === "Manual") {
-      status = "Manual";
     } else {
       status = "Cancelled";
     }
     try {
       const parcels = await Order.find({
-        orderStatus: status,
+        driverStatus: status,
         driverId: req.params.driver,
       })
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus"
         )
         .populate({
           path: "userId",
@@ -477,14 +479,15 @@ module.exports = {
         const orderId = req.params.id;
         const driverId = req.params.driverId;
         const userId = req.user.id;
+        const driverStatus = "Picking";
 
         try {
             const updatedOrder = await Order.findByIdAndUpdate(
                 orderId,
-                { driverId: driverId },
+                { driverStatus: "Picking", driverId: driverId },
                 { new: true }
             )
-            .select("userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus")
+            .select("userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus")
             .populate("userId", "phone profile fcm username")
             .populate("restaurantId", "title coords imageUrl logoUrl time")
             .populate("orderItems.foodId", "title imageUrl time")
@@ -528,15 +531,16 @@ module.exports = {
   orderPicked: async (req, res) => {
     const orderId = req.params.id;
     const status = "Out_for_Delivery";
+    const driverStatus = "Delivering";
 
     try {
       const updatedOrder = await Order.findByIdAndUpdate(
         orderId,
-        { orderStatus: "Out_for_Delivery" },
+        { orderStatus: "Out_for_Delivery", driverStatus: "Delivering" },
         { new: true }
       )
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus"
         )
         .populate({
           path: "userId",
@@ -586,16 +590,17 @@ module.exports = {
   orderDelivered: async (req, res) => {
     const orderId = req.params.id;
     const status = "Delivered";
+    const driverStatus = "Delivered";
     const userId = req.user.id;
 
     try {
       const updatedOrder = await Order.findByIdAndUpdate(
         orderId,
-        { orderStatus: "Delivered" },
+        { orderStatus: "Delivered", driverStatus: "Delivered" },
         { new: true }
       )
         .select(
-          "userId orderTotal deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId orderTotal deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus"
         )
         .populate({
           path: "userId",
