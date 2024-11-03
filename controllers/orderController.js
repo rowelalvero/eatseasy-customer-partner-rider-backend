@@ -487,7 +487,7 @@ module.exports = {
               );
           }
 
-          const data = {
+          /*const data = {
               orderId: updatedOrder._id.toString(),
               messageType: "order",
           };
@@ -503,7 +503,7 @@ module.exports = {
           }
 
           updateUser(updatedOrder, db, "Accepted"); // Define "status" properly or replace with hardcoded status
-          res.status(200).json(updatedOrder);
+          res.status(200).json(updatedOrder);*/
 
       } catch (error) {
           res.status(500).json({ status: false, message: error.message });
