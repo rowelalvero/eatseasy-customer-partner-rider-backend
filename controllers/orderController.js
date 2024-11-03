@@ -435,19 +435,12 @@ module.exports = {
       const userId = req.user.id;
       const { paymentMethod, orderTotal, restaurantId } = req.body;
 
-      // Helper function for withdrawing funds
       const withdraw = async (driverId, amount) => {
           try {
               const driver = await Driver.findById(driverId);
-              if (!driver) {
-                  return { success: false, message: 'Driver not found' };
-              }
-              if (amount <= 0) {
-                  return { success: false, message: 'Amount must be greater than zero' };
-              }
-              if (amount > driver.walletBalance) {
+              if (!driver) return { success: false, message: 'Driver not found' };
+              if (amount <= 0 || amount > driver.walletBalance)
                   return { success: false, message: 'Insufficient balance' };
-              }
 
               driver.walletBalance -= amount;
               driver.walletTransactions.push({
@@ -465,7 +458,7 @@ module.exports = {
       try {
           const updatedOrder = await Order.findByIdAndUpdate(
               orderId,
-              { orderStatus: "Accepted", driverId: driverId },
+              { orderStatus: "Accepted", driverId },
               { new: true }
           )
           .select("userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords orderStatus")
@@ -474,7 +467,11 @@ module.exports = {
           .populate("orderItems.foodId", "title imageUrl time")
           .populate("deliveryAddress", "addressLine1 city district deliveryInstructions");
 
-          const driver = await Driver.findOne({ driver: userId });
+          if (!updatedOrder) {
+              return res.status(404).json({ status: false, message: "Order not found" });
+          }
+
+          const driver = await Driver.findById(driverId);
           const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
 
           if (paymentMethod === 'COD') {
@@ -488,63 +485,28 @@ module.exports = {
                   { $inc: { earnings: orderTotal } },
                   { new: true }
               );
-
-              if (updatedOrder) {
-                  const data = {
-                      orderId: updatedOrder._id.toString(),
-                      messageType: "order",
-                  };
-                  const db = admin.database();
-
-                  if (user.fcm || user.fcm !== null || user.fcm !== "") {
-                      sendNotification(
-                          user.fcm,
-                          "📦 Order Accepted",
-                          data,
-                          `Your order has been accepted and is being prepared.`
-                      );
-                  }
-
-                  if (driver) {
-                      driver.isActive = true;
-                  }
-
-                  await driver.save();
-                  updateUser(updatedOrder, db, status);
-                  return res.status(200).json(updatedOrder);
-              } else {
-                  return res.status(404).json({ status: false, message: "Order not found" });
-              }
-          } else {
-              if (updatedOrder) {
-                  const data = {
-                      orderId: updatedOrder._id.toString(),
-                      messageType: "order",
-                  };
-                  const db = admin.database();
-
-                  if (user.fcm || user.fcm !== null || user.fcm !== "") {
-                      sendNotification(
-                          user.fcm,
-                          "📦 Order Accepted",
-                          data,
-                          `Your order has been accepted and is being prepared.`
-                      );
-                  }
-
-                  if (driver) {
-                      driver.isActive = true;
-                  }
-
-                  await driver.save();
-                  updateUser(updatedOrder, db, status);
-                  return res.status(200).json(updatedOrder);
-              } else {
-                  return res.status(404).json({ status: false, message: "Order not found" });
-              }
           }
+
+          const data = {
+              orderId: updatedOrder._id.toString(),
+              messageType: "order",
+          };
+          const db = admin.database();
+
+          if (user?.fcm) {
+              await sendNotification(user.fcm, "📦 Order Accepted", data, `Your order has been accepted and is being prepared.`);
+          }
+
+          if (driver) {
+              driver.isActive = true;
+              await driver.save();
+          }
+
+          updateUser(updatedOrder, db, "Accepted"); // Define "status" properly or replace with hardcoded status
+          res.status(200).json(updatedOrder);
+
       } catch (error) {
-          return res.status(500).json({ status: false, message: error.message });
+          res.status(500).json({ status: false, message: error.message });
       }
   },
 
