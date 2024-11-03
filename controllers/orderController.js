@@ -484,6 +484,7 @@ module.exports = {
         const orderId = req.params.id;
         const driverId = req.params.driverId;
         const userId = req.user.id;
+        const status = "Accepted";
 
         try {
             const updatedOrder = await Order.findByIdAndUpdate(
