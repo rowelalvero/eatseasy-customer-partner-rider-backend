@@ -1,9 +1,11 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const app = express();
-const dotenv = require('dotenv');
+const cors = require('cors');
 const compression = require('compression');
+const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const { fireBaseConnection } = require('./utils/fbConnect');
+
+// Route imports
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user");
 const restRoute = require("./routes/restaurant");
@@ -15,32 +17,34 @@ const driverRoute = require("./routes/driver");
 const messagingRoute = require("./routes/messaging");
 const orderRoute = require("./routes/order");
 const ratingRoute = require("./routes/rating");
-const uploadRoute =require("./routes/uploads")
+const uploadRoute = require("./routes/uploads");
 
-
-
-
-dotenv.config()
-
+dotenv.config();
 fireBaseConnection();
 
-
-
-const mongoose = require('mongoose');
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URL)
-    .then(() => console.log("connected to the db"))
-    .catch((err) => { console.log(err) });
+  .then(() => console.log("Connected to the database"))
+  .catch((err) => console.log(err));
 
+const app = express();
 
+// CORS setup
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGIN || '*', // Specify origin for production
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
 
+// Compression setup
+app.use(compression({ level: 6, threshold: 0 }));
 
-app.use(compression({
-    level: 6,
-    threshold: 0
-}))
+// Parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Routes setup
 app.use("/", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/restaurant", restRoute);
@@ -54,11 +58,16 @@ app.use("/api/rating", ratingRoute);
 app.use("/api/messaging", messagingRoute);
 app.use("/api/uploads", uploadRoute);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
 
-const ip =  "127.0.0.1";
-const port = process.env.PORT || 3000; 
+// Server setup
+const ip = "127.0.0.1";
+const port = process.env.PORT || 3000;
 
 app.listen(port, ip, () => {
   console.log(`Product server listening on ${ip}:${port}`);
 });
-
