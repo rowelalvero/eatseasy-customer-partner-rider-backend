@@ -65,6 +65,9 @@ app.use((err, req, res, next) => {
 });
 
 // Server setup
-app.listen(process.env.PORT || 8000, () =>
-  console.log(`Eatseasy Backend is running on ${process.env.PORT || 8000}!`)
-);
+const ip = "127.0.0.1";
+const port = process.env.PORT || 8000;
+
+app.listen(port, ip, () => {
+  console.log(`Product server listening on ${ip}:${port}`);
+});
