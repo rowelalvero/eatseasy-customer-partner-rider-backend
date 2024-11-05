@@ -31,7 +31,10 @@ const app = express();
 
 // CORS setup
 const corsOptions = {
-  origin: process.env.ALLOWED_ORIGIN || '*', // Specify origin for production
+  origin: [
+      'https://eatseasy-food-userapp.web.app',
+      'https://eatseasy-food-partner.web.app'
+    ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
