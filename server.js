@@ -66,7 +66,7 @@ app.use((err, req, res, next) => {
 
 // Server setup
 const ip = "127.0.0.1";
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 app.listen(port, ip, () => {
   console.log(`Product server listening on ${ip}:${port}`);
