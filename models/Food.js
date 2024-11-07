@@ -1,11 +1,5 @@
 const mongoose = require('mongoose');
 
-const additiveSchema = new mongoose.Schema({
-    id: { type: Number, required: true },
-    title: { type: String, required: true },
-    price: { type: String, required: true }
-});
-
 const optionsSchema = new mongoose.Schema({
     optionName: { type: String, required: true },
     price: { type: String, required: true }
@@ -43,7 +37,6 @@ const foodSchema = new mongoose.Schema({
     ratingCount: {type: String, default: "302"},
     description: { type: String, required: true },
     price: { type: Number, required: true },
-    additives: { type: [additiveSchema], required: true }, // Array of Additive subdocuments
     imageUrl: { type: Array, required: true },
     v: { type: Number, required: false },
     category: {type: String, required: true},
