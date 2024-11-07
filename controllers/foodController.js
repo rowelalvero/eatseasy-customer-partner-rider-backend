@@ -209,14 +209,19 @@ module.exports = {
     },
 
     getRandomFoods: async (req, res) => {
-        try {
-                const foods = await Food.find();
-                res.status(200).json(foods);
-            } catch (error) {
-                console.error("Error fetching foods:", error);
-                throw error; // Handle or rethrow the error as needed
-            }
-    },
+                const sampleSize = 5; // Use a default size of 5 if no size is specified
+
+                try {
+                        const randomFoods = await Food.aggregate([
+                            { $match: { isAvailable: true } }, // Filter to only available foods if needed
+                            { $sample: { size: 5 } }       // Randomly select 'count' foods
+                        ]);
+                        res.status(200).json(randomFoods);
+                    } catch (error) {
+                        console.error("Error fetching random foods:", error);
+                        throw error;
+                    }
+            },
 
     getRandomFoodsByCategoryAndCode: async (req, res) => {
         const { category, code } = req.params;  // Assuming category, code, and value are sent as parameters
