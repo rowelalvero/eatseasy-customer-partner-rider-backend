@@ -158,7 +158,7 @@ module.exports = {
             if (req.params.code) {
                 randomFoodList = await Food.aggregate([
                     { $match: { code: req.params.code } },
-                    { $sample: { size: 3 } },
+                    { $sample: { size: 5 } },
                     { $project: {  __v: 0 } }
                 ]);
             }
