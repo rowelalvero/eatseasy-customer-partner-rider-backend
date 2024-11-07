@@ -209,19 +209,18 @@ module.exports = {
     },
 
     getRandomFoods: async (req, res) => {
-                const page   = req.query.page || 1;
+        const page   = req.query.page || 1;
                         try {
-                            const foods = await Food.find({ isAvailable: req.query.status }, { __v: 0, createdAt: 0, updatedAt: 0})
-                                .sort({ createdAt: -1 });
+                            const foods = await Food.find({ isAvailable: req.query.status }, { __v: 0, createdAt: 0, updatedAt: 0});
                             const totalItems = await Food.countDocuments({isAvailable: req.query.status  });
 
                             res.status(200).json({
                                 foods,
-                            });
-                        } catch (error) {
-                            res.status(500).json({ status: false, message: error.message });
-                        }
-            },
+        });
+        } catch (error) {
+              res.status(500).json({ status: false, message: error.message });
+        }
+    },
 
     getRandomFoodsByCategoryAndCode: async (req, res) => {
         const { category, code } = req.params;  // Assuming category, code, and value are sent as parameters
