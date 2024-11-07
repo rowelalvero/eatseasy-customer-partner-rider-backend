@@ -209,17 +209,18 @@ module.exports = {
     },
 
     getRandomFoods: async (req, res) => {
-                const sampleSize = 5; // Use a default size of 5 if no size is specified
+                const page   = req.query.page || 1;
+                        try {
+                            const foods = await Food.find({ isAvailable: req.query.status }, { __v: 0, createdAt: 0, updatedAt: 0})
+                                .sort({ createdAt: -1 });
+                            const totalItems = await Food.countDocuments({isAvailable: req.query.status  });
 
-                try {
-                        const randomFoods = await Food.aggregate([
-                            { $sample: { size:sampleSize } }       // Randomly select 'count' foods
-                        ]);
-                        res.status(200).json(randomFoods);
-                    } catch (error) {
-                        console.error("Error fetching random foods:", error);
-                        throw error;
-                    }
+                            res.status(200).json({
+                                foods,
+                            });
+                        } catch (error) {
+                            res.status(500).json({ status: false, message: error.message });
+                        }
             },
 
     getRandomFoodsByCategoryAndCode: async (req, res) => {
