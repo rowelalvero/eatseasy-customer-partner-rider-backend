@@ -53,6 +53,22 @@ module.exports = {
         }
     },
 
+    getRandomFoods: async (req, res) => {
+            const sampleSize = 5; // Use a default size of 5 if no size is specified
+
+            try {
+                    const randomFoods = await Food.aggregate([
+                        { $match: { isAvailable: true } }, // Filter to only available foods if needed
+                        { $sample: { size: sampleSize } }       // Randomly select 'count' foods
+                    ]);
+                    return randomFoods;
+                } catch (error) {
+                    console.error("Error fetching random foods:", error);
+                    throw error;
+                }
+        },
+
+
     getFoodList: async (req, res) => {
         const restaurant = req.params.id;
 
@@ -158,7 +174,7 @@ module.exports = {
             if (req.params.code) {
                 randomFoodList = await Food.aggregate([
                     { $match: { code: req.params.code } },
-                    { $sample: { size: 5 } },
+                    { $sample: { size: 3 } },
                     { $project: {  __v: 0 } }
                 ]);
             }
@@ -205,20 +221,6 @@ module.exports = {
             res.status(200).json({ status: true, message: 'Type successfully added' });
         } catch (error) {
             res.status(500).json(error);
-        }
-    },
-
-    getRandomFoods: async (req, res) => {
-        const page   = req.query.page || 1;
-                        try {
-                            const foods = await Food.find({ isAvailable: req.query.status }, { __v: 0, createdAt: 0, updatedAt: 0});
-                            const totalItems = await Food.countDocuments({isAvailable: req.query.status  });
-
-                            res.status(200).json({
-                                foods,
-        });
-        } catch (error) {
-              res.status(500).json({ status: false, message: error.message });
         }
     },
 
