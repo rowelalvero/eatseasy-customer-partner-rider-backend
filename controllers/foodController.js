@@ -150,6 +150,29 @@ module.exports = {
         }
     },
 
+    getRandomFoods: async (req, res) => {
+            try {
+                let randomFoodList = [];
+
+                // If no code provided in params or no Foods match the provided code
+                if (!randomFoodList.length) {
+                    randomFoodList = await Food.aggregate([
+                        { $sample: { size: 5 } },
+                        { $project: {  __v: 0 } }
+                    ]);
+                }
+
+                // Respond with the results
+                if (randomFoodList.length) {
+                    res.status(200).json(randomFoodList);
+                } else {
+                    res.status(404).json({status: false, message: 'No Foods found' });
+                }
+            } catch (error) {
+                res.status(500).json(error);
+            }
+        },
+
     getRandomFoodsByCode: async (req, res) => {
         try {
             let randomFoodList = [];
