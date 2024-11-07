@@ -53,28 +53,12 @@ module.exports = {
         }
     },
 
-    getRandomFoods: async (req, res) => {
-            const sampleSize = 5; // Use a default size of 5 if no size is specified
-
-            try {
-                    const randomFoods = await Food.aggregate([
-                        { $match: { isAvailable: true } }, // Filter to only available foods if needed
-                        { $sample: { size: sampleSize } }       // Randomly select 'count' foods
-                    ]);
-                    return randomFoods;
-                } catch (error) {
-                    console.error("Error fetching random foods:", error);
-                    throw error;
-                }
-        },
-
-
     getFoodList: async (req, res) => {
         const restaurant = req.params.id;
-      
+
         try {
           const foods = await Food.find({ restaurant: restaurant }).sort({ createdAt: -1 }); // Sort by date in descending order (newest first)
-      
+
           res.status(200).json(foods);
         } catch (error) {
           res.status(500).json({ status: false, message: error.message });
@@ -223,6 +207,21 @@ module.exports = {
             res.status(500).json(error);
         }
     },
+
+    getRandomFoods: async (req, res) => {
+                const sampleSize = 5; // Use a default size of 5 if no size is specified
+
+                try {
+                        const randomFoods = await Food.aggregate([
+                            { $match: { isAvailable: true } }, // Filter to only available foods if needed
+                            { $sample: { size: sampleSize } }       // Randomly select 'count' foods
+                        ]);
+                        res.status(200).json(randomFoods);
+                    } catch (error) {
+                        console.error("Error fetching random foods:", error);
+                        throw error;
+                    }
+            },
 
     getRandomFoodsByCategoryAndCode: async (req, res) => {
         const { category, code } = req.params;  // Assuming category, code, and value are sent as parameters
