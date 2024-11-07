@@ -171,35 +171,22 @@ module.exports = {
     },
 
     getRandomFoodsByCode: async (req, res) => {
-        try {
-            let randomFoodList = [];
+        const sampleSize = 5; // Use a default size of 5 if no size is specified
 
-            // Check if code is provided in the params
-            if (req.params.code) {
-                randomFoodList = await Food.aggregate([
-                    { $match: { code: req.params.code } },
-                    { $sample: { size: 3 } },
-                    { $project: {  __v: 0 } }
-                ]);
-            }
-            
-            // If no code provided in params or no Foods match the provided code
-            if (!randomFoodList.length) {
-                randomFoodList = await Food.aggregate([
-                    { $sample: { size: 5 } },
-                    { $project: {  __v: 0 } }
-                ]);
-            }
-    
-            // Respond with the results
-            if (randomFoodList.length) {
-                res.status(200).json(randomFoodList);
-            } else {
-                res.status(404).json({status: false, message: 'No Foods found' });
-            }
-        } catch (error) {
-            res.status(500).json(error);
-        }
+                    try {
+                        const randomFoods = await Food.aggregate([
+                            { $sample: { size: sampleSize } }, // Fetch a random selection of foods
+                            { $project: { __v: 0 } } // Exclude the __v field
+                        ]);
+
+                        if (randomFoods.length === 0) {
+                            return res.status(404).json({ status: false, message: 'No foods found' });
+                        }
+
+                        res.status(200).json(randomFoods);
+                    } catch (error) {
+                        res.status(500).json({ status: false, message: error.message });
+                    }
     },
 
     addFoodType: async (req, res) => {
