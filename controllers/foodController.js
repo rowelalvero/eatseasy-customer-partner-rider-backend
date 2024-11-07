@@ -54,22 +54,18 @@ module.exports = {
     },
 
     getRandomFoods: async (req, res) => {
-            const sampleSize = parseInt(req.query.size) || 5; // Use a default size of 5 if no size is specified
+            const sampleSize = 5; // Use a default size of 5 if no size is specified
 
             try {
-                const randomFoods = await Food.aggregate([
-                    { $sample: { size: sampleSize } }, // Fetch a random selection of foods
-                    { $project: { __v: 0 } } // Exclude the __v field
-                ]);
-
-                if (randomFoods.length === 0) {
-                    return res.status(404).json({ status: false, message: 'No foods found' });
+                    const randomFoods = await Food.aggregate([
+                        { $match: { isAvailable: true } }, // Filter to only available foods if needed
+                        { $sample: { size: sampleSize } }       // Randomly select 'count' foods
+                    ]);
+                    return randomFoods;
+                } catch (error) {
+                    console.error("Error fetching random foods:", error);
+                    throw error;
                 }
-
-                res.status(200).json(randomFoods);
-            } catch (error) {
-                res.status(500).json({ status: false, message: error.message });
-            }
         },
 
 
@@ -177,7 +173,7 @@ module.exports = {
             // Check if code is provided in the params
             if (req.params.code) {
                 randomFoodList = await Food.aggregate([
-                    { $match: { code: req.params.code, serviceAvailability: true } },
+                    { $match: { code: req.params.code } },
                     { $sample: { size: 3 } },
                     { $project: {  __v: 0 } }
                 ]);
@@ -186,6 +182,7 @@ module.exports = {
             // If no code provided in params or no Foods match the provided code
             if (!randomFoodList.length) {
                 randomFoodList = await Food.aggregate([
+                    { $sample: { size: 5 } },
                     { $project: {  __v: 0 } }
                 ]);
             }
