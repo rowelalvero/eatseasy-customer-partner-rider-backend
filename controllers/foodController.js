@@ -213,8 +213,7 @@ module.exports = {
 
                 try {
                         const randomFoods = await Food.aggregate([
-                            { $match: { isAvailable: true } }, // Filter to only available foods if needed
-                            { $sample: { size: 5 } }       // Randomly select 'count' foods
+                            { $project: {  __v: 0 } }      // Randomly select 'count' foods
                         ]);
                         res.status(200).json(randomFoods);
                     } catch (error) {
