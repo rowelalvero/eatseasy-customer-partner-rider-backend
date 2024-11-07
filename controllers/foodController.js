@@ -3,10 +3,10 @@ const Food = require("../models/Food")
 
 module.exports = {
     addFood: async (req, res) => {
-        const { title, foodTags, category, foodType, code, isAvailable, restaurant, description,time, price, additives, imageUrl } = req.body;
+        const { title, foodTags, category, foodType, code, isAvailable, restaurant, description, time, price, imageUrl, customAdditives } = req.body;
 
         // Simple validation
-        if (!title || !foodTags || !category || !foodType || !code || !description || !price || !additives || !time || !imageUrl || !restaurant || !isAvailable) {
+        if (!title || !foodTags || !category || !foodType || !code || !description || !price || !customAdditives || !time || !imageUrl || !restaurant || !isAvailable) {
             return res.status(400).json({ status: false, message: 'Missing required fields' });
         }
         const newFood = new Food({
@@ -20,7 +20,6 @@ module.exports = {
             description: req.body.description,
             time: req.body.time,
             price: req.body.price,
-            additives: req.body.additives,
             imageUrl: req.body.imageUrl,
             customAdditives: req.body.customAdditives, // Ensure this is included
         });
