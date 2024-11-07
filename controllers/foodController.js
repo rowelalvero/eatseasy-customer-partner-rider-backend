@@ -54,7 +54,7 @@ module.exports = {
     },
 
     getRandomFoods: async (req, res) => {
-            const sampleSize = parseInt(req.query.size) || 5; // Use a default size of 5 if no size is specified
+            const sampleSize = 5; // Use a default size of 5 if no size is specified
 
             try {
                 const randomFoods = await Food.aggregate([
