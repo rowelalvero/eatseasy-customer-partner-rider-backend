@@ -151,24 +151,30 @@ module.exports = {
     },
 
     getRandomFoods: async (req, res) => {
-            try {
-                let randomFoodList = [];
+        try {
+            const randomFoodList = await Food.aggregate([
+                { $sample: { size: 5 } },
+                { $project: { __v: 0 } }
+            ]);
 
-                randomFoodList = await Food.aggregate([
-                   { $sample: { size: 5 } },
-                   { $project: {  __v: 0 } }
-                ]);
-
-                // Respond with the results
-                if (randomFoodList.length) {
-                    res.status(200).json(randomFoodList);
-                } else {
-                    res.status(404).json({status: false, message: 'No Foods found' });
-                }
-            } catch (error) {
-                res.status(500).json(error);
+            if (randomFoodList.length) {
+                res.status(200).json({
+                    status: true,
+                    data: randomFoodList
+                });
+            } else {
+                res.status(404).json({
+                    status: false,
+                    message: 'No Foods found'
+                });
             }
-        },
+        } catch (error) {
+            res.status(500).json({
+                status: false,
+                error: error.message || 'Server error'
+            });
+        }
+    },
 
     getRandomFoodsByCode: async (req, res) => {
         try {
