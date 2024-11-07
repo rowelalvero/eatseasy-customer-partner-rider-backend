@@ -213,7 +213,7 @@ module.exports = {
 
                 try {
                         const randomFoods = await Food.aggregate([
-                            { $project: {  __v: 0 } }      // Randomly select 'count' foods
+                            { $sample: { size:sampleSize } }       // Randomly select 'count' foods
                         ]);
                         res.status(200).json(randomFoods);
                     } catch (error) {
