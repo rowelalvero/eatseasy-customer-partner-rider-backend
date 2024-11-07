@@ -26,7 +26,8 @@ router.delete("/:id", foodController.deleteFoodById);
 
 router.patch("/:id", foodController.foodAvailability);
 
-router.get("/recommendation/:code", foodController.getRandomFoodsByCode);
+router.get("/recommendation/:code?", foodController.getRandomFoodsByCode);
+
 
 
 
