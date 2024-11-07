@@ -177,7 +177,7 @@ module.exports = {
             // Check if code is provided in the params
             if (req.params.code) {
                 randomFoodList = await Food.aggregate([
-                    { $match: { code: req.params.code } },
+                    { $match: { code: req.params.code, serviceAvailability: true } },
                     { $sample: { size: 3 } },
                     { $project: {  __v: 0 } }
                 ]);
