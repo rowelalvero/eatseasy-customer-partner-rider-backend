@@ -109,7 +109,7 @@ module.exports = {
             const foodId = req.params.id;
 
             try {
-                const updatedFood = await Food.findByIdAndUpdate(foodId, req.body, { new: true, runValidators: true });
+                const updatedFood = await Food.findByIdAndUpdate(foodId, req.body, { new: true });
 
                 if (!updatedFood) {
                     return res.status(404).json({ status: false, message: 'Food item not found' });
