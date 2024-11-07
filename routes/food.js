@@ -26,13 +26,9 @@ router.delete("/:id", foodController.deleteFoodById);
 
 router.patch("/:id", foodController.foodAvailability);
 
-router.get("/recommendation/:code?", foodController.getRandomFoodsByCode);
+router.get("/recommendation/:code", foodController.getRandomFoodsByCode);
 
-router.get("/random", foodController.getRandomFoods);
-
-
-
-
+router.get("/random-foods", foodController.getRandomFoods);
 
 
 module.exports = router

@@ -53,6 +53,26 @@ module.exports = {
         }
     },
 
+    getRandomFoods: async (req, res) => {
+            const sampleSize = parseInt(req.query.size) || 5; // Use a default size of 5 if no size is specified
+
+            try {
+                const randomFoods = await Food.aggregate([
+                    { $sample: { size: sampleSize } }, // Fetch a random selection of foods
+                    { $project: { __v: 0 } } // Exclude the __v field
+                ]);
+
+                if (randomFoods.length === 0) {
+                    return res.status(404).json({ status: false, message: 'No foods found' });
+                }
+
+                res.status(200).json(randomFoods);
+            } catch (error) {
+                res.status(500).json({ status: false, message: error.message });
+            }
+        },
+
+
     getFoodList: async (req, res) => {
         const restaurant = req.params.id;
       
@@ -109,7 +129,7 @@ module.exports = {
             const foodId = req.params.id;
 
             try {
-                const updatedFood = await Food.findByIdAndUpdate(foodId, req.body, { new: true });
+                const updatedFood = await Food.findByIdAndUpdate(foodId, req.body, { new: true, runValidators: true });
 
                 if (!updatedFood) {
                     return res.status(404).json({ status: false, message: 'Food item not found' });
@@ -147,32 +167,6 @@ module.exports = {
             res.status(200).json({ status: true, message: 'Tag successfully added', data: food });
         } catch (error) {
             res.status(500).json(error);
-        }
-    },
-
-    getRandomFoods: async (req, res) => {
-        try {
-            const randomFoodList = await Food.aggregate([
-                { $sample: { size: 5 } },
-                { $project: { __v: 0 } }
-            ]);
-
-            if (randomFoodList.length) {
-                res.status(200).json({
-                    status: true,
-                    data: randomFoodList
-                });
-            } else {
-                res.status(404).json({
-                    status: false,
-                    message: 'No Foods found'
-                });
-            }
-        } catch (error) {
-            res.status(500).json({
-                status: false,
-                error: error.message || 'Server error'
-            });
         }
     },
 
