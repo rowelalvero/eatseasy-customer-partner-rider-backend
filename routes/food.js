@@ -28,7 +28,7 @@ router.patch("/:id", foodController.foodAvailability);
 
 router.get("/recommendation/:code", foodController.getRandomFoodsByCode);
 
-router.get("/random-foods/:code", foodController.getRandomFoods);
+router.get("/random-foods", foodController.getRandomFoods);
 
 
 module.exports = router
