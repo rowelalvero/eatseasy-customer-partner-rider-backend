@@ -173,12 +173,23 @@ module.exports = {
     getRandomFoodsByCode: async (req, res) => {
         try {
             let randomFoodList = [];
+
+            // Check if code is provided in the params
+            if (req.params.code) {
+                randomFoodList = await Food.aggregate([
+                    { $match: { code: req.params.code } },
+                    { $sample: { size: 3 } },
+                    { $project: {  __v: 0 } }
+                ]);
+            }
             
             // If no code provided in params or no Foods match the provided code
-            randomFoodList = await Food.aggregate([
-                                { $sample: { size: 5 } },
-                                { $project: {  __v: 0 } }
-                            ]);
+            if (!randomFoodList.length) {
+                randomFoodList = await Food.aggregate([
+                    { $sample: { size: 5 } },
+                    { $project: {  __v: 0 } }
+                ]);
+            }
     
             // Respond with the results
             if (randomFoodList.length) {
