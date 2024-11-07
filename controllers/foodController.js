@@ -186,7 +186,6 @@ module.exports = {
             // If no code provided in params or no Foods match the provided code
             if (!randomFoodList.length) {
                 randomFoodList = await Food.aggregate([
-                    { $sample: { size: 5 } },
                     { $project: {  __v: 0 } }
                 ]);
             }
