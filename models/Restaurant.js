@@ -4,6 +4,8 @@ const restaurantSchema = new mongoose.Schema({
     title: {type: String , required: true},
     time: {type: String , required: true},
     imageUrl: {type: String , required: true},
+    image1Url: {type: String , required: true},
+    image2Url: {type: String , required: true},
     foods: {type: Array , default: []},
     pickup: {type: Boolean , default: true},
     delivery: {type: Boolean, default: true},

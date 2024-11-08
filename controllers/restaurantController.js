@@ -9,10 +9,10 @@ const admin = require("firebase-admin");
 module.exports ={
     addRestaurant: async (req, res) => {
         const owner = req.user.id;
-        const { title, time, imageUrl, code, logoUrl, coords } = req.body;
+        const { title, time, imageUrl, code, logoUrl, image1Url, image2Url, coords } = req.body;
     
         // Check if required fields are not empty
-        if (!title || !time || !imageUrl ||  !code || !logoUrl || !coords || !coords.latitude || !coords.longitude || !coords.address || !coords.title) {
+        if (!title || !time || !imageUrl ||  !code || !logoUrl || image1Url || image2Url || !coords || !coords.latitude || !coords.longitude || !coords.address || !coords.title) {
             return res.status(400).json({ status: false, message: 'Missing required fields' });
         }
     
