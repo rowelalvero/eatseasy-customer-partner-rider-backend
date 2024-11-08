@@ -9,6 +9,8 @@ const UserSchema = new mongoose.Schema(
         verification: {type: Boolean, default: false},
         password: { type: String, required: true },
         phone: { type: String, required: false, default:"01234567890"},
+        validIdUrl: { type: String, required: false},
+        proofOfResidenceUrl: { type: String, required: false},
         phoneVerification: { type: Boolean, default: false},
         address: {
             type: mongoose.Schema.Types.ObjectId,
