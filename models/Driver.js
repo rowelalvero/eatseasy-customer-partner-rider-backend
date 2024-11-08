@@ -9,6 +9,11 @@ const walletTransactionSchema = new mongoose.Schema({
 const driverSchema = new mongoose.Schema({
     driver: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     vehicleType: { type: String, required: true, enum: ['Bike', 'Car', 'Scooter', 'Drone'] },
+    vehicleName: {type: String , required: true},
+    licenseNumber: {type: String , required: true},
+    licenseExpireDate: {type: String , required: true},
+    driverLicenseUrl: {type: String , required: true},
+    nbiClearanceUrl: {type: String , required: true},
     phone: { type: String, required: true, default: '1234567890' },
     vehicleNumber: { type: String, required: true },
     currentLocation: {

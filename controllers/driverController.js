@@ -12,6 +12,12 @@ module.exports = {
             vehicleType: req.body.vehicleType,
             phone: req.body.phone,
             vehicleNumber: req.body.vehicleNumber,
+            vehicleName: req.body.vehicleName,
+            vehicleNumber: req.body.vehicleNumber,
+            licenseNumber: req.body.licenseNumber,
+            licenseExpireDate: req.body.licenseExpireDate,
+            driverLicenseUrl: req.body.driverLicenseUrl,
+            nbiClearanceUrl: req.body.nbiClearanceUrl,
             currentLocation: {
                 latitude: req.body.latitude,
                 longitude: req.body.longitude
