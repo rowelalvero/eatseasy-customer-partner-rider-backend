@@ -32,6 +32,8 @@ module.exports = {
             const newUser = new User({
                 username: req.body.username,
                 email: req.body.email,
+                validIdUrl: req.body.validIdUrl,
+                proofOfResidenceUrl: req.body.proofOfResidenceUrl,
                 userType: 'Client',
                 fcm: req.body.fcm,
                 otp: otp.toString(),
