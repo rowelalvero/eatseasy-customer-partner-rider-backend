@@ -12,7 +12,7 @@ module.exports ={
         const { title, time, imageUrl, code, logoUrl, image1Url, image2Url, phoneNumber, ownerName, coords } = req.body;
     
         // Check if required fields are not empty
-        if (!title || !time || !imageUrl ||  !code || !logoUrl || image1Url || image2Url || ownerName || phoneNumber || !coords || !coords.latitude || !coords.longitude || !coords.address || !coords.title) {
+        if (!title || !time || !imageUrl ||  !code || !logoUrl || !image1Url || !image2Url || !ownerName || !phoneNumber || !coords || !coords.latitude || !coords.longitude || !coords.address || !coords.title) {
             return res.status(400).json({ status: false, message: 'Missing required fields' });
         }
     
