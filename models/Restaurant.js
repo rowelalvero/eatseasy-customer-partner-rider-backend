@@ -3,6 +3,8 @@ const generateOtp = require('../utils/otp_generator')
 const restaurantSchema = new mongoose.Schema({
     title: {type: String , required: true},
     time: {type: String , required: true},
+    ownerName: {type: String , required: true},
+    phoneNumber: {type: String , required: true},
     imageUrl: {type: String , required: true},
     image1Url: {type: String , required: true},
     image2Url: {type: String , required: true},
