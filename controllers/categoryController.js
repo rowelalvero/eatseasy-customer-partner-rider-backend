@@ -67,7 +67,6 @@ module.exports = {
             res.status(500).json({ status: false, message: 'An error occurred while fetching the categories.' });
         }
     },
-    
 
      patchCategoryImage: async (req, res) => {
         const id  = req.params;

@@ -8,7 +8,6 @@ router.put("/:id", categoryController.updateCategory);
 router.post("/", categoryController.createCategory);
 
 // DELETE category
-
 router.delete("/:id", categoryController.deleteCategory);
 
 // DELETE category
@@ -19,9 +18,5 @@ router.get("/", categoryController.getAllCategories);
 
 // GET category
 router.get("/random", categoryController.getRandomCategories);
-
-// Add Skills
-
-
 
 module.exports = router

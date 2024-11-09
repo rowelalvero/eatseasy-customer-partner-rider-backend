@@ -34,6 +34,7 @@ const corsOptions = {
   origin: [
       'https://eatseasy-food-userapp.web.app',
       'https://eatseasy-food-partner.web.app'
+      'http://localhost:65138'
     ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

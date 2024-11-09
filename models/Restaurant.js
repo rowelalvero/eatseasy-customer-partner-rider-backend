@@ -33,7 +33,7 @@ const restaurantSchema = new mongoose.Schema({
         address: {type: String , required: true},
         title: {type: String , required: true},
     },
-    earnings: {type: Number, default: 0}
+    earnings: {type: Number, default: 0.0}
 });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
