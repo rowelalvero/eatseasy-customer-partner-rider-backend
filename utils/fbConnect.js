@@ -3,10 +3,10 @@ const serviceAccount = require('../servicesAccountKey.json')
 
 
 const fireBaseConnection = async () => {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      databaseURL: "https://xxxxx.firebaseio.com"
-    });
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+          databaseURL: "https://xxxxx.firebaseio.com"
+        });
       console.log("Connected to Firebase");
       
 }
