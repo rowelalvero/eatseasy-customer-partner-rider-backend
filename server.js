@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
 const compression = require('compression');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
@@ -34,38 +33,9 @@ const app = express();
 const corsOptions = {
   origin: ['https://eatseasy-partner.web.app'],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true // Allow cookies and headers like Authorization
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
-
-// Handle preflight requests
-app.options('*', cors(corsOptions));
-
-app.get('/api/autocomplete', async (req, res) => {
-  const { input } = req.query;
-  const googleApiKey = 'YOUR_GOOGLE_API_KEY'; // Add your Google API key here
-
-  if (!input) {
-    return res.status(400).json({ error: 'Search query is required' });
-  }
-
-  try {
-    // Make a request to the Google Places API
-    const response = await axios.get('https://maps.googleapis.com/maps/api/place/autocomplete/json', {
-      params: {
-        input,
-        key: googleApiKey,
-      },
-    });
-
-    // Forward the response from Google to the client
-    res.json(response.data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch data from Google Places API' });
-  }
-});
 
 // Compression setup
 app.use(compression({ level: 6, threshold: 0 }));
