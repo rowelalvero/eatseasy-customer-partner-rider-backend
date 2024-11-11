@@ -34,9 +34,13 @@ const app = express();
 const corsOptions = {
   origin: ['https://eatseasy-partner.web.app'],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // Allow cookies and headers like Authorization
 };
 app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 app.get('/api/autocomplete', async (req, res) => {
   const { input } = req.query;
