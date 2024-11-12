@@ -4,54 +4,21 @@ const admin = require('firebase-admin');
 
 module.exports = {
 
-    updateeUser: async (req, res) => {
-        if (req.body.password) {
-            req.body.password = CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString();
-        }
-        try {
-            const updatedUser = await User.findByIdAndUpdate(
-                req.params.id, {
-                $set: req.body
-            }, { new: true });
-            const { password, __v, createdAt, ...others } = updatedUser._doc;
-
-            res.status(200).json({ ...others });
-        } catch (err) {
-            res.status(500).json(err)
-        }
-    },
-
     updateUser: async (req, res) => {
-           const { userId } = req.params;
-             const { username, email, proofOfResidenceUrl, phone, profile } = req.body;
+            if (req.body.password) {
+                req.body.password = CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString();
+            }
+            try {
+                const updatedUser = await User.findByIdAndUpdate(
+                    req.user.id, {
+                    $set: req.body
+                }, { new: true });
+                const { password, __v, createdAt, ...others } = updatedUser._doc;
 
-             // Check if the user making the request is the same as the user to be updated
-             if (req.user.id !== userId) {
-               return res.status(403).json({ message: 'You are not authorized to update this profile.' });
-             }
-
-             // Validate fields - you may want to add more validation here
-             if (!username || !email || !phone) {
-               return res.status(400).json({ message: 'Name, email, and phone are required fields.' });
-             }
-
-             try {
-               // Update user information
-               const updatedUser = await User.findByIdAndUpdate(
-                 userId,
-                 { username, email, proofOfResidenceUrl, phone, profile },
-                 { new: true }
-               );
-
-               if (!updatedUser) {
-                 return res.status(404).json({ message: 'User not found.' });
-               }
-
-               res.status(200).json({ message: 'Profile updated successfully.', user: updatedUser });
-             } catch (error) {
-               console.error('Error updating profile:', error);
-               res.status(500).json({ message: 'Server error. Please try again later.' });
-             }
+                res.status(200).json({ ...others });
+            } catch (err) {
+                res.status(500).json(err)
+            }
         },
 
     deleteUser: async (req, res) => {
