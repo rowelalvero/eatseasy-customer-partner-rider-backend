@@ -10,7 +10,7 @@ module.exports = {
         }
         try {
             const updatedUser = await User.findByIdAndUpdate(
-                req.user.id, {
+                req.params.id, {
                 $set: req.body
             }, { new: true });
             const { password, __v, createdAt, ...others } = updatedUser._doc;
