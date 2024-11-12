@@ -4,7 +4,7 @@ const admin = require('firebase-admin');
 
 module.exports = {
 
-    updateUser: async (req, res) => {
+    updateeUser: async (req, res) => {
         if (req.body.password) {
             req.body.password = CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString();
         }
@@ -20,6 +20,21 @@ module.exports = {
             res.status(500).json(err)
         }
     },
+
+    updateUser: async (req, res) => {
+           const id = req.params.id
+            try {
+                const updatedUser = await User.findByIdAndUpdate(
+                    id, {
+                    $set: req.body
+                }, { new: true });
+                const { ...others } = updatedUser._doc;
+
+                res.status(200).json({ ...others });
+            } catch (err) {
+                res.status(500).json(err)
+            }
+        },
 
     deleteUser: async (req, res) => {
         try {
