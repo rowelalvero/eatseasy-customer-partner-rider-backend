@@ -38,6 +38,29 @@ module.exports ={
         }
     },
 
+    updateRestaurantImages: async (req, res) => {
+        const { imageUrl, logoUrl } = req.body;
+        const restaurantId = req.params.id;
+
+        try {
+            // Update only the imageUrl and logoUrl fields
+            const updatedRestaurant = await Restaurant.findByIdAndUpdate(
+                restaurantId,
+                { imageUrl, logoUrl },
+                { new: true, runValidators: true }
+            );
+
+            if (!updatedRestaurant) {
+                return res.status(404).json({ status: false, message: 'Restaurant not found' });
+            }
+
+            res.status(200).json({ status: true, message: 'Images updated successfully', data: updatedRestaurant });
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    }
+
+
     getRestaurantByOwner: async (req, res) => {
         const id = req.user.id;
 
@@ -316,5 +339,5 @@ module.exports ={
                 res.status(500).json({ error: error.message, status: false });
             }
         },
-    
+
 }
