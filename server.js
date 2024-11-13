@@ -37,11 +37,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.post('/login', (req, res) => {
-  // Login logic here
-  res.json({ message: 'Login successful!' });
-});
-
 // Compression setup
 app.use(compression({ level: 6, threshold: 0 }));
 

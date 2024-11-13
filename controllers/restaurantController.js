@@ -62,21 +62,21 @@ module.exports ={
 
 
     getRestaurantByOwner: async (req, res) => {
-        const id = req.user.id;
+            const id = req.user.id;
 
-        try {
-            const restaurant = await Restaurant.findOne({owner: id}) // populate the restaurant field if needed
+            try {
+                const restaurant = await Restaurant.findOne({owner: id}) // populate the restaurant field if needed
 
 
-            if (!restaurant) {
-                return res.status(404).json({ status: false, message: 'restaurant item not found' });
+                if (!restaurant) {
+                    return res.status(404).json({ status: false, message: 'restaurant item not found' });
+                }
+
+                res.status(200).json(restaurant);
+            } catch (error) {
+                res.status(500).json({status: false, message: error.message });
             }
-
-            res.status(200).json(restaurant);
-        } catch (error) {
-            res.status(500).json({status: false, message: error.message });
-        }
-    },
+        },
 
     getRandomRestaurants: async (req, res) => {
         try {
