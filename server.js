@@ -29,13 +29,27 @@ mongoose.connect(process.env.MONGO_URL)
 
 const app = express();
 
+// Define allowed origins
+const allowedOrigins = [
+  'https://eatseasy-partner.web.app',
+  'https://eatseasyfoods.web.app',
+  'https://partner.eatseasy.online',
+  'https://foods.eatseasy.online'
+];
+
 // CORS setup
-const corsOptions = {
-  origin: ['https://eatseasy-partner.web.app', 'https://eatseasyfoods.web.app', 'https://partner.eatseasy.online', 'https://foods.eatseasy.online'],
+app.use(cors({
+  origin: function (origin, callback) {
+    // Check if the origin is in the allowed list or is undefined (undefined allows non-browser requests like Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
-};
-app.use(cors(corsOptions));
+}));
 
 // Compression setup
 app.use(compression({ level: 6, threshold: 0 }));
