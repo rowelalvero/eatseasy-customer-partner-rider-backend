@@ -346,7 +346,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile username", // Replace with actual field names for suid
+          select: "phone profile username proofOfResidenceUrl", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -398,7 +398,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile username", // Replace with actual field names for suid
+          select: "phone profile username proofOfResidenceUrl", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -488,7 +488,7 @@ module.exports = {
                 { new: true }
             )
             .select("userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus")
-            .populate("userId", "phone profile fcm username")
+            .populate("userId", "phone profile fcm username proofOfResidenceUrl")
             .populate("restaurantId", "title coords imageUrl logoUrl time")
             .populate("orderItems.foodId", "title imageUrl time")
             .populate("deliveryAddress", "addressLine1 city district deliveryInstructions");
@@ -544,7 +544,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile fcm username", // Replace with actual field names for suid
+          select: "phone profile fcm username proofOfResidenceUrl", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -604,7 +604,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile fcm username", // Replace with actual field names for suid
+          select: "phone profile fcm username proofOfResidenceUrl", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -678,7 +678,7 @@ module.exports = {
         )
         .populate({
           path: "userId",
-          select: "phone profile username", // Replace with actual field names for suid
+          select: "phone profile username proofOfResidenceUrl", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
@@ -803,7 +803,7 @@ module.exports = {
         .select("userId orderTotal deliveryAddress orderItems orderTotal paymentMethod deliveryFee restaurantId restaurantCoords recipientCoords orderStatus")
         .populate({
           path: "userId",
-          select: "phone profile fcm username",
+          select: "phone profile fcm username proofOfResidenceUrl",
         })
         .populate({
           path: "restaurantId",
