@@ -116,9 +116,9 @@ module.exports = {
     },
 
     getUserById: async (req, res) => {
+        const id = req.params.id;
         try {
-            const userId = req.params.id;
-            const user = await User.findById(userId);
+            const user = await User.findById(id);
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
@@ -129,7 +129,6 @@ module.exports = {
             res.status(500).json({ message: 'Server error', error: error.message });
         }
     },
-
 
     updateFcm: async (req, res) => {
         const token = req.params.token;
