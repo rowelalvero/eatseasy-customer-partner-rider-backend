@@ -67,7 +67,7 @@ module.exports = {
               .populate({ path: "deliveryAddress", select: "addressLine1" })
               .populate({
                   path: "driverId",
-                  select: "phone vehicleNumber currentLocation driver profileImage",
+                  select: "phone vehicleNumber currentLocation driver",
                   populate: { path: "driver", select: "username profile" }
               });
 
