@@ -342,7 +342,7 @@ module.exports = {
         //paymentStatus: "Completed",
       })
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus orderDate"
         )
         .populate({
           path: "userId",
@@ -394,7 +394,7 @@ module.exports = {
         driverId: req.params.driver,
       })
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus orderDate"
         )
         .populate({
           path: "userId",
@@ -487,7 +487,7 @@ module.exports = {
                 { driverStatus: "Picking", driverId: driverId },
                 { new: true }
             )
-            .select("userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus")
+            .select("userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus orderDate")
             .populate("userId", "phone profile fcm username proofOfResidenceUrl")
             .populate("restaurantId", "title coords imageUrl logoUrl time")
             .populate("orderItems.foodId", "title imageUrl time")
@@ -540,7 +540,7 @@ module.exports = {
         { new: true }
       )
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus orderDate"
         )
         .populate({
           path: "userId",
@@ -600,7 +600,7 @@ module.exports = {
         { new: true }
       )
         .select(
-          "userId orderTotal deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus"
+          "userId orderTotal deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus orderDate"
         )
         .populate({
           path: "userId",
@@ -674,7 +674,7 @@ module.exports = {
         { new: true }
       )
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee restaurantId restaurantCoords recipientCoords orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee restaurantId restaurantCoords recipientCoords orderDate orderStatus"
         )
         .populate({
           path: "userId",
@@ -800,7 +800,7 @@ module.exports = {
   
       // Fetch delivered orders for the driver
       const deliveredOrders = await Order.find({ orderStatus: status, driverId: driver._id })
-        .select("userId orderTotal deliveryAddress orderItems orderTotal paymentMethod deliveryFee restaurantId restaurantCoords recipientCoords orderStatus")
+        .select("userId orderTotal deliveryAddress orderItems orderTotal paymentMethod deliveryFee restaurantId restaurantCoords recipientCoords orderDate orderStatus")
         .populate({
           path: "userId",
           select: "phone profile fcm username proofOfResidenceUrl",
