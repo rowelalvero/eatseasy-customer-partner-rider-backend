@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema(
         profile: {
             type: String,
             require: true,
-            default: "https://dbestech-code.oss-ap-southeast-1.aliyuncs.com/foodly_flutter/icons/profile-photo.png?OSSAccessKeyId=LTAI5t8cUzUwGV1jf4n5JVfD&Expires=36001721319904&Signature=mxqrJ0bGFdbh05ORP7QHQsI3Ty0%3D"
+            default: "https://firebasestorage.googleapis.com/v0/b/eatseasy-49a0d.firebasestorage.app/o/images%2Fperson-icon.png?alt=media&token=61cd2a8c-5534-4556-8806-19c0e56fd33b"
         },
 
     }, { timestamps: true }

@@ -22,10 +22,9 @@ module.exports = {
                 latitude: req.body.latitude,
                 longitude: req.body.longitude
             },
+            profileImage: req.body.profileImage,
         });
 
-        
-    
         try {
             await newDriver.save();
             await User.findByIdAndUpdate(

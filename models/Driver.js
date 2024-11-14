@@ -24,11 +24,11 @@ const driverSchema = new mongoose.Schema({
     walletBalance: { type: Number, default: 0 }, // New field for driver’s wallet balance
     isAvailable: { type: Boolean, default: true },
     verification: { type: String, default: "Pending", enum: ["Pending", "Verified", "Rejected"] },
-    verificationMessage: { type: String, default: "Please allow up to 24 hours for your verification to be processed. You will receive a notification once your verification is complete." },
+    verificationMessage: { type: String, default: "Please allow up to 24 hours for your verification to be processed. Wait for 2-3 days for you to approve." },
     rating: { type: Number, min: 1, max: 5, default: 3 },
     totalDeliveries: { type: Number, default: 0 },
     totalEarnings: { type: Number, default: 0.0 },
-    profileImage: { type: String, default: "https://d326fntlu7tb1e.cloudfront.net/uploads/cf503f8d-3318-4306-9e2c-a53efb7d585b-avatar.png" },
+    profileImage: { type: String, default: "https://firebasestorage.googleapis.com/v0/b/eatseasy-49a0d.firebasestorage.app/o/images%2Fperson-icon.png?alt=media&token=61cd2a8c-5534-4556-8806-19c0e56fd33b" },
     isActive: { type: Boolean, default: false }
 });
 
