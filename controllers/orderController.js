@@ -61,13 +61,13 @@ module.exports = {
               .select(
                   "userId deliveryAddress orderItems deliveryFee orderTotal customAdditives grandTotal restaurantId restaurantCoords recipientCoords orderStatus driverId"
               )
-              .populate({ path: "userId", select: "phone profile" })
+              .populate({ path: "userId", select: "phone profile profileImage" })
               .populate({ path: "restaurantId", select: "title coords imageUrl logoUrl time" })
               .populate({ path: "orderItems.foodId", select: "title imageUrl time" })
               .populate({ path: "deliveryAddress", select: "addressLine1" })
               .populate({
                   path: "driverId",
-                  select: "phone vehicleNumber currentLocation driver profileImage",
+                  select: "phone vehicleNumber currentLocation driver",
                   populate: { path: "driver", select: "username profile" }
               });
 
