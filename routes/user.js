@@ -14,5 +14,6 @@ router.get("/verify_phone/:phone",verifyTokenAndAuthorization, userController.ve
 router.delete("/" , verifyTokenAndAuthorization, userController.deleteUser);
 router.get("/",verifyTokenAndAuthorization, userController.getUser);
 router.put("/updateToken/:token",verifyTokenAndAuthorization, userController.updateFcm);
+router.get("/byId/:id", userController.getUserById);
 
 module.exports = router

@@ -115,15 +115,21 @@ module.exports = {
         }
     },
 
-    getAllUsers: async (req, res) => {
+    getUserById: async (req, res) => {
         try {
-            const allUser = await User.find();
+            const userId = req.params.id;
+            const user = await User.findById(userId);
 
-            res.status(200).json(allUser)
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            res.status(200).json(user);
         } catch (error) {
-            res.status(500).json(error)
+            res.status(500).json({ message: 'Server error', error: error.message });
         }
     },
+
 
     updateFcm: async (req, res) => {
         const token = req.params.token;
