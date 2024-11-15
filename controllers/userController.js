@@ -130,24 +130,6 @@ module.exports = {
         }
     },
 
-    getUserByEmail: async (req, res) => {
-        const email = req.params.email;
-
-        try {
-            const user = await User.findOne({ email });
-
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-
-            const { password, __v, createdAt, ...userdata } = user._doc; // Remove sensitive data
-            res.status(200).json(userdata);
-        } catch (error) {
-            res.status(500).json({ message: 'Server error', error: error.message });
-        }
-    }
-
-
     updateFcm: async (req, res) => {
         const token = req.params.token;
 

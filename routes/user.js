@@ -15,6 +15,5 @@ router.delete("/" , verifyTokenAndAuthorization, userController.deleteUser);
 router.get("/",verifyTokenAndAuthorization, userController.getUser);
 router.put("/updateToken/:token",verifyTokenAndAuthorization, userController.updateFcm);
 router.get("/byId/:id", userController.getUserById);
-router.get("/byEmail/:email", verifyTokenAndAuthorization, userController.getUserByEmail);
 
 module.exports = router
