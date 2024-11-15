@@ -1,39 +1,8 @@
 const Address = require('../models/Address')
 const User = require('../models/User')
 const axios = require('axios');
-const GOOGLE_API_KEY = 'AIzaSyCBrZpYQFIWHQfgX4wvjzY5cC4JWDvu9XI';
+
 module.exports = {
-    getOrderPolyline: async (req, res) => {
-          const { origin, destination } = req.body;
-
-          if (!origin || !destination) {
-              return res.status(400).json({ error: 'Origin and destination coordinates are required' });
-            }
-
-            try {
-              const response = await axios.get(`https://maps.googleapis.com/maps/api/directions/json`, {
-                params: {
-                  origin,
-                  destination,
-                  key: GOOGLE_API_KEY,
-                  mode: 'driving', // You can adjust the mode as needed
-                },
-              });
-
-              if (response.data.status === 'OK') {
-                const route = response.data.routes[0];
-                const polyline = route.overview_polyline.points;
-
-                return res.json({ polyline });
-              } else {
-                return res.status(500).json({ error: 'Failed to fetch directions from Google API' });
-              }
-            } catch (error) {
-              console.error('Error fetching polyline:', error);
-              return res.status(500).json({ error: 'An error occurred while fetching polyline' });
-            }
-        },
-
     getPolyline: async (req, res) => {
       const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
 
