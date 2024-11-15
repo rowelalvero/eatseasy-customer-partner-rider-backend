@@ -2,8 +2,10 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 
-/*const verifyToken = (req, res, next)=> {
-    const authHeader = req.headers.authorization;
+const verifyToken = (req, res, next)=> {
+req.user = user;
+            next();
+    /*const authHeader = req.headers.authorization;
 
     if(authHeader){
         const token = authHeader.split(" ")[1];
@@ -19,8 +21,8 @@ const User = require("../models/User");
 
     }else{
         return res.status(401).json({status: false, message: "You are not authenticated"})
-    }
-}*/
+    }*/
+}
 
 const verifyTokenAndAuthorization = (req, res, next) => {
     verifyToken(req, res, () => {
