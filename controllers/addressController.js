@@ -2,6 +2,39 @@ const Address = require('../models/Address')
 const User = require('../models/User')
 
 module.exports = {
+    getDirections: async (req, res) => {
+        const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
+
+        const origin = `${originLat},${originLng}`;
+        const destination = `${destinationLat},${destinationLng}`;
+        const googleApiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${googleApiKey}`;
+
+        try {
+            // Call the Google Maps API via a backend proxy (avoiding CORS)
+            const response = await axios.get(googleApiUrl);
+
+            if (response.data.routes && response.data.routes.length > 0) {
+                const route = response.data.routes[0];
+                const leg = route.legs[0];
+
+                const distance = leg.distance.value / 1000; // in kilometers
+                const duration = leg.duration.value / 60; // in minutes
+
+                // Send back the distance and duration
+                res.status(200).json({
+                    status: true,
+                    distance: distance,
+                    duration: duration
+                });
+            } else {
+                res.status(404).json({ status: false, message: 'No routes found' });
+            }
+        } catch (error) {
+            console.error('Error fetching directions:', error);
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
     createAddress: async (req, res) => {
 
         const address = new Address({
