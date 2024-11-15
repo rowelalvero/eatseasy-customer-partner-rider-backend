@@ -3,6 +3,33 @@ const User = require('../models/User')
 const axios = require('axios');
 
 module.exports = {
+    const getPolyline = async (req, res) => {
+      const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
+
+      const googleApiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${originLat},${originLng}&destination=${destinationLat},${destinationLng}&key=${googleApiKey}&mode=driving&optimizeWaypoints=true`;
+
+      try {
+        // Call the Google Maps Directions API to get polyline data
+        const response = await axios.get(googleApiUrl);
+
+        if (response.data.routes && response.data.routes.length > 0) {
+          const route = response.data.routes[0];
+          const polyline = route.overview_polyline.points;
+
+          // Send the polyline points back to the client
+          res.status(200).json({
+            status: true,
+            polyline: polyline
+          });
+        } else {
+          res.status(404).json({ status: false, message: 'No routes found' });
+        }
+      } catch (error) {
+        console.error('Error fetching polyline:', error);
+        res.status(500).json({ status: false, message: error.message });
+      }
+    }
+
     getDirections: async (req, res) => {
         const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
 
