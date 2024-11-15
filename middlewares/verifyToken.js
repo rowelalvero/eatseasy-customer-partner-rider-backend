@@ -3,8 +3,7 @@ const User = require("../models/User");
 
 
 const verifyToken = (req, res, next)=> {
-req.user = user;
-            next();
+next();
     /*const authHeader = req.headers.authorization;
 
     if(authHeader){
