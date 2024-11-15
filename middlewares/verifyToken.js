@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 
-const verifyToken = (req, res, next)=> {
+/*const verifyToken = (req, res, next)=> {
     const authHeader = req.headers.authorization;
 
     if(authHeader){
@@ -20,7 +20,7 @@ const verifyToken = (req, res, next)=> {
     }else{
         return res.status(401).json({status: false, message: "You are not authenticated"})
     }
-}
+}*/
 
 const verifyTokenAndAuthorization = (req, res, next) => {
     verifyToken(req, res, () => {
