@@ -26,4 +26,6 @@ router.post("/directions", verifyTokenAndAuthorization, getDirections); // Add t
 
 router.post("/getPolyline", verifyTokenAndAuthorization, addressController.getPolyline);
 
+router.post("/getOrderPolyline", verifyTokenAndAuthorization, addressController.getOrderPolyline);
+
 module.exports = router;

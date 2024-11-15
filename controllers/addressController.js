@@ -1,76 +1,65 @@
 const Address = require('../models/Address')
 const User = require('../models/User')
 const axios = require('axios');
-const googleApiKey = 'AIzaSyCBrZpYQFIWHQfgX4wvjzY5cC4JWDvu9XI';
-
-function decodePolyline(encoded) {
-    const points = [];
-    let index = 0;
-    const len = encoded.length;
-    let lat = 0;
-    let lng = 0;
-
-    while (index < len) {
-        let shift = 0;
-        let result = 0;
-        let byte;
-
-        do {
-            byte = encoded.charCodeAt(index++) - 63;
-            result |= (byte & 0x1f) << shift;
-            shift += 5;
-        } while (byte >= 0x20);
-
-        const dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
-        lat += dlat;
-
-        shift = 0;
-        result = 0;
-
-        do {
-            byte = encoded.charCodeAt(index++) - 63;
-            result |= (byte & 0x1f) << shift;
-            shift += 5;
-        } while (byte >= 0x20);
-
-        const dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
-        lng += dlng;
-
-        points.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
-    }
-
-    return points;
-}
-
+const GOOGLE_API_KEY = 'AIzaSyCBrZpYQFIWHQfgX4wvjzY5cC4JWDvu9XI';
 module.exports = {
-    getPolyline: async (req, res) => {
-            const { originLat, originLng, destinationLat, destinationLng } = req.body;
+    getOrderPolyline: async (req, res) => {
+          const { origin, destination } = req.body;
 
-            const googleApiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${originLat},${originLng}&destination=${destinationLat},${destinationLng}&key=${process.env.GOOGLE_API_KEY}&mode=driving&optimizeWaypoints=true`;
+          if (!origin || !destination) {
+              return res.status(400).json({ error: 'Origin and destination coordinates are required' });
+            }
 
             try {
-                const response = await axios.get(googleApiUrl);
+              const response = await axios.get(`https://maps.googleapis.com/maps/api/directions/json`, {
+                params: {
+                  origin,
+                  destination,
+                  key: GOOGLE_API_KEY,
+                  mode: 'driving', // You can adjust the mode as needed
+                },
+              });
 
-                if (response.data.routes && response.data.routes.length > 0) {
-                    const route = response.data.routes[0];
-                    const polyline = route.overview_polyline.points;
+              if (response.data.status === 'OK') {
+                const route = response.data.routes[0];
+                const polyline = route.overview_polyline.points;
 
-                    // Decode the polyline
-                    const polylineCoordinates = decodePolyline(polyline);
-
-                    // Send back the polyline coordinates to the client
-                    res.status(200).json({
-                        status: true,
-                        polyline: polylineCoordinates
-                    });
-                } else {
-                    res.status(404).json({ status: false, message: 'No routes found' });
-                }
+                return res.json({ polyline });
+              } else {
+                return res.status(500).json({ error: 'Failed to fetch directions from Google API' });
+              }
             } catch (error) {
-                console.error('Error fetching polyline:', error);
-                res.status(500).json({ status: false, message: error.message });
+              console.error('Error fetching polyline:', error);
+              return res.status(500).json({ error: 'An error occurred while fetching polyline' });
             }
         },
+
+    getPolyline: async (req, res) => {
+      const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
+
+      const googleApiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${originLat},${originLng}&destination=${destinationLat},${destinationLng}&key=${googleApiKey}&mode=driving&optimizeWaypoints=true`;
+
+      try {
+        // Call the Google Maps Directions API to get polyline data
+        const response = await axios.get(googleApiUrl);
+
+        if (response.data.routes && response.data.routes.length > 0) {
+          const route = response.data.routes[0];
+          const polyline = route.overview_polyline.points;
+
+          // Send the polyline points back to the client
+          res.status(200).json({
+            status: true,
+            polyline: polyline
+          });
+        } else {
+          res.status(404).json({ status: false, message: 'No routes found' });
+        }
+      } catch (error) {
+        console.error('Error fetching polyline:', error);
+        res.status(500).json({ status: false, message: error.message });
+      }
+    },
 
     getDirections: async (req, res) => {
         const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
