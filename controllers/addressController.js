@@ -4,31 +4,32 @@ const axios = require('axios');
 
 module.exports = {
     getPolyline: async (req, res) => {
-      const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
+        const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
 
-      const googleApiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${originLat},${originLng}&destination=${destinationLat},${destinationLng}&key=${googleApiKey}&mode=driving&optimizeWaypoints=true`;
+        const googleApiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${originLat},${originLng}&destination=${destinationLat},${destinationLng}&key=${googleApiKey}&mode=driving&optimizeWaypoints=true`;
 
-      try {
-        // Call the Google Maps Directions API to get polyline data
-        const response = await axios.get(googleApiUrl);
+        try {
+          const response = await axios.get(googleApiUrl);
 
-        if (response.data.routes && response.data.routes.length > 0) {
-          const route = response.data.routes[0];
-          const polyline = route.overview_polyline.points;
+          if (response.data.routes && response.data.routes.length > 0) {
+            const route = response.data.routes[0];
+            const polyline = route.overview_polyline.points;
 
-          // Send the polyline points back to the client
-          res.status(200).json({
-            status: true,
-            polyline: polyline
-          });
-        } else {
-          res.status(404).json({ status: false, message: 'No routes found' });
+            // Decode polyline on the server
+            const decodedPolyline = decodePolyline(polyline);
+
+            res.status(200).json({
+              status: true,
+              polyline: decodedPolyline, // Send back decoded points
+            });
+          } else {
+            res.status(404).json({ status: false, message: 'No routes found' });
+          }
+        } catch (error) {
+          console.error('Error fetching polyline:', error);
+          res.status(500).json({ status: false, message: error.message });
         }
-      } catch (error) {
-        console.error('Error fetching polyline:', error);
-        res.status(500).json({ status: false, message: error.message });
-      }
-    },
+      },
 
     getDirections: async (req, res) => {
         const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
@@ -162,4 +163,36 @@ module.exports = {
         }
     },
 
+};
+
+function decodePolyline(encoded) {
+  const points = [];
+  let index = 0, lat = 0, lng = 0;
+
+  while (index < encoded.length) {
+    let shift = 0, result = 0, b;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+
+    const dLat = (result & 1) !== 0 ? ~(result >> 1) : (result >> 1);
+    lat += dLat;
+
+    shift = 0;
+    result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+
+    const dLng = (result & 1) !== 0 ? ~(result >> 1) : (result >> 1);
+    lng += dLng;
+
+    points.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
+  }
+
+  return points;
 }
