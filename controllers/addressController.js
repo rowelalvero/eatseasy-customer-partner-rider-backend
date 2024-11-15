@@ -28,7 +28,7 @@ module.exports = {
         console.error('Error fetching polyline:', error);
         res.status(500).json({ status: false, message: error.message });
       }
-    }
+    },
 
     getDirections: async (req, res) => {
         const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
