@@ -3,8 +3,7 @@ const User = require("../models/User");
 
 
 const verifyToken = (req, res, next)=> {
-next();
-    /*const authHeader = req.headers.authorization;
+    const authHeader = req.headers.authorization;
 
     if(authHeader){
         const token = authHeader.split(" ")[1];
@@ -20,7 +19,7 @@ next();
 
     }else{
         return res.status(401).json({status: false, message: "You are not authenticated"})
-    }*/
+    }
 }
 
 const verifyTokenAndAuthorization = (req, res, next) => {
