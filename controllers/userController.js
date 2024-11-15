@@ -21,7 +21,7 @@ module.exports = {
             }
         },
 
-    changePassword async (req, res) => {
+    changePassword: async (req, res) => {
         if (req.body.password) {
             req.body.password = CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString();
         }
