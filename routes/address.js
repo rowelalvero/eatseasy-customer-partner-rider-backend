@@ -24,6 +24,6 @@ router.patch("/default/:address", verifyTokenAndAuthorization, addressController
 // NEW ROUTE: GET DIRECTIONS FROM GOOGLE MAPS API (PROXY)
 router.post("/directions", verifyTokenAndAuthorization, getDirections); // Add the new route here
 
-router.post('/getPolyline', verifyTokenAndAuthorization, addressController.getPolyline);
+router.post("/getPolyline", verifyTokenAndAuthorization, addressController.getPolyline);
 
 module.exports = router;
