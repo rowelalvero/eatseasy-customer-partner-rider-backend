@@ -4,30 +4,36 @@ const axios = require('axios');
 
 module.exports = {
     const getPolyline = async (req, res) => {
-      const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
+        const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
 
-      const googleApiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${originLat},${originLng}&destination=${destinationLat},${destinationLng}&key=${googleApiKey}&mode=driving&optimizeWaypoints=true`;
+        const origin = `${originLat},${originLng}`;
+        const destination = `${destinationLat},${destinationLng}`;
+        const googleApiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${googleApiKey}`;
 
-      try {
-        // Call the Google Maps Directions API to get polyline data
-        const response = await axios.get(googleApiUrl);
+        try {
+            // Call the Google Maps API via a backend proxy (avoiding CORS)
+            const response = await axios.get(googleApiUrl);
 
-        if (response.data.routes && response.data.routes.length > 0) {
-          const route = response.data.routes[0];
-          const polyline = route.overview_polyline.points;
+            if (response.data.routes && response.data.routes.length > 0) {
+                const route = response.data.routes[0];
+                const leg = route.legs[0];
 
-          // Send the polyline points back to the client
-          res.status(200).json({
-            status: true,
-            polyline: polyline
-          });
-        } else {
-          res.status(404).json({ status: false, message: 'No routes found' });
+                const distance = leg.distance.value / 1000; // in kilometers
+                const duration = leg.duration.value / 60; // in minutes
+
+                // Send back the distance and duration
+                res.status(200).json({
+                    status: true,
+                    distance: distance,
+                    duration: duration
+                });
+            } else {
+                res.status(404).json({ status: false, message: 'No routes found' });
+            }
+        } catch (error) {
+            console.error('Error fetching directions:', error);
+            res.status(500).json({ status: false, message: error.message });
         }
-      } catch (error) {
-        console.error('Error fetching polyline:', error);
-        res.status(500).json({ status: false, message: error.message });
-      }
     },
 
     getDirections: async (req, res) => {
