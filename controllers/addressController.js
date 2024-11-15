@@ -1,6 +1,5 @@
 const Address = require('../models/Address')
 const User = require('../models/User')
-const axios = require('axios');
 
 module.exports = {
     getDirections: async (req, res) => {
