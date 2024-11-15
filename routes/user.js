@@ -2,7 +2,6 @@ const router = require("express").Router();
 const userController = require("../controllers/userController");
 const {verifyTokenAndAuthorization, verifyAdmin}= require("../middlewares/verifyToken")
 
-
 // UPADATE USER
 router.put("/:userId", verifyTokenAndAuthorization, userController.updateUser);
 router.put("/:email", userController.changePassword);
