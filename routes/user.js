@@ -5,6 +5,7 @@ const {verifyTokenAndAuthorization, verifyAdmin}= require("../middlewares/verify
 
 // UPADATE USER
 router.put("/:userId", verifyTokenAndAuthorization, userController.updateUser);
+router.put("/:email", verifyTokenAndAuthorization, userController.changePassword);
 
 router.get("/verify/:otp",verifyTokenAndAuthorization, userController.verifyAccount);
 router.get("/customer_service", userController.getAdminNumber);
