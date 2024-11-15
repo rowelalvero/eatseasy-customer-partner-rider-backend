@@ -22,12 +22,14 @@ module.exports = {
         },
 
     changePassword: async (req, res) => {
+        // Check if the email and password are provided
         if (req.body.password) {
             req.body.password = CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString();
         }
+
         try {
             const updatedUser = await User.findOneAndUpdate(
-                { email: req.params.email },  // Find user by email
+                { email: req.params.email },  // Find by email, not token
                 { $set: req.body },
                 { new: true }  // Return the updated document
             );
@@ -43,6 +45,7 @@ module.exports = {
             res.status(500).json(err);
         }
     },
+
 
     deleteUser: async (req, res) => {
         try {
