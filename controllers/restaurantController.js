@@ -199,125 +199,45 @@ module.exports ={
     },
 
     getStats: async (req, res) => {
-        const restaurantId = req.params.id;
-
-        // Ensure that restaurantId is provided
-        if (!restaurantId) {
-          return res.status(400).json({
-            message: 'Restaurant ID is required.'
-          });
-        }
-
+        const id = req.params.id;
         try {
-          // Step 1: Fetch orders that belong to the restaurant and meet the criteria
-          const orders = await Orders.find({
-            restaurantId: restaurantId,
-            paymentStatus: 'Completed',
-            orderStatus: 'Delivered',
-            confirmation: true,
-            revenueCalculated: false
-          });
+            const data = await Restaurant.findById(id, {coords: 0});
 
-          console.log("checking orders ",orders.length);
-          const ordersTotal = await Orders.countDocuments({ restaurantId: restaurantId, orderStatus: "Delivered" });
-          const deliveryRevenue = await Orders.countDocuments({ restaurantId: restaurantId, orderStatus: "Delivered" });
-          const cancelledOrders = await Orders.countDocuments({ restaurantId: restaurantId, orderStatus: "Cancelled" });
-          const data = await Restaurant.findById(restaurantId, {coords: 0});
-          //-1 means the latest one
-          const latestPayout = await Payout.find({restaurant: restaurantId}).sort({ createdAt: -1 });
-          let processingOrders = await Orders.countDocuments({
-            restaurantId: restaurantId,
-            orderStatus: {
-              $in: ["Placed", "Preparing", "Manual", "Ready", "Out_for_Delivery", "Delivered"]
-            },
-            confirmation: false,  // Only include orders that are not confirmed
-          });
-          let grossRevenue = 0;
-          const restaurantToken = await User.findById(data.owner, { fcm: 1 });
-          // Step 4: Respond with the calculated gross revenue
-          let revenueTotal = grossRevenue;
+            const ordersTotal = await Orders.countDocuments({ restaurantId: id, orderStatus: "Delivered" });
+            const deliveryRevenue = await Orders.countDocuments({ restaurantId: id, orderStatus: "Delivered" });
+            const cancelledOrders = await Orders.countDocuments({ restaurantId: id, orderStatus: "Cancelled" });
 
-          // If no orders are found, return a message
-          if (orders.length === 0) {
-            const latestPayout = await Payout.find({restaurant: restaurantId}).sort({ createdAt: -1 });
-            if(latestPayout.length!=0){
-                if(latestPayout[0].unpaidAmount!=0){
 
-                }
-            }else{
 
-                return res.status(200).json({
+            const latestPayout = await Payout.find({restaurant: id}).sort({ createdAt: -1 });
+            const processingOrders = await Orders.countDocuments({
+                restaurantId: id,
+                orderStatus: {
+                  $in: ["Placed", "Preparing", "Manual", "Ready", "Out_for_Delivery"],
+                },
+              });
+
+
+            const revenueTotal = parseFloat(data.earnings.toFixed(2))
+            const restaurantToken = await User.findById(data.owner, { fcm: 1 });
+
+
+
+            res.status(200).json(
+                {
                     data,
-                    revenueTotal,
-                    deliveryRevenue,
-                    cancelledOrders,
-                    processingOrders,
                     latestPayout,
-                    totalOrders: orders.length,
                     ordersTotal,
-                    restaurantToken
-                  });
-            }
-
-          }
-          console.log("going ahead with the data");
-          // Initialize grossRevenue to 0
-
-
-          // Step 2: Calculate gross revenue by summing the orderTotal of each order
-          orders.forEach(order => {
-            grossRevenue += order.orderTotal;  // Ignoring the delivery fee
-          });
-
-
-
-
-
-            if(latestPayout.length!=0){
-                let revenueTotal = latestPayout[0].unpaidAmount;
-               // if(revenueTotal!=0){
-                    grossRevenue=0;
-                    orders.forEach(order => {
-                        grossRevenue += order.orderTotal;  // Ignoring the delivery fee
-                      });
-                      revenueTotal=revenueTotal+grossRevenue;
-               // }
-                return res.status(200).json({
-                    data,
-                    revenueTotal,
-                    deliveryRevenue,
                     cancelledOrders,
-                    processingOrders,
-                    latestPayout,
-                    totalOrders: orders.length,
-                    ordersTotal,
-                    restaurantToken
-                  });
-            }else{
-                return res.status(200).json({
-                    data,
                     revenueTotal,
-                    deliveryRevenue,
-                    cancelledOrders,
                     processingOrders,
-                    latestPayout,
-                    totalOrders: orders.length,
-                    ordersTotal,
                     restaurantToken
-                  });
-            }
-
-
+                });
 
 
         } catch (error) {
-          console.error('Error calculating gross revenue:', error);
-          return res.status(500).json({
-            message: 'Internal server error',
-            error
-          });
+            res.status(500).json({ status: false, message: error.message });
         }
-
     },
 
     createPayout: async (req, res) => {
