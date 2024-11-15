@@ -1,7 +1,6 @@
 const Address = require('../models/Address')
 const User = require('../models/User')
 
-
 module.exports = {
     getDirections: async (req, res) => {
         const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
