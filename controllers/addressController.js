@@ -3,7 +3,7 @@ const User = require('../models/User')
 const axios = require('axios');
 
 module.exports = {
-    getPolyline = async (req, res) => {
+    getPolyline: async (req, res) => {
       const { originLat, originLng, destinationLat, destinationLng, googleApiKey } = req.body;
 
       const googleApiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${originLat},${originLng}&destination=${destinationLat},${destinationLng}&key=${googleApiKey}&mode=driving&optimizeWaypoints=true`;
