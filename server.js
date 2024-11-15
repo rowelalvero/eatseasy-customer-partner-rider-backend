@@ -1,10 +1,8 @@
-// Import necessary modules
 const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const axios = require('axios'); // For making HTTP requests
 const { fireBaseConnection } = require('./utils/fbConnect');
 
 // Route imports
@@ -42,6 +40,7 @@ const allowedOrigins = [
 // CORS setup
 app.use(cors({
   origin: function (origin, callback) {
+    // Check if the origin is in the allowed list or is undefined (undefined allows non-browser requests like Postman)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -72,30 +71,6 @@ app.use("/api/orders", orderRoute);
 app.use("/api/rating", ratingRoute);
 app.use("/api/messaging", messagingRoute);
 app.use("/api/uploads", uploadRoute);
-
-// Google Directions Proxy Route
-app.get("/api/directions", async (req, res) => {
-  const { origin, destination } = req.query;
-  const googleApiKey = process.env.GOOGLE_API_KEY; // Use an environment variable for your Google API key
-
-  if (!origin || !destination) {
-    return res.status(400).json({ error: "Origin and destination are required" });
-  }
-
-  try {
-    // Construct the Google Directions API URL
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${googleApiKey}`;
-
-    // Make the request to the Google Directions API
-    const response = await axios.get(url);
-
-    // Send the response data back to the client
-    res.json(response.data);
-  } catch (error) {
-    console.error("Error fetching directions:", error);
-    res.status(500).json({ error: "Failed to fetch directions from Google API" });
-  }
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
