@@ -1,6 +1,7 @@
 const FeedBack = require("../models/FeedBack");
 const User = require("../models/User");
 const admin = require('firebase-admin');
+const CryptoJS = require("crypto-js");
 
 module.exports = {
 
@@ -23,11 +24,16 @@ module.exports = {
 
 
     changePassword: async (req, res) => {
-        if (req.body.password) {
-            req.body.password = CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString();
-        }
-
         try {
+            if (req.body.password) {
+                if (!process.env.SECRET) {
+                    throw new Error("SECRET environment variable is not defined");
+                }
+
+                // Encrypt the password
+                req.body.password = CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString();
+            }
+
             const updatedUser = await User.findOneAndUpdate(
                 { email: req.params.userEmail },  // Find user by email
                 { $set: req.body },  // Set new password
@@ -43,7 +49,8 @@ module.exports = {
             // Return the updated user details (without sensitive information)
             res.status(200).json({ ...others });
         } catch (err) {
-            res.status(500).json(err);
+            console.error(err.message);
+            res.status(500).json({ error: err.message || "An error occurred" });
         }
     },
 
