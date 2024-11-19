@@ -27,6 +27,14 @@ module.exports = {
                 return res.status(400).json({ status: false, message: "Email already exists" });
             }
 
+            // Ensure phoneVerification is true
+            if (!req.body.phoneVerification) {
+                return res.status(400).json({
+                    status: false,
+                    message: "Phone verification is required to complete registration",
+                });
+            }
+
             const otp = generateOtp();
 
             const newUser = new User({
@@ -37,6 +45,8 @@ module.exports = {
                 userType: 'Client',
                 fcm: req.body.fcm,
                 otp: otp.toString(),
+                phone: req.body.phone,
+                phoneVerification: req.body.phoneVerification,
                 password: CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString(),
             });
 

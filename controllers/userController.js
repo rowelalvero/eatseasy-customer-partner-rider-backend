@@ -19,7 +19,8 @@ module.exports = {
             } catch (err) {
                 res.status(500).json(err)
             }
-        },
+    },
+
 
     changePassword: async (req, res) => {
         if (req.body.password) {
@@ -28,7 +29,7 @@ module.exports = {
 
         try {
             const updatedUser = await User.findOneAndUpdate(
-                { email: req.params.email },  // Find user by email
+                { email: req.params.userEmail },  // Find user by email
                 { $set: req.body },  // Set new password
                 { new: true }  // Return updated user document
             );
