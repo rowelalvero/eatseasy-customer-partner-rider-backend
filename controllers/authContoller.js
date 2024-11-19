@@ -49,9 +49,9 @@ module.exports = {
                 phoneVerification: req.body.phoneVerification,
                 password: CryptoJS.AES.encrypt(req.body.password, process.env.SECRET).toString(),
             });
-
-            await newUser.save();
             sendVerificationEmail(req.body.email, otp);
+            await newUser.save();
+
             // sendNotification(req.body.fcm, "Foodly Registration", `The verification code has been sent to ${req.body.email}`, { type: "account_verification" })
             res.status(201).json({ status: true, message: 'User created successfully' })
         } catch (error) {

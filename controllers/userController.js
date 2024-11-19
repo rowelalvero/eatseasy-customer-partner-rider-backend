@@ -122,32 +122,29 @@ module.exports = {
     },
 
     verifyEmail: async (req, res) => {
-            const providedOtp = req.params.otp
-            const providedEmail = req.params.email
-            try {
+      const { otp: providedOtp, email: providedEmail } = req.params;
 
-                const user = await User.findOne({providedEmail});
+      try {
+        const user = await User.findOne({ email: providedEmail });
+        if (!user) {
+          return res.status(404).json({ status: false, message: "User not found" });
+        }
 
-                if(!user){
-                    return res.status(404).json({status: false, message: 'User not found'})
-                }
+        if (user.otp === providedOtp) {
+          user.verification = true;
+          user.otp = null; // Clear OTP
+          await user.save();
 
-                // Check if user exists and OTP matches
-                if (user.otp === providedOtp) {
-                    // Update the verification field
-                    user.verification = true;
-                    user.otp = 'none'; // Optionally reset the OTP
-                    await user.save();
-
-                    const { password, __v, otp, createdAt, ...others } = user._doc;
-                    return res.status(200).json({ ...others });
-                } else {
-                    return res.status(400).json({status: false, message: 'OTP verification failed'});
-                }
-            } catch (error) {
-                res.status(500).json({status: false, message: error.message });
-            }
-        },
+          const { password, __v, otp, ...publicData } = user._doc;
+          return res.status(200).json(publicData);
+        } else {
+          return res.status(400).json({ status: false, message: "OTP verification failed" });
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: false, message: "Internal server error" });
+      }
+    },
 
     verifyAccount: async (req, res) => {
         const providedOtp = req.params.otp
