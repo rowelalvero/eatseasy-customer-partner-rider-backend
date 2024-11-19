@@ -2,6 +2,9 @@ const FeedBack = require("../models/FeedBack");
 const User = require("../models/User");
 const admin = require('firebase-admin');
 const CryptoJS = require("crypto-js");
+const generateOtp = require('../utils/otp_generator');
+const sendVerificationEmail = require('../utils/email_verification');
+const sendNotification = require('../utils/sendNotification');
 
 module.exports = {
 
@@ -22,6 +25,60 @@ module.exports = {
             }
     },
 
+    findUserByEmail: async (req, res) => {
+        const { email } = req.body;
+
+        // Validate email format
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ status: false, message: "Invalid email format" });
+        }
+
+        try {
+            // Check if user exists
+            const user = await User.findOne({ email });
+            if (!user) {
+                return res.status(404).json({ status: false, message: "Email does not exist" });
+            }
+
+            // Exclude sensitive fields
+            const { password, __v, createdAt, ...userData } = user._doc;
+
+            res.status(200).json({ status: true, user: userData });
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
+    sendVerificationEmail: async (req, res) => {
+            const { email } = req.body;
+
+            // Validate email format
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            if (!emailRegex.test(email)) {
+                return res.status(400).json({ status: false, message: "Invalid email format" });
+            }
+
+            try {
+                // Check if the user exists
+                const user = await User.findOne({ email });
+                if (!user) {
+                    return res.status(404).json({ status: false, message: "User not found" });
+                }
+
+                // Generate OTP and update the user record
+                const otp = generateOtp();
+                user.otp = otp.toString();
+                await user.save();
+
+                // Send verification email
+                sendVerificationEmail(email, otp);
+
+                res.status(200).json({ status: true, message: "Verification email sent successfully" });
+            } catch (error) {
+                res.status(500).json({ status: false, message: error.message });
+            }
+        },
 
     changePassword: async (req, res) => {
         try {

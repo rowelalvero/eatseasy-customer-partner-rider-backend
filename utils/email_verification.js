@@ -14,7 +14,7 @@ async function sendVerificationEmail(userEmail, verificationCode) {
 
     // Email content
     const mailOptions = {
-        from: process.env.AUTH_USER,
+        from: 'EatsEasy Company',
         to: userEmail,
         subject: 'EatsEasy Verification Code',
         html: `<h1>EatsEasy Email Verification</h1>
