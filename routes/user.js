@@ -8,6 +8,7 @@ router.put("/changePassword/:userEmail", userController.changePassword);
 router.post('/find-user-by-email', userController.findUserByEmail);
 router.post("/send-verification-email", userController.sendVerificationEmail);
 router.get("/verify/:otp", userController.verifyAccount);
+router.get("/verifyEmail/:otp/:email", userController.verifyEmail);
 router.get("/customer_service", userController.getAdminNumber);
 router.post("/feedback",verifyTokenAndAuthorization, userController.userFeedback);
 router.get("/verify_phone/:phone",verifyTokenAndAuthorization, userController.verifyPhone);
