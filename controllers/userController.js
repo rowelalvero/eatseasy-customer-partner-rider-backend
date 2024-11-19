@@ -126,7 +126,7 @@ module.exports = {
             const providedEmail = req.params.email
             try {
 
-                const user = await User.findOne(providedEmail);
+                const user = await User.findOne({providedEmail});
 
                 if(!user){
                     return res.status(404).json({status: false, message: 'User not found'})
