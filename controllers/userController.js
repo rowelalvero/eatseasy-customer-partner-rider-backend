@@ -122,27 +122,33 @@ module.exports = {
     },
 
     verifyEmail: async (req, res) => {
-      const { otp: providedOtp, email: providedEmail } = req.params;
+      const providedOtp = req.params.otp;
+      const providedEmail = req.params.email;
 
       try {
+        if (!providedOtp || !providedEmail) {
+          return res.status(400).json({ status: false, message: 'OTP and email are required' });
+        }
+
         const user = await User.findOne({ email: providedEmail });
+
         if (!user) {
-          return res.status(404).json({ status: false, message: "User not found" });
+          return res.status(404).json({ status: false, message: 'User not found' });
         }
 
         if (user.otp === providedOtp) {
           user.verification = true;
-          user.otp = null; // Clear OTP
+          user.otp = 'none'; // Optionally reset the OTP
           await user.save();
 
-          const { password, __v, otp, ...publicData } = user._doc;
-          return res.status(200).json(publicData);
+          const { password, __v, otp, createdAt, ...others } = user._doc;
+          return res.status(200).json({ status: true, message: 'Email verified', user: others });
         } else {
-          return res.status(400).json({ status: false, message: "OTP verification failed" });
+          return res.status(400).json({ status: false, message: 'OTP verification failed' });
         }
       } catch (error) {
         console.error(error);
-        res.status(500).json({ status: false, message: "Internal server error" });
+        res.status(500).json({ status: false, message: 'Internal server error' });
       }
     },
 
