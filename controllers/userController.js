@@ -71,11 +71,7 @@ module.exports = {
             user.otp = otp.toString();
 
             // Send verification email and wait for it to complete
-            const emailSent = await sendVerificationEmail(email, otp); // Ensure this is awaited
-
-            if (!emailSent) {
-                return res.status(500).json({ status: false, message: "Failed to send email" });
-            }
+            await sendVerificationEmail(email, otp); // Ensure this is awaited
 
             await user.save();
 
