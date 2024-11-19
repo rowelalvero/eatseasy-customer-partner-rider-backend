@@ -1,9 +1,7 @@
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 
-
 async function sendVerificationEmail(userEmail, verificationCode) {
-    // SMTP configuration
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -12,7 +10,6 @@ async function sendVerificationEmail(userEmail, verificationCode) {
         }
     });
 
-    // Email content
     const mailOptions = {
         from: process.env.AUTH_USER,
         to: userEmail,
@@ -24,12 +21,21 @@ async function sendVerificationEmail(userEmail, verificationCode) {
                <p>If you did not request this, please ignore this email.</p>`
     };
 
-    // Sending email
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log('Verification email sent successfully');
-    } catch (error) {
-        console.log('Email send failed with error:', error);
+    let retries = 3; // Number of retry attempts
+    while (retries > 0) {
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log('Verification email sent successfully');
+            return; // Exit once email is successfully sent
+        } catch (error) {
+            console.log('Email send failed with error:', error);
+            retries -= 1;
+            if (retries === 0) {
+                console.log('Max retries reached. Failed to send email.');
+            } else {
+                console.log(`Retrying... Attempts left: ${retries}`);
+            }
+        }
     }
 }
 

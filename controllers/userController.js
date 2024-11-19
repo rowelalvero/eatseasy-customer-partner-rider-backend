@@ -51,35 +51,40 @@ module.exports = {
     },
 
     sendVerificationEmail: async (req, res) => {
-            const { email } = req.body;
+        const { email } = req.body;
 
-            // Validate email format
-            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-            if (!emailRegex.test(email)) {
-                return res.status(400).json({ status: false, message: "Invalid email format" });
+        // Validate email format
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ status: false, message: "Invalid email format" });
+        }
+
+        try {
+            // Check if the user exists
+            const user = await User.findOne({ email });
+            if (!user) {
+                return res.status(404).json({ status: false, message: "User not found" });
             }
 
-            try {
-                // Check if the user exists
-                const user = await User.findOne({ email });
-                if (!user) {
-                    return res.status(404).json({ status: false, message: "User not found" });
-                }
+            // Generate OTP and update the user record
+            const otp = generateOtp();
+            user.otp = otp.toString();
 
-                // Generate OTP and update the user record
-                const otp = generateOtp();
-                user.otp = otp.toString();
+            // Send verification email and wait for it to complete
+            const emailSent = await sendVerificationEmail(email, otp); // Ensure this is awaited
 
-                // Send verification email
-                sendVerificationEmail(email, otp);
-
-                await user.save();
-
-                res.status(200).json({ status: true, message: "Verification email sent successfully" });
-            } catch (error) {
-                res.status(500).json({ status: false, message: error.message });
+            if (!emailSent) {
+                return res.status(500).json({ status: false, message: "Failed to send email" });
             }
-        },
+
+            await user.save();
+
+            res.status(200).json({ status: true, message: "Verification email sent successfully" });
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
 
     changePassword: async (req, res) => {
         try {
