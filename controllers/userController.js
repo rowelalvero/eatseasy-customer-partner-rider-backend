@@ -69,10 +69,11 @@ module.exports = {
                 // Generate OTP and update the user record
                 const otp = generateOtp();
                 user.otp = otp.toString();
-                await user.save();
 
                 // Send verification email
                 sendVerificationEmail(email, otp);
+
+                await user.save();
 
                 res.status(200).json({ status: true, message: "Verification email sent successfully" });
             } catch (error) {
