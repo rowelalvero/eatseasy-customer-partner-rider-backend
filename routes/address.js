@@ -22,7 +22,7 @@ router.put("/:id", verifyTokenAndAuthorization, addressController.updateAddress)
 router.patch("/default/:address", verifyTokenAndAuthorization, addressController.setDefaultAddress);
 
 // NEW ROUTE: GET DIRECTIONS FROM GOOGLE MAPS API (PROXY)
-router.post("/directions", verifyTokenAndAuthorization, getDirections); // Add the new route here
+router.post("/directions", getDirections); // Add the new route here
 
 router.post("/getPolyline", addressController.getPolyline);
 
