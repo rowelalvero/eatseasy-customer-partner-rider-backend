@@ -121,6 +121,15 @@ module.exports = {
             // Add the withdrawal transaction to the driver's wallet transactions
             driver.walletTransactions.push(withdrawalTransaction);
 
+            // Send notification if FCM token exists
+                if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                   sendNotification(
+                     user.fcm,
+                     'Withdraw successful',
+                     `An amount of Php ${amount} has been deducted from your wallet.`
+                   );
+                }
+
             // Save the updated driver document
             await driver.save();
 

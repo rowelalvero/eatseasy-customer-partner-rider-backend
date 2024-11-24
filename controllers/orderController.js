@@ -527,13 +527,11 @@ module.exports = {
         { new: true }
       );
 
-      const data = { orderId: orderId.toString(), messageType: "pay" };
       // Send notification if FCM token exists
       if (user.fcm || user.fcm !== null || user.fcm !== "") {
          sendNotification(
            user.fcm,
            'Order paid',
-           data,
            `An amount of Php ${grandTotal} has been deducted from your wallet.`
          );
       }
