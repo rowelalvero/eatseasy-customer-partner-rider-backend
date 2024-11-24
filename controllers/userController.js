@@ -45,10 +45,13 @@ module.exports = {
                 user.walletTransactions.push(newTransaction);
                 user.walletBalance += amount; // Update the wallet balance
 
+                const data = { messageType: "pay" };
+                // Send notification if FCM token exists
                 if (user.fcm || user.fcm !== null || user.fcm !== "") {
                    sendNotification(
                      user.fcm,
                      'Top-up successful',
+                     data,
                      `An amount of Php ${amount} has been added to your wallet.`
                    );
                 }
