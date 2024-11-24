@@ -469,13 +469,13 @@ module.exports = {
       const data = { orderId: orderId.toString(), messageType: "pay" };
       // Send notification if FCM token exists
       if (user.fcm || user.fcm !== null || user.fcm !== "") {
-                    sendNotification(
-                      user.fcm,
-                      'Order paid',
-                      data,
-                      `An amount of Php ${grandTotal} has been deducted from your wallet.`
-                    );
-                  }
+         sendNotification(
+           user.fcm,
+           'Order paid',
+           data,
+           `An amount of Php ${grandTotal} has been deducted from your wallet.`
+         );
+      }
 
       // Save the updated user document
       await user.save();
@@ -526,6 +526,17 @@ module.exports = {
         { paymentStatus: "Completed" },
         { new: true }
       );
+
+      const data = { orderId: orderId.toString(), messageType: "pay" };
+      // Send notification if FCM token exists
+      if (user.fcm || user.fcm !== null || user.fcm !== "") {
+         sendNotification(
+           user.fcm,
+           'Order paid',
+           data,
+           `An amount of Php ${grandTotal} has been deducted from your wallet.`
+         );
+      }
 
       // Save the updated driver document
       await driver.save();

@@ -45,9 +45,15 @@ module.exports = {
                 user.walletTransactions.push(newTransaction);
                 user.walletBalance += amount; // Update the wallet balance
 
+                if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                   sendNotification(
+                     user.fcm,
+                     'Top-up successful',
+                     `An amount of Php ${amount} has been added to your wallet.`
+                   );
+                }
                 // Save the updated user document
                 await user.save();
-
 
                 res.status(200).json({ status: true, message: 'Wallet top-up successful', user });
             } catch (error) {

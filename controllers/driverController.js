@@ -72,6 +72,15 @@ module.exports = {
             driver.walletTransactions.push(newTransaction);
             driver.walletBalance += amount; // Update the wallet balance
 
+                // Send notification if FCM token exists
+                if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                   sendNotification(
+                     user.fcm,
+                     'Top-up successful',
+                     `An amount of Php ${amount} has been added to your wallet.`
+                   );
+                }
+
             // Save the updated driver document
             await driver.save();
 
