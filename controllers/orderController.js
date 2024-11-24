@@ -428,7 +428,7 @@ module.exports = {
   initiateUserPay: async (req, res) => {
     const orderId = req.params.id;
     const userId = req.params.userId;
-    const { paymentMethod, orderTotal, restaurantId } = req.body;
+    const { paymentMethod, orderTotal, grandTotal, restaurantId } = req.body;
 
     try {
       const user = await User.findById(userId);
