@@ -467,14 +467,14 @@ module.exports = {
       );
 
       // Send notification if FCM token exists
-            if (user.fcm) {
-              await sendNotification(
-                user.fcm,
-                'Order paid',
-                { orderId, amount: grandTotal },
-                `An amount of Php ${grandTotal} has been deducted from your wallet.`
-              );
-            }
+      if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                    sendNotification(
+                      user.fcm,
+                      'Order paid',
+                      data,
+                      `An amount of Php ${grandTotal} has been deducted from your wallet.`
+                    );
+                  }
 
       // Save the updated user document
       await user.save();
