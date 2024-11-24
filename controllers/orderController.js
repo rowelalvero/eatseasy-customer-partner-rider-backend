@@ -764,8 +764,8 @@ module.exports = {
           path: "deliveryAddress",
           select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
         });
-      const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
-      const driver = await Driver.findById(updatedOrder.driverId);
+      const user = await User.findById(updatedOrder.userId._id, { fcm: 1, walletBalance: 1 });
+      const driver = await Driver.findById(updatedOrder.driverId, { walletBalance: 1 });
 
       if (user) {
         if (updatedOrder) {
