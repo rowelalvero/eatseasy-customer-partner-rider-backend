@@ -468,7 +468,7 @@ module.exports = {
 
       // Send notification if FCM token exists
             if (user.fcm) {
-              sendNotification(
+              await sendNotification(
                 user.fcm,
                 'Order paid',
                 { orderId, amount: grandTotal },
