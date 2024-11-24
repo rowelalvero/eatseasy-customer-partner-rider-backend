@@ -466,6 +466,7 @@ module.exports = {
         { new: true }
       );
 
+      const data = { orderId: orderId.toString(), messageType: "pay" };
       // Send notification if FCM token exists
       if (user.fcm || user.fcm !== null || user.fcm !== "") {
                     sendNotification(
