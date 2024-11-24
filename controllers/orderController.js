@@ -878,6 +878,12 @@ module.exports = {
                           `Your payment amounted of Php ${updatedOrder.orderTotal} has been refunded to your wallet.`
                       );
                 }
+              // Update the order's payment status
+                    await Order.findByIdAndUpdate(
+                      orderId,
+                      { paymentStatus: "Refunded" },
+                      { new: true }
+                    );
 
               sendNotification(
                 user.fcm,
