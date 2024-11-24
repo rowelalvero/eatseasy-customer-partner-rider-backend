@@ -4,6 +4,8 @@ const {verifyTokenAndAuthorization, verifyAdmin}= require("../middlewares/verify
 
 // UPADATE USER
 router.put("/:userId", verifyTokenAndAuthorization, userController.updateUser);
+router.post("/wallet/:id/topup", verifyTokenAndAuthorization, userController.topUpWallet);
+router.post("/wallet/:id/withdraw", verifyTokenAndAuthorization, userController.withdraw);
 router.put("/changePassword/:userEmail", userController.changePassword);
 router.post('/find-user-by-email', userController.findUserByEmail);
 router.post("/send-verification-email", userController.sendVerificationEmail);

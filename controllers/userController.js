@@ -25,6 +25,75 @@ module.exports = {
             }
     },
 
+    topUpWallet: async (req, res) => {
+            const userId = req.params.id; // Assuming the user ID comes from a verified token
+            const { amount, paymentMethod } = req.body;
+
+            try {
+                const user = await User.findById(userId);
+                if (!user) {
+                    return res.status(404).json({ status: false, message: 'User not found' });
+                }
+
+                // Create a new wallet transaction
+                const newTransaction = {
+                    amount: amount,
+                    paymentMethod: paymentMethod,
+                };
+
+                // Update the user wallet balance and add the transaction
+                user.walletTransactions.push(newTransaction);
+                user.walletBalance += amount; // Update the wallet balance
+
+                // Save the updated user document
+                await user.save();
+
+                res.status(200).json({ status: true, message: 'Wallet top-up successful', user });
+            } catch (error) {
+                res.status(500).json({ status: false, message: error.message });
+            }
+        },
+
+    withdraw: async (req, res) => {
+            const userId = req.params.id; // Get the user ID from the request parameters
+            const { amount } = req.body; // Get the withdrawal amount from the request body
+
+            try {
+                const user = await User.findById(userId);
+                if (!user) {
+                    return res.status(404).json({ status: false, message: 'User not found' });
+                }
+
+                // Check if the withdrawal amount is valid
+                if (amount <= 0) {
+                    return res.status(400).json({ status: false, message: 'Amount must be greater than zero' });
+                }
+                if (amount > user.walletBalance) {
+                    return res.status(400).json({ status: false, message: 'Insufficient balance' });
+                }
+
+                // Deduct the amount from the user's wallet balance
+                user.walletBalance -= amount;
+
+                // Create a new wallet transaction for the withdrawal
+                const withdrawalTransaction = {
+                    amount: -amount, // Negative amount to indicate a withdrawal
+                    paymentMethod: 'Withdrawal', // You can adjust this as necessary
+                    date: new Date() // Optional: record the date of the transaction
+                };
+
+                // Add the withdrawal transaction to the user's wallet transactions
+                user.walletTransactions.push(withdrawalTransaction);
+
+                // Save the updated user document
+                await user.save();
+
+                res.status(200).json({ status: true, message: 'Withdrawal successful', driver });
+            } catch (error) {
+                res.status(500).json({ status: false, message: error.message });
+            }
+        },
+
     findUserByEmail: async (req, res) => {
         const { email } = req.body;
 
@@ -80,7 +149,6 @@ module.exports = {
             res.status(500).json({ status: false, message: error.message });
         }
     },
-
 
     changePassword: async (req, res) => {
         try {

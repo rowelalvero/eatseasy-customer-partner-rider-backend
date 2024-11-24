@@ -52,7 +52,13 @@ module.exports = {
             await sendVerificationEmail(req.body.email, otp);
             await newUser.save();
 
-            // sendNotification(req.body.fcm, "Foodly Registration", `The verification code has been sent to ${req.body.email}`, { type: "account_verification" })
+            sendNotification(
+            req.body.fcm,
+            "EatsEasy Registration",
+            `The verification code has been sent to ${req.body.email}`,
+            { type: "account_verification" }
+            )
+
             res.status(201).json({ status: true, message: 'User created successfully' })
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });

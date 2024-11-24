@@ -1,5 +1,11 @@
 const mongoose = require("mongoose");
 
+const walletTransactionSchema = new mongoose.Schema({
+    amount: { type: Number, required: true },
+    paymentMethod: { type: String, required: true },
+    transactionDate: { type: Date, default: Date.now }, // Optional field to log transaction date
+});
+
 const UserSchema = new mongoose.Schema(
     {
         username: { type: String, required: true },
@@ -12,6 +18,8 @@ const UserSchema = new mongoose.Schema(
         validIdUrl: { type: String, required: false},
         proofOfResidenceUrl: { type: String, required: false},
         phoneVerification: { type: Boolean, default: false},
+        walletTransactions: [walletTransactionSchema], // Embeds the walletTransactionSchema for transactions
+        walletBalance: { type: Number, default: 0 },
         address: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Address", 

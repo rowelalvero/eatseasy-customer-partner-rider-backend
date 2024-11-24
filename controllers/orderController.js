@@ -425,6 +425,56 @@ module.exports = {
     }
   },
 
+  initiateUserPay: async (req, res) => {
+    const orderId = req.params.id;
+    const userId = req.params.userId;
+    const { paymentMethod, orderTotal, restaurantId } = req.body;
+
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ status: false, message: 'User not found' });
+      }
+
+      if (orderTotal <= 0) {
+        return res.status(400).json({ status: false, message: 'Amount must be greater than zero' });
+      }
+      if (orderTotal > user.walletBalance) {
+        return res.status(400).json({ status: false, message: 'Insufficient balance' });
+      }
+
+      // Deduct the orderTotal from the user's wallet
+      user.walletBalance -= orderTotal;
+      const withdrawalTransaction = {
+        amount: -orderTotal,
+        paymentMethod: 'Order paid',
+        date: new Date(),
+      };
+      user.walletTransactions.push(withdrawalTransaction);
+
+      // Update the restaurant's earnings
+      await Restaurant.findByIdAndUpdate(
+        restaurantId,
+        { $inc: { earnings: orderTotal } },
+        { new: true }
+      );
+
+      // Update the order's payment status
+      await Order.findByIdAndUpdate(
+        orderId,
+        { paymentStatus: "Completed" },
+        { new: true }
+      );
+
+      // Save the updated user document
+      await user.save();
+
+      res.status(200).json({ status: true, message: 'Payment successful', user });
+    } catch (error) {
+      res.status(500).json({ status: false, message: error.message });
+    }
+  },
+
   initiateRiderPay: async (req, res) => {
     const orderId = req.params.id;
     const driverId = req.params.driverId;

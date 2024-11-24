@@ -23,7 +23,7 @@ const restaurantSchema = new mongoose.Schema({
     },
     ratingCount: {type: String, default: "0"},
     verification: {type: String ,default: "Pending", enum: ["Pending", "Verified", "Rejected"]},
-    verificationMessage: {type: String, default: "Please allow up to 24 hours for your verification to be processed. You will receive a notification once your verification is complete."},
+    verificationMessage: {type: String, default: "Please allow up to 24 hours for your verification to be processed. You will receive an email once your verification is complete."},
     coords: {
         id: {type: String, default: generateOtp() },
         latitude: {type: Number , required: true},
