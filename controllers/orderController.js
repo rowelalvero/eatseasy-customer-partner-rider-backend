@@ -444,9 +444,9 @@ module.exports = {
       }
 
       // Deduct the orderTotal from the user's wallet
-      user.walletBalance -= orderTotal;
+      user.walletBalance -= grandTotal;
       const withdrawalTransaction = {
-        amount: -orderTotal,
+        amount: -grandTotal,
         paymentMethod: 'Order paid',
         date: new Date(),
       };
@@ -765,6 +765,7 @@ module.exports = {
           select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
         });
       const user = await User.findById(updatedOrder.userId._id, { fcm: 1 });
+      const driver = await Driver.findById(updatedOrder.driverId);
 
       if (user) {
         if (updatedOrder) {
@@ -843,6 +844,19 @@ module.exports = {
                         { $inc: { walletBalance: updatedOrder.grandTotal } },
                         { new: true }
                       );
+                      user.walletBalance -= updatedOrder.grandTotal;
+                            const withdrawalTransaction = {
+                              amount: -updatedOrder.grandTotal,
+                              paymentMethod: 'Refund',
+                              date: new Date(),
+                            };
+                            user.walletTransactions.push(withdrawalTransaction);
+                      sendNotification(
+                          user.fcm,
+                          `Payment refunded`,
+                          data,
+                          `Your payment amounted of Php ${updatedOrder.grandTotal} has been refunded to your wallet.`
+                      );
                 } else {
                       // Update the driver's balance
                       await Driver.findByIdAndUpdate(
@@ -850,8 +864,21 @@ module.exports = {
                         { $inc: { walletBalance: updatedOrder.orderTotal } },
                         { new: true }
                       );
-
+                      driver.walletBalance -= updatedOrder.orderTotal;
+                            const withdrawalTransaction = {
+                              amount: -updatedOrder.orderTotal,
+                              paymentMethod: 'Refund',
+                              date: new Date(),
+                            };
+                            driver.walletTransactions.push(withdrawalTransaction);
+                      sendNotification(
+                          user.fcm,
+                          `Payment refunded`,
+                          data,
+                          `Your payment amounted of Php ${updatedOrder.orderTotal} has been refunded to your wallet.`
+                      );
                 }
+
               sendNotification(
                 user.fcm,
                 `💔 Order Cancelled`,
