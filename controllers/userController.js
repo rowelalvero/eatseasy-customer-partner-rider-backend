@@ -48,11 +48,20 @@ module.exports = {
                 // Save the updated user document
                 await user.save();
 
+                if (user.fcm) {
+                    sendNotification(
+                        user.fcm,
+                       'Top-up successful',
+                       { orderId, amount: grandTotal },
+                       `An amount of Php ${amount} has been added to your wallet.`
+                   );
+                }
+
                 res.status(200).json({ status: true, message: 'Wallet top-up successful', user });
             } catch (error) {
                 res.status(500).json({ status: false, message: error.message });
             }
-        },
+    },
 
     withdraw: async (req, res) => {
             const userId = req.params.id; // Get the user ID from the request parameters

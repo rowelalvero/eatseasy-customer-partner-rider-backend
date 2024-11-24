@@ -428,50 +428,68 @@ module.exports = {
   initiateUserPay: async (req, res) => {
     const orderId = req.params.id;
     const userId = req.params.userId;
-    const { paymentMethod, orderTotal, restaurantId } = req.body;
+    const { paymentMethod, orderTotal, grandTotal, restaurantId } = req.body;
+
+    if (orderTotal <= 0) {
+      return res.status(400).json({ status: false, message: 'Amount must be greater than zero' });
+    }
 
     try {
-      const user = await User.findById(userId);
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
+      const user = await User.findById(userId).session(session);
       if (!user) {
+        await session.abortTransaction();
         return res.status(404).json({ status: false, message: 'User not found' });
       }
 
-      if (orderTotal <= 0) {
-        return res.status(400).json({ status: false, message: 'Amount must be greater than zero' });
-      }
       if (orderTotal > user.walletBalance) {
+        await session.abortTransaction();
         return res.status(400).json({ status: false, message: 'Insufficient balance' });
       }
 
-      // Deduct the orderTotal from the user's wallet
+      // Deduct wallet balance and update transactions
       user.walletBalance -= orderTotal;
-      const withdrawalTransaction = {
+      user.walletTransactions.push({
         amount: -orderTotal,
         paymentMethod: 'Order paid',
         date: new Date(),
-      };
-      user.walletTransactions.push(withdrawalTransaction);
+      });
 
-      // Update the restaurant's earnings
+      await user.save({ session });
+
+      // Update restaurant earnings
       await Restaurant.findByIdAndUpdate(
         restaurantId,
         { $inc: { earnings: orderTotal } },
-        { new: true }
+        { new: true, session }
       );
 
-      // Update the order's payment status
+      // Update order payment status
       await Order.findByIdAndUpdate(
         orderId,
-        { paymentStatus: "Completed" },
-        { new: true }
+        { paymentStatus: 'Completed' },
+        { new: true, session }
       );
 
-      // Save the updated user document
-      await user.save();
+      // Send notification if FCM token exists
+      if (user.fcm) {
+        sendNotification(
+          user.fcm,
+          'Order paid',
+          { orderId, amount: grandTotal },
+          `An amount of Php ${grandTotal} has been deducted from your wallet.`
+        );
+      }
 
+      await session.commitTransaction();
       res.status(200).json({ status: true, message: 'Payment successful', user });
     } catch (error) {
-      res.status(500).json({ status: false, message: error.message });
+      console.error(error);
+      res.status(500).json({ status: false, message: 'An internal server error occurred' });
+    } finally {
+      session.endSession();
     }
   },
 
@@ -481,15 +499,21 @@ module.exports = {
     const { paymentMethod, orderTotal, restaurantId } = req.body;
 
     try {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
       const driver = await Driver.findById(driverId);
       if (!driver) {
+        await session.abortTransaction();
         return res.status(404).json({ status: false, message: 'Driver not found' });
       }
 
       if (orderTotal <= 0) {
+        await session.abortTransaction();
         return res.status(400).json({ status: false, message: 'Amount must be greater than zero' });
       }
       if (orderTotal > driver.walletBalance) {
+        await session.abortTransaction();
         return res.status(400).json({ status: false, message: 'Insufficient balance' });
       }
 
@@ -516,12 +540,13 @@ module.exports = {
         { new: true }
       );
 
-      // Save the updated driver document
-      await driver.save();
-
+      await session.commitTransaction();
       res.status(200).json({ status: true, message: 'Payment successful', driver });
     } catch (error) {
-      res.status(500).json({ status: false, message: error.message });
+      console.error(error);
+      res.status(500).json({ status: false, message: 'An internal server error occurred' });
+    } finally {
+      session.endSession();
     }
   },
 
