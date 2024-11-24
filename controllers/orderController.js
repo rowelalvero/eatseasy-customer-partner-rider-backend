@@ -527,11 +527,13 @@ module.exports = {
         { new: true }
       );
 
+      const data = { orderId: orderId.toString(), messageType: "pay" };
       // Send notification if FCM token exists
       if (user.fcm || user.fcm !== null || user.fcm !== "") {
          sendNotification(
            user.fcm,
            'Order paid',
+           data,
            `An amount of Php ${grandTotal} has been deducted from your wallet.`
          );
       }
@@ -829,16 +831,32 @@ module.exports = {
                 `Thank you for ordering from us! Your order has been successfully delivered.`
               );
               console.log("Sent notification to user");
-            }else{
+            } else{
                 console.log("Did not notification to user");
             }
           } else if (status === "Cancelled") {
             if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                if (updatedOrder.paymentMethod === 'STRIPE') {
+                      // Update the user's balance
+                      await User.findByIdAndUpdate(
+                        updatedOrder.userId._id,
+                        { $inc: { walletBalance: updatedOrder.grandTotal } },
+                        { new: true }
+                      );
+                } else {
+                      // Update the driver's balance
+                      await Driver.findByIdAndUpdate(
+                        updatedOrder.driverId,
+                        { $inc: { walletBalance: updatedOrder.orderTotal } },
+                        { new: true }
+                      );
+
+                }
               sendNotification(
                 user.fcm,
                 `💔 Order Cancelled`,
                 data,
-                `Your order has been cancelled. Contact the restaurant for more information`
+                `Your order has been cancelled. Chat the restaurant for more information`
               );
             }
           }

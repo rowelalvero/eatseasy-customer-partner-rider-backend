@@ -45,7 +45,7 @@ module.exports = {
                 user.walletTransactions.push(newTransaction);
                 user.walletBalance += amount; // Update the wallet balance
 
-                const data = { messageType: "pay" };
+                const data = { orderId: orderId.toString(), messageType: "pay" };
                 // Send notification if FCM token exists
                 if (user.fcm || user.fcm !== null || user.fcm !== "") {
                    sendNotification(
