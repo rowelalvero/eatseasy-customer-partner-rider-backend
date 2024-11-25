@@ -72,7 +72,7 @@ module.exports = {
             driver.walletTransactions.push(newTransaction);
             driver.walletBalance += amount; // Update the wallet balance
 
-            const data = { orderId: orderId.toString(), messageType: "pay" };
+            const data = { messageType: "pay" };
                 // Send notification if FCM token exists
                 if (user.fcm || user.fcm !== null || user.fcm !== "") {
                    sendNotification(
@@ -123,7 +123,7 @@ module.exports = {
             // Add the withdrawal transaction to the driver's wallet transactions
             driver.walletTransactions.push(withdrawalTransaction);
 
-            const data = { orderId: orderId.toString(), messageType: "pay" };
+            const data = { messageType: "pay" };
             // Send notification if FCM token exists
                 if (user.fcm || user.fcm !== null || user.fcm !== "") {
                    sendNotification(
