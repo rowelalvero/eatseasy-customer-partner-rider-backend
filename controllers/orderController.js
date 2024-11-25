@@ -748,6 +748,7 @@ module.exports = {
         .select(
           "userId deliveryAddress orderItems orderTotal deliveryFee restaurantId restaurantCoords recipientCoords orderDate orderStatus"
         )
+
         .populate({
           path: "userId",
           select: "phone profile username proofOfResidenceUrl", // Replace with actual field names for suid
@@ -766,6 +767,11 @@ module.exports = {
         });
       const user = await User.findById(updatedOrder.userId._id, { fcm: 1, walletBalance: 1 });
       const driver = await Driver.findById(updatedOrder.driverId, { walletBalance: 1 });
+
+      console.log("Updated Order:", updatedOrder);
+      console.log("User:", user);
+      console.log("Driver:", driver);
+
 
       if (user) {
         if (updatedOrder) {
