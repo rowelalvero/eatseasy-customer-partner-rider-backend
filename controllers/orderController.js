@@ -534,7 +534,7 @@ module.exports = {
            fcm,
            'Order paid',
            data,
-           `An amount of Php ${grandTotal} has been deducted from your wallet.`
+           `An amount of Php ${orderTotal} has been deducted from your wallet.`
          );
       }
 
