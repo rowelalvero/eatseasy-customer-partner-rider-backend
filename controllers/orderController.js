@@ -755,7 +755,7 @@ module.exports = {
         })
         .populate({
           path: "restaurantId",
-          select: "title coords imageUrl logoUrl time", // Replace with actual field names for courier
+          select: "title coords imageUrl logoUrl time earnings", // Replace with actual field names for courier
         })
         .populate({
           path: "orderItems.foodId",
@@ -772,7 +772,7 @@ module.exports = {
       }
 
       const driver = updatedOrder.driverId
-        ? await Driver.findById(updatedOrder.driverId, { walletBalance: 1 })
+        ? await Driver.findById(updatedOrder.driverId, { walletBalance: 1, walletTransactions: 1 })
         : null; // Handle cases where there's no driver
 
       console.log("Updated Order:", updatedOrder);
@@ -903,6 +903,12 @@ module.exports = {
                     await Order.findByIdAndUpdate(
                       orderId,
                       { paymentStatus: "Refunded" },
+                      { new: true }
+                    );
+                    // Update the restaurant's earnings
+                    await Restaurant.findByIdAndUpdate(
+                      updatedOrder.restaurantId,
+                      { $inc: { earnings: -updatedOrder.orderTotal } },
                       { new: true }
                     );
 
