@@ -489,7 +489,7 @@ module.exports = {
   initiateRiderPay: async (req, res) => {
     const orderId = req.params.id;
     const driverId = req.params.driverId;
-    const { paymentMethod, orderTotal, restaurantId fcm } = req.body;
+    const { paymentMethod, orderTotal, restaurantId, fcm } = req.body;
 
     try {
       const driver = await Driver.findById(driverId);
