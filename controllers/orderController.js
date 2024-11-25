@@ -902,7 +902,7 @@ module.exports = {
               // Update the order's payment status
                     await Order.findByIdAndUpdate(
                       orderId,
-                      { paymentStatus: "Refunded" },
+                      { driverStatus: "Cancelled" },
                       { new: true }
                     );
 
