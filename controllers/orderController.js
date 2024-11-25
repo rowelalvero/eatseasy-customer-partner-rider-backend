@@ -765,8 +765,15 @@ module.exports = {
           path: "deliveryAddress",
           select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
         });
+
       const user = await User.findById(updatedOrder.userId._id, { fcm: 1, walletBalance: 1 });
-      const driver = await Driver.findById(updatedOrder.driverId, { walletBalance: 1 });
+      if (!user) {
+        return res.status(404).json({ status: false, message: "User not found" });
+      }
+
+      const driver = updatedOrder.driverId
+        ? await Driver.findById(updatedOrder.driverId, { walletBalance: 1 })
+        : null; // Handle cases where there's no driver
 
       console.log("Updated Order:", updatedOrder);
       console.log("User:", user);
