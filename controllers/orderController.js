@@ -746,12 +746,12 @@ module.exports = {
         { new: true }
       )
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee restaurantId restaurantCoords recipientCoords orderDate orderStatus"
+          "userId deliveryAddress orderItems orderTotal deliveryFee restaurantId restaurantCoords recipientCoords paymentMethod orderDate orderStatus"
         )
 
         .populate({
           path: "userId",
-          select: "phone profile username proofOfResidenceUrl", // Replace with actual field names for suid
+          select: "phone profile username proofOfResidenceUrl walletBalance", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
