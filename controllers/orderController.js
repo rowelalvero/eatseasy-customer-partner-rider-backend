@@ -766,7 +766,7 @@ module.exports = {
           select: "addressLine1 city district deliveryInstructions", // Replace with actual field names for courier
         });
 
-      const user = await User.findById(updatedOrder.userId._id, { fcm: 1, walletBalance: 1 });
+      const user = await User.findById(updatedOrder.userId._id, { fcm: 1, walletBalance: 1, walletTransactions: 1 });
       if (!user) {
         return res.status(404).json({ status: false, message: "User not found" });
       }
@@ -858,9 +858,6 @@ module.exports = {
                         { new: true }
                       );
                       user.walletBalance -= updatedOrder.grandTotal;
-                      if (!user.walletTransactions) {
-                              user.walletTransactions = [];
-                            }
                             const withdrawalTransaction = {
                               amount: -updatedOrder.grandTotal,
                               paymentMethod: 'Refund',
@@ -882,9 +879,6 @@ module.exports = {
                         { new: true }
                       );
                       driver.walletBalance -= updatedOrder.orderTotal;
-                      if (!driver.walletTransactions) {
-                              driver.walletTransactions = [];
-                            }
                             const withdrawalTransaction = {
                               amount: -updatedOrder.orderTotal,
                               paymentMethod: 'Refund',
