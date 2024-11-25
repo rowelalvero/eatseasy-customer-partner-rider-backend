@@ -751,7 +751,7 @@ module.exports = {
 
         .populate({
           path: "userId",
-          select: "phone profile username proofOfResidenceUrl walletBalance", // Replace with actual field names for suid
+          select: "phone profile username proofOfResidenceUrl walletBalance walletTransactions", // Replace with actual field names for suid
         })
         .populate({
           path: "restaurantId",
