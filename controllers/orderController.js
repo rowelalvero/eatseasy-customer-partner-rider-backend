@@ -530,7 +530,7 @@ module.exports = {
       const data = { messageType: "pay" };
       // Send notification if FCM token exists
       if (fcm || fcm !== null || fcm !== "") {
-         sendNotification(
+         await sendNotification(
            fcm,
            'Order paid',
            data,
