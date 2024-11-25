@@ -746,7 +746,7 @@ module.exports = {
         { new: true }
       )
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee restaurantId restaurantCoords recipientCoords paymentMethod orderDate orderStatus"
+          "userId deliveryAddress orderItems orderTotal grandTotal deliveryFee restaurantId restaurantCoords recipientCoords paymentMethod orderDate orderStatus"
         )
 
         .populate({
