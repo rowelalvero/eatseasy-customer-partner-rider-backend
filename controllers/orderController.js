@@ -899,10 +899,16 @@ module.exports = {
                           `Your payment amounted of Php ${updatedOrder.orderTotal} has been refunded to your wallet.`
                       );
                 }
-              // Update the order's payment status
+                    // Update the order's payment status
                     await Order.findByIdAndUpdate(
                       orderId,
                       { driverStatus: "Cancelled" },
+                      { new: true }
+                    );
+                    // Update the order's payment status
+                    await Order.findByIdAndUpdate(
+                      orderId,
+                      { paymentStatus: "Refunded" },
                       { new: true }
                     );
 
