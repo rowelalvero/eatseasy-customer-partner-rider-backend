@@ -299,7 +299,7 @@ module.exports = {
       const parcels = await Order.find({
         orderStatus: status,
         restaurantId: req.params.id,
-        paymentStatus: "Completed",
+        //paymentStatus: "Completed",
       })
         .select(
           "userId deliveryAddress deliveryOption paymentStatus deliveryDate orderItems orderTotal deliveryFee restaurantId orderStatus restaurantCoords recipientCoords orderDate"
