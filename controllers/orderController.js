@@ -858,6 +858,9 @@ module.exports = {
                         { new: true }
                       );
                       user.walletBalance -= updatedOrder.grandTotal;
+                      if (!user.walletTransactions) {
+                              user.walletTransactions = [];
+                            }
                             const withdrawalTransaction = {
                               amount: -updatedOrder.grandTotal,
                               paymentMethod: 'Refund',
@@ -879,6 +882,9 @@ module.exports = {
                         { new: true }
                       );
                       driver.walletBalance -= updatedOrder.orderTotal;
+                      if (!driver.walletTransactions) {
+                              driver.walletTransactions = [];
+                            }
                             const withdrawalTransaction = {
                               amount: -updatedOrder.orderTotal,
                               paymentMethod: 'Refund',
