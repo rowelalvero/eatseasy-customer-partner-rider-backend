@@ -489,7 +489,7 @@ module.exports = {
   initiateRiderPay: async (req, res) => {
     const orderId = req.params.id;
     const driverId = req.params.driverId;
-    const { paymentMethod, orderTotal, restaurantId } = req.body;
+    const { paymentMethod, orderTotal, restaurantId fcm } = req.body;
 
     try {
       const driver = await Driver.findById(driverId);
@@ -529,9 +529,9 @@ module.exports = {
 
       const data = { messageType: "pay" };
       // Send notification if FCM token exists
-      if (user.fcm || user.fcm !== null || user.fcm !== "") {
+      if (fcm || fcm !== null || fcm !== "") {
          sendNotification(
-           user.fcm,
+           fcm,
            'Order paid',
            data,
            `An amount of Php ${grandTotal} has been deducted from your wallet.`
@@ -746,7 +746,7 @@ module.exports = {
         { new: true }
       )
         .select(
-          "userId deliveryAddress orderItems orderTotal grandTotal deliveryFee restaurantId restaurantCoords recipientCoords paymentMethod orderDate orderStatus"
+          "userId deliveryAddress orderItems orderTotal grandTotal deliveryFee restaurantId restaurantCoords recipientCoords paymentMethod orderDate orderStatus driverId"
         )
 
         .populate({
@@ -758,6 +758,10 @@ module.exports = {
           select: "title coords imageUrl logoUrl time earnings", // Replace with actual field names for courier
         })
         .populate({
+          path: "driverId",
+          select: "userId walletBalance walletTransactions", // Replace with actual field names for courier
+        })
+        .populate({
           path: "orderItems.foodId",
           select: "title imageUrl time", // Replace with actual field names for courier
         })
@@ -767,6 +771,7 @@ module.exports = {
         });
 
       const user = await User.findById(updatedOrder.userId._id, { fcm: 1, walletBalance: 1, walletTransactions: 1 });
+      const userDriver = await User.findById(updatedOrder.driverId.driver, { fcm: 1 });
       if (!user) {
         return res.status(404).json({ status: false, message: "User not found" });
       }
@@ -865,11 +870,17 @@ module.exports = {
                             };
                             user.walletTransactions.push(withdrawalTransaction);
                             await user.save();
-                      sendNotification(
+                      await sendNotification(
                           user.fcm,
                           `Payment refunded`,
                           data,
                           `Your payment amounted of Php ${updatedOrder.grandTotal} has been refunded to your wallet.`
+                      );
+                      await sendNotification(
+                         user.fcm,
+                         `💔 Order Cancelled`,
+                         data,
+                         `Your order has been cancelled. Chat the restaurant for more information`
                       );
                 } else {
                       // Update the driver's balance
@@ -886,11 +897,17 @@ module.exports = {
                             };
                             driver.walletTransactions.push(withdrawalTransaction);
                             await driver.save();
-                      sendNotification(
-                          user.fcm,
+                      await sendNotification(
+                          userDriver.fcm,
                           `Payment refunded`,
                           data,
                           `Your payment amounted of Php ${updatedOrder.orderTotal} has been refunded to your wallet.`
+                      );
+                      await sendNotification(
+                         userDriver.fcm,
+                         `💔 Order Cancelled`,
+                         data,
+                         `The order has been cancelled.`
                       );
                 }
                     // Update the order's payment status
@@ -912,12 +929,7 @@ module.exports = {
                       { new: true }
                     );
 
-              sendNotification(
-                user.fcm,
-                `💔 Order Cancelled`,
-                data,
-                `Your order has been cancelled. Chat the restaurant for more information`
-              );
+
             }
           }
 
