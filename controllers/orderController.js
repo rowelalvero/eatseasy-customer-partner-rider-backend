@@ -864,6 +864,7 @@ module.exports = {
                               date: new Date(),
                             };
                             user.walletTransactions.push(withdrawalTransaction);
+                            await user.save();
                       sendNotification(
                           user.fcm,
                           `Payment refunded`,
@@ -884,6 +885,7 @@ module.exports = {
                               date: new Date(),
                             };
                             driver.walletTransactions.push(withdrawalTransaction);
+                            await driver.save();
                       sendNotification(
                           user.fcm,
                           `Payment refunded`,
