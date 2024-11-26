@@ -153,40 +153,35 @@ module.exports = {
 
     getRandomFoodsByCode: async (req, res) => {
         try {
-            const sampleSize = 5; // Configurable size
-            let foodList = [];
+            let randomFoodList = [];
 
-            // Check if 'code' is provided and fetch matching random foods
+            // Check if code is provided in the params
             if (req.params.code) {
-                foodList = await Food.aggregate([
-                    { $match: { code: req.params.code } },  // Match by the 'code' field
-                    { $sample: { size: sampleSize } },
-                    { $project: { __v: 0 } },
-                ]);
-            } else {
-                // If no code is provided, fetch a random sample of foods
-                foodList = await Food.aggregate([
-                    { $sample: { size: sampleSize } },
-                    { $project: { __v: 0 } },
+                randomFoodList = await Food.aggregate([
+                    { $match: { code: req.params.code } },
+                    { $sample: { size: 5 } },
+                    { $project: {  __v: 0 } }
                 ]);
             }
 
-            // Respond with appropriate data
-            if (foodList.length) {
-                res.status(200).json(foodList);
+            // If no code provided in params or no Foods match the provided code
+            if (!randomFoodList.length) {
+                randomFoodList = await Food.aggregate([
+                    { $sample: { size: 5 } },
+                    { $project: {  __v: 0 } }
+                ]);
+            }
+
+            // Respond with the results
+            if (randomFoodList.length) {
+                res.status(200).json(randomFoodList);
             } else {
-                res.status(404).json({ status: false, message: 'No foods found' });
+                res.status(404).json({status: false, message: 'No Foods found' });
             }
         } catch (error) {
-            console.error('Error fetching foods:', error);
-            res.status(500).json({
-                status: false,
-                message: 'An error occurred while fetching food items',
-                error: error.message,
-            });
+            res.status(500).json(error);
         }
     },
-
 
     addFoodType: async (req, res) => {
         const foodId = req.params.id;
