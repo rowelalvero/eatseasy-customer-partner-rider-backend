@@ -60,7 +60,6 @@ module.exports ={
         }
     },
 
-
     getRestaurantByOwner: async (req, res) => {
             const id = req.user.id;
 

@@ -28,8 +28,6 @@ router.patch("/:id", foodController.foodAvailability);
 
 router.get("/recommendation/:code", foodController.getRandomFoodsByCode);
 
-router.get("/food-list", foodController.getAllFoods);
-
 router.get("/randoms", foodController.getRandomFoods);
 
 

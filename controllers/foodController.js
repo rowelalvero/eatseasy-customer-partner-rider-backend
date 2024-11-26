@@ -209,23 +209,6 @@ module.exports = {
         }
     },
 
-    const getAllFoods = async (req, res) => {
-        try {
-            // Fetch all food items from the database
-            const foods = await Food.find().populate('restaurant'); // Populate 'restaurant' field if needed
-            res.status(200).json({
-                success: true,
-                data: foods,
-            });
-        } catch (error) {
-            console.error('Error fetching food list:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Server error while fetching food list.',
-            });
-        }
-    },
-
     getRandomFoods: async (req, res) => {
         const page   = req.query.page || 1;
                         try {
