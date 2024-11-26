@@ -27,9 +27,7 @@ const foodSchema = new mongoose.Schema({
     foodType: {type: Array, required: true},
     code: {type: String, required: true},
     isAvailable: {type: Boolean , required: true, default: true},
-    restaurant: json["restaurant"] is String
-            ? Restaurant(id: json["restaurant"], coords: Coords.defaultCoords(), time: '')
-            : Restaurant.fromJson(json["restaurant"]),
+    restaurant: { type: mongoose.Schema.Types.ObjectId, ref: "Restaurant" },
     rating: {
             type: Number,
             min: 0,
@@ -38,7 +36,6 @@ const foodSchema = new mongoose.Schema({
         },
     ratingCount: {type: String, default: "0"},
     description: { type: String, required: true },
-    stocks: { type: Number },
     price: { type: Number, required: true },
     imageUrl: { type: Array, required: true },
     v: { type: Number, required: false },
