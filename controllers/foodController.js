@@ -185,7 +185,7 @@ module.exports = {
                 error: error.message,
             });
         }
-    }
+    },
 
 
     addFoodType: async (req, res) => {
