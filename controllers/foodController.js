@@ -160,20 +160,7 @@ module.exports = {
                 randomFoodList = await Food.aggregate([
                     { $match: { code: req.params.code } },
                     { $sample: { size: 5 } },
-                    {
-                        $lookup: {
-                            from: 'products', // The name of the related collection
-                            localField: 'productId', // The field in the current collection
-                            foreignField: '_id', // The field in the related collection
-                            as: 'productDetails' // Alias for the joined data
-                        }
-                    },
-                    {
-                        $project: {
-                            __v: 0,
-                            'productDetails.__v': 0 // Optionally exclude unwanted fields from the joined data
-                        }
-                    }
+                    { $project: {  __v: 0 } }
                 ]);
             }
 
@@ -181,20 +168,7 @@ module.exports = {
             if (!randomFoodList.length) {
                 randomFoodList = await Food.aggregate([
                     { $sample: { size: 5 } },
-                    {
-                        $lookup: {
-                            from: 'products',
-                            localField: 'productId',
-                            foreignField: '_id',
-                            as: 'productDetails'
-                        }
-                    },
-                    {
-                        $project: {
-                            __v: 0,
-                            'productDetails.__v': 0
-                        }
-                    }
+                    { $project: {  __v: 0 } }
                 ]);
             }
 
@@ -202,13 +176,12 @@ module.exports = {
             if (randomFoodList.length) {
                 res.status(200).json(randomFoodList);
             } else {
-                res.status(404).json({ status: false, message: 'No Foods found' });
+                res.status(404).json({status: false, message: 'No Foods found' });
             }
         } catch (error) {
-            res.status(500).json({ status: false, message: error.message });
+            res.status(500).json(error);
         }
     },
-
 
     addFoodType: async (req, res) => {
         const foodId = req.params.id;
