@@ -111,8 +111,8 @@ module.exports = {
     
                 // If quantity is more than 1, decrement and adjust price
                 if (cartItem.quantity > 1) {
-                    cartItem.quantity -= quantity;
-                    cartItem.totalPrice -= productPrice; 
+                    cartItem.quantity = quantity;
+                    cartItem.totalPrice -= productPrice;
                     await cartItem.save();
                     res.status(200).json({ status: true, message: 'Product quantity decreased successfully' });
                 } 
@@ -144,7 +144,7 @@ module.exports = {
                 const productPrice = cartItem.totalPrice / cartItem.quantity;
 
                 // Increment the quantity and adjust the total price
-                cartItem.quantity += quantity;
+                cartItem.quantity = quantity;
                 cartItem.totalPrice += productPrice;
                 await cartItem.save();
 
