@@ -100,6 +100,7 @@ module.exports = {
     decrementProductQuantity: async (req, res) => {
         const userId = req.user.id;
         const productId = req.body.productId;
+        const quantity = req.body.quantity;
     
         try {
             const cartItem = await Cart.findOne({ userId, productId });
@@ -110,7 +111,7 @@ module.exports = {
     
                 // If quantity is more than 1, decrement and adjust price
                 if (cartItem.quantity > 1) {
-                    cartItem.quantity -= 1;
+                    cartItem.quantity -= quantity;
                     cartItem.totalPrice -= productPrice; 
                     await cartItem.save();
                     res.status(200).json({ status: true, message: 'Product quantity decreased successfully' });
@@ -130,6 +131,7 @@ module.exports = {
     incrementProductQuantity: async (req, res) => {
         const userId = req.user.id;
         const productId = req.body.productId;
+        const quantity = req.body.quantity;
 
         console.log("productId:", productId);
         console.log("userId:", userId);
@@ -142,7 +144,7 @@ module.exports = {
                 const productPrice = cartItem.totalPrice / cartItem.quantity;
 
                 // Increment the quantity and adjust the total price
-                cartItem.quantity += 1;
+                cartItem.quantity += quantity;
                 cartItem.totalPrice += productPrice;
                 await cartItem.save();
 
