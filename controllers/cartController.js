@@ -156,6 +156,29 @@ module.exports = {
             res.status(500).json({ status: false, message: error.message });
         }
     },
+    updateCustomAdditives: async (req, res) => {
+        const { foodId } = req.params;
+        const { customAdditives } = req.body;  // Custom additives data sent from the frontend
 
+          try {
+            // Find the food item by ID
+            const food = await Food.findById(foodId);
+
+            if (!food) {
+              return res.status(404).json({ message: 'Food item not found' });
+            }
+
+            // Update customAdditives
+            food.customAdditives = customAdditives;
+
+            // Save the updated food document
+            await food.save();
+
+            return res.status(200).json({ message: 'Custom additives updated successfully', food });
+          } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Failed to update custom additives', error });
+          }
+    },
 
 };

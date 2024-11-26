@@ -10,6 +10,8 @@ router.post("/decrement",verifyTokenAndAuthorization, cartController.decrementPr
 
 router.post("/increment",verifyTokenAndAuthorization, cartController.incrementProductQuantity);
 
+router.post("/updateCustomAdditives/:foodId",verifyTokenAndAuthorization, cartController.updateCustomAdditives);
+
 router.delete("/delete/:id",verifyTokenAndAuthorization, cartController.removeProductFromCart);
 
 router.get("/",verifyTokenAndAuthorization, cartController.fetchUserCart);
