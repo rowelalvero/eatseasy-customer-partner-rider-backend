@@ -772,6 +772,7 @@ module.exports = {
 
       const user = await User.findById(updatedOrder.userId._id, { fcm: 1, walletBalance: 1, walletTransactions: 1 });
       const userDriver = await User.findById(updatedOrder.driverId.driver, { fcm: 1 });
+
       if (!user) {
         return res.status(404).json({ status: false, message: "User not found" });
       }
