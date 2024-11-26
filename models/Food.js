@@ -27,7 +27,9 @@ const foodSchema = new mongoose.Schema({
     foodType: {type: Array, required: true},
     code: {type: String, required: true},
     isAvailable: {type: Boolean , required: true, default: true},
-    restaurant: { type: mongoose.Schema.Types.ObjectId, ref: "Restaurant" },
+    restaurant: json["restaurant"] is Map<String, dynamic>
+          ? Restaurant.fromJson(json["restaurant"])
+          : Restaurant(id: json["restaurant"], coords: Coords(id: '', latitude: 0, longitude: 0, address: '', title: '', latitudeDelta: 0, longitudeDelta: 0), time: ''), // Fallback if it's a string
     rating: {
             type: Number,
             min: 0,
