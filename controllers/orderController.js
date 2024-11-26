@@ -759,7 +759,7 @@ module.exports = {
         })
         .populate({
           path: "driverId",
-          select: "userId walletBalance walletTransactions", // Replace with actual field names for courier
+          select: "driver walletBalance walletTransactions", // Replace with actual field names for courier
         })
         .populate({
           path: "orderItems.foodId",
@@ -783,7 +783,7 @@ module.exports = {
       console.log("Updated Order:", updatedOrder);
       console.log("User:", user);
       console.log("Driver:", driver);
-      console.log("DriverId:", updatedOrder.driverId.driver);
+      console.log("DriverId:", updatedOrder.driverId);
 
 
 
