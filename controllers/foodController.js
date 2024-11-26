@@ -157,31 +157,43 @@ module.exports = {
 
             // Check if code is provided in the params
             if (req.params.code) {
-                randomFoodList = await Food.aggregate([
-                    { $match: { code: req.params.code } },
-                    { $sample: { size: 5 } },
-                    { $project: {  __v: 0 } }
-                ]);
+                randomFoodList = await Food.find({ code: req.params.code })
+                    .limit(5)
+                    .populate({
+                        path: 'productId',
+                        select: "imageUrl title restaurant rating ratingCount",
+                        populate: {
+                            path: 'restaurant',
+                            select: "time coords" // Add the fields you want to select from the restaurant
+                        }
+                    });
             }
 
             // If no code provided in params or no Foods match the provided code
             if (!randomFoodList.length) {
-                randomFoodList = await Food.aggregate([
-                    { $sample: { size: 5 } },
-                    { $project: {  __v: 0 } }
-                ]);
+                randomFoodList = await Food.find()
+                    .limit(5)
+                    .populate({
+                        path: 'productId',
+                        select: "imageUrl title restaurant rating ratingCount",
+                        populate: {
+                            path: 'restaurant',
+                            select: "time coords" // Add the fields you want to select from the restaurant
+                        }
+                    });
             }
 
             // Respond with the results
             if (randomFoodList.length) {
                 res.status(200).json(randomFoodList);
             } else {
-                res.status(404).json({status: false, message: 'No Foods found' });
+                res.status(404).json({ status: false, message: 'No Foods found' });
             }
         } catch (error) {
             res.status(500).json(error);
         }
     },
+
 
     addFoodType: async (req, res) => {
         const foodId = req.params.id;
