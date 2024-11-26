@@ -153,35 +153,40 @@ module.exports = {
 
     getRandomFoodsByCode: async (req, res) => {
         try {
-            let randomFoodList = [];
+            const sampleSize = 5; // Configurable size
+            let foodList = [];
 
-            // Check if code is provided in the params
+            // Check if 'code' is provided and fetch matching random foods
             if (req.params.code) {
-                randomFoodList = await Food.aggregate([
-                    { $match: { code: req.params.code } },
-                    { $sample: { size: 5 } },
-                    { $project: {  __v: 0 } }
+                foodList = await Food.aggregate([
+                    { $match: { code: req.params.code } },  // Match by the 'code' field
+                    { $sample: { size: sampleSize } },
+                    { $project: { __v: 0 } },
                 ]);
-            }
-
-            // If no code provided in params or no Foods match the provided code
-            if (!randomFoodList.length) {
-                randomFoodList = await Food.aggregate([
-                    { $sample: { size: 5 } },
-                    { $project: {  __v: 0 } }
-                ]);
-            }
-
-            // Respond with the results
-            if (randomFoodList.length) {
-                res.status(200).json(randomFoodList);
             } else {
-                res.status(404).json({status: false, message: 'No Foods found' });
+                // If no code is provided, fetch a random sample of foods
+                foodList = await Food.aggregate([
+                    { $sample: { size: sampleSize } },
+                    { $project: { __v: 0 } },
+                ]);
+            }
+
+            // Respond with appropriate data
+            if (foodList.length) {
+                res.status(200).json(foodList);
+            } else {
+                res.status(404).json({ status: false, message: 'No foods found' });
             }
         } catch (error) {
-            res.status(500).json(error);
+            console.error('Error fetching foods:', error);
+            res.status(500).json({
+                status: false,
+                message: 'An error occurred while fetching food items',
+                error: error.message,
+            });
         }
     },
+
 
     addFoodType: async (req, res) => {
         const foodId = req.params.id;
@@ -210,29 +215,18 @@ module.exports = {
     },
 
     getRandomFoods: async (req, res) => {
-        try {
-            const sampleSize = 5;
-            const foodList = await Food.aggregate([
-                { $sample: { size: sampleSize } },
-                { $project: { __v: 0 } }
-            ]);
-            console.log('Food list retrieved:', foodList); // Log the food list
+        const page   = req.query.page || 1;
+                        try {
+                            const foods = await Food.find({ isAvailable: req.query.status }, { __v: 0, createdAt: 0, updatedAt: 0});
+                            const totalItems = await Food.countDocuments({isAvailable: req.query.status  });
 
-            if (foodList.length) {
-                res.status(200).json(foodList);
-            } else {
-                res.status(404).json({ status: false, message: 'No foods found' });
-            }
+                            res.status(200).json({
+                                foods,
+        });
         } catch (error) {
-            console.error('Error fetching random foods:', error);
-            res.status(500).json({
-                status: false,
-                message: 'An error occurred while fetching random food items',
-                error: error.message,
-            });
+              res.status(500).json({ status: false, message: error.message });
         }
     },
-
 
     getRandomFoodsByCategoryAndCode: async (req, res) => {
         const { category, code } = req.params;  // Assuming category, code, and value are sent as parameters
