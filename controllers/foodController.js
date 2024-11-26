@@ -151,37 +151,43 @@ module.exports = {
         }
     },
 
-    getRandomFoodsByCode: async (req, res) => {
+    const getRandomFoodsByCode = async (req, res) => {
         try {
+            const sampleSize = 5; // Configurable size
             let randomFoodList = [];
 
-            // Check if code is provided in the params
+            // Check if 'code' is provided and fetch matching random foods
             if (req.params.code) {
                 randomFoodList = await Food.aggregate([
                     { $match: { code: req.params.code } },
-                    { $sample: { size: 5 } },
-                    { $project: {  __v: 0 } }
+                    { $sample: { size: sampleSize } },
+                    { $project: { __v: 0 } },
                 ]);
             }
 
-            // If no code provided in params or no Foods match the provided code
+            // Fall back to fetching random foods if no matching items found
             if (!randomFoodList.length) {
                 randomFoodList = await Food.aggregate([
-                    { $sample: { size: 5 } },
-                    { $project: {  __v: 0 } }
+                    { $sample: { size: sampleSize } },
+                    { $project: { __v: 0 } },
                 ]);
             }
 
-            // Respond with the results
+            // Respond with appropriate data
             if (randomFoodList.length) {
                 res.status(200).json(randomFoodList);
             } else {
-                res.status(404).json({status: false, message: 'No Foods found' });
+                res.status(404).json({ status: false, message: 'No foods found' });
             }
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({
+                status: false,
+                message: 'An error occurred while fetching food items',
+                error: error.message,
+            });
         }
-    },
+    };
+
 
     addFoodType: async (req, res) => {
         const foodId = req.params.id;
