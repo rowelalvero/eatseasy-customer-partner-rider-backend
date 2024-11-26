@@ -85,7 +85,6 @@ module.exports ={
             if (req.params.code) {
                 randomRestaurants = await Restaurant.aggregate([
                     { $match: { code: req.params.code, serviceAvailability: true } },
-                    { $sample: { size: 5 } },
                     { $project: {  __v: 0 } }
                 ]);
             }
@@ -93,7 +92,6 @@ module.exports ={
             // If no code provided in params or no restaurants match the provided code
             if (!randomRestaurants.length) {
                 randomRestaurants = await Restaurant.aggregate([
-                    { $sample: { size: 5 } },
                     { $project: {  __v: 0 } }
                 ]);
             }
