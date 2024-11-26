@@ -164,7 +164,7 @@ module.exports = {
             // Find the food item by ID
             const cartItem = await Cart.findOne({ foodId });
 
-            if (!food) {
+            if (!cartItem) {
               return res.status(404).json({ message: 'Food item not found' });
             }
 
