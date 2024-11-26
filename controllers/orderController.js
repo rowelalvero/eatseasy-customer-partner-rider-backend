@@ -783,7 +783,9 @@ module.exports = {
       console.log("Updated Order:", updatedOrder);
       console.log("User:", user);
       console.log("Driver:", driver);
-      console.log("DriverId:", updatedOrder.driverId);
+      console.log("DriverId:", updatedOrder.driverId.driver);
+      console.log("DriverId:", updatedOrder.driverId.driver.fcm);
+      console.log("DriverId:", userDriver);
 
 
 
