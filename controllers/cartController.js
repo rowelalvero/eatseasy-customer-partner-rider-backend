@@ -131,6 +131,9 @@ module.exports = {
         const userId = req.user.id;
         const productId = req.body.productId;
 
+        console.log("productId:", productId);
+        console.log("userId:", userId);
+
         try {
             const cartItem = await Cart.findOne({ userId, productId });
 
