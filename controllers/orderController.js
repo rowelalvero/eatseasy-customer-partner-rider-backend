@@ -864,9 +864,9 @@ module.exports = {
                         { $inc: { walletBalance: updatedOrder.grandTotal } },
                         { new: true }
                       );
-                      user.walletBalance -= updatedOrder.grandTotal;
+                      user.walletBalance += updatedOrder.grandTotal;
                             const withdrawalTransaction = {
-                              amount: -updatedOrder.grandTotal,
+                              amount: updatedOrder.grandTotal,
                               paymentMethod: 'Refund',
                               date: new Date(),
                             };
@@ -891,9 +891,9 @@ module.exports = {
                         { $inc: { walletBalance: updatedOrder.orderTotal } },
                         { new: true }
                       );
-                      driver.walletBalance -= updatedOrder.orderTotal;
+                      driver.walletBalance += updatedOrder.orderTotal;
                             const withdrawalTransaction = {
-                              amount: -updatedOrder.orderTotal,
+                              amount: updatedOrder.orderTotal,
                               paymentMethod: 'Refund',
                               date: new Date(),
                             };
