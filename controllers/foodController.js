@@ -18,6 +18,7 @@ module.exports = {
             isAvailable: req.body.isAvailable,
             restaurant: req.body.restaurant,
             description: req.body.description,
+            stocks: req.body.stocks,
             time: req.body.time,
             price: req.body.price,
             imageUrl: req.body.imageUrl,

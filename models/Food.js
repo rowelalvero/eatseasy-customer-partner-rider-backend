@@ -36,6 +36,7 @@ const foodSchema = new mongoose.Schema({
         },
     ratingCount: {type: String, default: "0"},
     description: { type: String, required: true },
+    stocks: { type: String },
     price: { type: Number, required: true },
     imageUrl: { type: Array, required: true },
     v: { type: Number, required: false },
