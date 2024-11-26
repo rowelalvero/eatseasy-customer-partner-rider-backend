@@ -127,6 +127,30 @@ module.exports = {
             res.status(500).json(error);
         }
     },
+    incrementProductQuantity: async (req, res) => {
+        const userId = req.user.id;
+        const productId = req.body.productId;
+
+        try {
+            const cartItem = await Cart.findOne({ userId, productId });
+
+            if (cartItem) {
+                // Calculate the price of a single product
+                const productPrice = cartItem.totalPrice / cartItem.quantity;
+
+                // Increment the quantity and adjust the total price
+                cartItem.quantity += 1;
+                cartItem.totalPrice += productPrice;
+                await cartItem.save();
+
+                res.status(200).json({ status: true, message: 'Product quantity increased successfully' });
+            } else {
+                res.status(404).json({ status: false, message: 'Product not found in cart' });
+            }
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
 
 
 };
