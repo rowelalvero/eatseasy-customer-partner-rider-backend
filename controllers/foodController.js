@@ -151,7 +151,7 @@ module.exports = {
         }
     },
 
-    const getRandomFoodsByCode = async (req, res) => {
+    getRandomFoodsByCode: async (req, res) => {
         try {
             const sampleSize = 5; // Configurable size
             let randomFoodList = [];
