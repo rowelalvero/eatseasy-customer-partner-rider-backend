@@ -162,17 +162,17 @@ module.exports = {
 
           try {
             // Find the food item by ID
-            const food = await Food.findById(foodId);
+            const cartItem = await Cart.findOne({ foodId });
 
             if (!food) {
               return res.status(404).json({ message: 'Food item not found' });
             }
 
             // Update customAdditives
-            food.customAdditives = customAdditives;
+            cartItem.customAdditives = customAdditives;
 
             // Save the updated food document
-            await food.save();
+            await cartItem.save();
 
             return res.status(200).json({ message: 'Custom additives updated successfully', food });
           } catch (error) {
