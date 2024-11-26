@@ -174,7 +174,7 @@ module.exports = {
             // Save the updated food document
             await cartItem.save();
 
-            return res.status(200).json({ message: 'Custom additives updated successfully', food });
+            return res.status(200).json({ message: 'Custom additives updated successfully', cartItem });
           } catch (error) {
             console.error(error);
             return res.status(500).json({ message: 'Failed to update custom additives', error });
