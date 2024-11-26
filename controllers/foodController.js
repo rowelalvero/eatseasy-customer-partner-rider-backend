@@ -157,30 +157,45 @@ module.exports = {
 
             // Check if code is provided in the params
             if (req.params.code) {
-                randomFoodList = await Food.find({ code: req.params.code })
-                    .limit(5)
-                    .populate({
-                        path: 'productId',
-                        select: "imageUrl title restaurant rating ratingCount",
-                        populate: {
-                            path: 'restaurant',
-                            select: "time coords" // Add the fields you want to select from the restaurant
+                randomFoodList = await Food.aggregate([
+                    { $match: { code: req.params.code } },
+                    { $sample: { size: 5 } },
+                    {
+                        $lookup: {
+                            from: 'products', // The name of the related collection
+                            localField: 'productId', // The field in the current collection
+                            foreignField: '_id', // The field in the related collection
+                            as: 'productDetails' // Alias for the joined data
                         }
-                    });
+                    },
+                    {
+                        $project: {
+                            __v: 0,
+                            'productDetails.__v': 0 // Optionally exclude unwanted fields from the joined data
+                        }
+                    }
+                ]);
             }
 
             // If no code provided in params or no Foods match the provided code
             if (!randomFoodList.length) {
-                randomFoodList = await Food.find()
-                    .limit(5)
-                    .populate({
-                        path: 'productId',
-                        select: "imageUrl title restaurant rating ratingCount",
-                        populate: {
-                            path: 'restaurant',
-                            select: "time coords" // Add the fields you want to select from the restaurant
+                randomFoodList = await Food.aggregate([
+                    { $sample: { size: 5 } },
+                    {
+                        $lookup: {
+                            from: 'products',
+                            localField: 'productId',
+                            foreignField: '_id',
+                            as: 'productDetails'
                         }
-                    });
+                    },
+                    {
+                        $project: {
+                            __v: 0,
+                            'productDetails.__v': 0
+                        }
+                    }
+                ]);
             }
 
             // Respond with the results
@@ -190,7 +205,7 @@ module.exports = {
                 res.status(404).json({ status: false, message: 'No Foods found' });
             }
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).json({ status: false, message: error.message });
         }
     },
 
