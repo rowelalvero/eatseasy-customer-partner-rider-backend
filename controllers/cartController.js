@@ -157,12 +157,12 @@ module.exports = {
         }
     },
     updateCustomAdditives: async (req, res) => {
-        const foodId = req.params.foodId;
+        const productId = req.params.productId;
         const { customAdditives } = req.body;  // Custom additives data sent from the frontend
 
           try {
             // Find the food item by ID
-            const cartItem = await Cart.findOne({ foodId });
+            const cartItem = await Cart.findOne({ productId });
 
             if (!cartItem) {
               return res.status(404).json({ message: 'Food item not found' });
