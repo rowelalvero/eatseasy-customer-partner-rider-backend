@@ -211,29 +211,28 @@ module.exports = {
 
     getRandomFoods: async (req, res) => {
         try {
-                const sampleSize = 5; // Configurable size, set this to the number of random foods you want
+            const sampleSize = 5;
+            const foodList = await Food.aggregate([
+                { $sample: { size: sampleSize } },
+                { $project: { __v: 0 } }
+            ]);
+            console.log('Food list retrieved:', foodList); // Log the food list
 
-                // Fetch a random sample of foods
-                const foodList = await Food.aggregate([
-                    { $sample: { size: sampleSize } },  // Randomly sample foods
-                    { $project: { __v: 0 } }  // Optionally exclude the __v field from the response
-                ]);
-
-                // Respond with the food list
-                if (foodList.length) {
-                    res.status(200).json(foodList);
-                } else {
-                    res.status(404).json({ status: false, message: 'No foods found' });
-                }
-            } catch (error) {
-                console.error('Error fetching random foods:', error);
-                res.status(500).json({
-                    status: false,
-                    message: 'An error occurred while fetching random food items',
-                    error: error.message,
-                });
+            if (foodList.length) {
+                res.status(200).json(foodList);
+            } else {
+                res.status(404).json({ status: false, message: 'No foods found' });
             }
+        } catch (error) {
+            console.error('Error fetching random foods:', error);
+            res.status(500).json({
+                status: false,
+                message: 'An error occurred while fetching random food items',
+                error: error.message,
+            });
+        }
     },
+
 
     getRandomFoodsByCategoryAndCode: async (req, res) => {
         const { category, code } = req.params;  // Assuming category, code, and value are sent as parameters
