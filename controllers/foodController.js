@@ -151,37 +151,36 @@ module.exports = {
         }
     },
 
-    getRandomFoodsByCode: async (req, res) => {
+    getFoods: async (req, res) => {
         try {
-            let randomFoodList = [];
+            let foodList = [];
 
-            // Check if code is provided in the params
+            // Check if a code is provided in the params
             if (req.params.code) {
-                randomFoodList = await Food.aggregate([
+                foodList = await Food.aggregate([
                     { $match: { code: req.params.code } },
-                    { $sample: { size: 5 } },
-                    { $project: {  __v: 0 } }
+                    { $project: { __v: 0 } }
                 ]);
             }
 
-            // If no code provided in params or no Foods match the provided code
-            if (!randomFoodList.length) {
-                randomFoodList = await Food.aggregate([
-                    { $sample: { size: 5 } },
-                    { $project: {  __v: 0 } }
+            // If no code is provided, or no food matches the provided code, get all food items
+            if (!foodList.length) {
+                foodList = await Food.aggregate([
+                    { $project: { __v: 0 } } // Exclude __v field
                 ]);
             }
 
             // Respond with the results
-            if (randomFoodList.length) {
-                res.status(200).json(randomFoodList);
+            if (foodList.length) {
+                res.status(200).json(foodList);
             } else {
-                res.status(404).json({status: false, message: 'No Foods found' });
+                res.status(404).json({ status: false, message: 'No foods found' });
             }
         } catch (error) {
             res.status(500).json(error);
         }
     },
+
 
     addFoodType: async (req, res) => {
         const foodId = req.params.id;
