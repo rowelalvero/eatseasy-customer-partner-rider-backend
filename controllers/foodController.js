@@ -153,7 +153,7 @@ module.exports = {
 
     getRandomFoodsByCode: async (req, res) => {
         try {
-            const sampleSize = 5; // Configurable size
+            const sampleSize = 20; // Configurable size
             let foodList = [];
 
             // If a code is provided, fetch matching random foods
