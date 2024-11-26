@@ -153,10 +153,9 @@ module.exports = {
 
     getRandomFoodsByCode: async (req, res) => {
         try {
-            const sampleSize = 5; // Configurable size
+            const sampleSize = 5;
             let randomFoodList = [];
 
-            // Check if 'code' is provided and fetch matching random foods
             if (req.params.code) {
                 randomFoodList = await Food.aggregate([
                     { $match: { code: req.params.code } },
@@ -165,7 +164,6 @@ module.exports = {
                 ]);
             }
 
-            // Fall back to fetching random foods if no matching items found
             if (!randomFoodList.length) {
                 randomFoodList = await Food.aggregate([
                     { $sample: { size: sampleSize } },
@@ -173,16 +171,17 @@ module.exports = {
                 ]);
             }
 
-            // Respond with appropriate data
-            if (randomFoodList.length) {
-                res.status(200).json(randomFoodList);
-            } else {
-                res.status(404).json({ status: false, message: 'No foods found' });
+            if (!randomFoodList.length) {
+                return res.status(404).json({ status: false, message: 'No foods found' });
             }
+console.log('Random Foods:', randomFoodList);
+
+            res.status(200).json(randomFoodList);
         } catch (error) {
+            console.error('Error fetching foods:', error);
             res.status(500).json({
                 status: false,
-                message: 'An error occurred while fetching food items',
+                message: 'Server error fetching food items',
                 error: error.message,
             });
         }
