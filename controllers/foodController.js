@@ -159,7 +159,7 @@ module.exports = {
             // If a code is provided, fetch matching random foods
             if (req.params.code) {
                 foodList = await Food.aggregate([
-                    { $match: { code: req.params.code } },
+                    { $match: { code: req.params.code } }, // Match food by 'code'
                     { $sample: { size: sampleSize } },
                     { $project: { __v: 0 } },
                 ]);
@@ -186,6 +186,7 @@ module.exports = {
             });
         }
     },
+
 
 
     addFoodType: async (req, res) => {
