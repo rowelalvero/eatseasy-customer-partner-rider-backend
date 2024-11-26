@@ -4,7 +4,7 @@ const {verifyTokenAndAuthorization, verifyAdmin} = require("../middlewares/verif
 
 
 // UPADATE category
-router.post("/", verifyTokenAndAuthorization, cartController.addProductToCart);
+router.put("/", verifyTokenAndAuthorization, cartController.addProductToCart);
 
 router.post("/decrement",verifyTokenAndAuthorization, cartController.decrementProductQuantity);
 
