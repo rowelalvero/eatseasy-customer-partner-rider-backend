@@ -157,7 +157,7 @@ module.exports = {
         }
     },
     updateCustomAdditives: async (req, res) => {
-        const { foodId } = req.params;
+        const foodId = req.params.foodId;
         const { customAdditives } = req.body;  // Custom additives data sent from the frontend
 
           try {
