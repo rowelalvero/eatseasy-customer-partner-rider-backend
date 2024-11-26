@@ -151,36 +151,35 @@ module.exports = {
         }
     },
 
-    getFoods: async (req, res) => {
+    getRandomFoodsByCode: async (req, res) => {
         try {
-            let foodList = [];
+                let foodList = [];
 
-            // Check if a code is provided in the params
-            if (req.params.code) {
-                foodList = await Food.aggregate([
-                    { $match: { code: req.params.code } },
-                    { $project: { __v: 0 } }
-                ]);
-            }
+                // Check if a code is provided in the params
+                if (req.params.code) {
+                    foodList = await Food.aggregate([
+                        { $match: { code: req.params.code } },
+                        { $project: { __v: 0 } }
+                    ]);
+                }
 
-            // If no code is provided, or no food matches the provided code, get all food items
-            if (!foodList.length) {
-                foodList = await Food.aggregate([
-                    { $project: { __v: 0 } } // Exclude __v field
-                ]);
-            }
+                // If no code is provided, or no food matches the provided code, get all food items
+                if (!foodList.length) {
+                    foodList = await Food.aggregate([
+                        { $project: { __v: 0 } } // Exclude __v field
+                    ]);
+                }
 
-            // Respond with the results
-            if (foodList.length) {
-                res.status(200).json(foodList);
-            } else {
-                res.status(404).json({ status: false, message: 'No foods found' });
+                // Respond with the results
+                if (foodList.length) {
+                    res.status(200).json(foodList);
+                } else {
+                    res.status(404).json({ status: false, message: 'No foods found' });
+                }
+            } catch (error) {
+                res.status(500).json(error);
             }
-        } catch (error) {
-            res.status(500).json(error);
-        }
     },
-
 
     addFoodType: async (req, res) => {
         const foodId = req.params.id;
