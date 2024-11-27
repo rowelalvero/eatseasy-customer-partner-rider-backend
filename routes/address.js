@@ -26,4 +26,10 @@ router.post("/directions", getDirections); // Add the new route here
 
 router.post("/getPolyline", addressController.getPolyline);
 
+router.post("/search-places", addressController.searchPlaces);
+
+router.post("/get-place-detail", addressController.getPlaceDetail);
+
+router.post("/reverse-geocode", addressController.reverseGeocode);
+
 module.exports = router;
