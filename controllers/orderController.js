@@ -781,14 +781,6 @@ module.exports = {
         ? await Driver.findById(updatedOrder.driverId, { walletBalance: 1, walletTransactions: 1 })
         : null; // Handle cases where there's no driver
 
-      console.log("Updated Order:", updatedOrder);
-      console.log("User:", user);
-      console.log("Driver:", driver);
-      console.log("DriverId:", updatedOrder.driverId.driver);
-      console.log("DriverId:", updatedOrder.driverId.driver.fcm);
-      console.log("DriverId:", userDriver);
-
-
 
       if (user) {
         if (updatedOrder) {
