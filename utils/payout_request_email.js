@@ -20,7 +20,7 @@ async function payoutRequestEmail(userEmail, name, payoutAmount){
     
         <p>We are pleased to inform you that your payout request of <strong>${payoutAmount}</strong> has been received and is currently being processed. Our team works diligently to ensure that payouts are completed promptly, and we will notify you once your payout has been sent.</p>
     
-        <p>If you have any questions or need further assistance, please do not hesitate to contact our support team at [Your Support Email] or [Your Support Phone Number]. We are here to help.</p>
+        <p>If you have any questions or need further assistance, please do not hesitate to contact our support team at eatseasy.services@gmail.com or +639294983155. We are here to help.</p>
     
         <p>Thank you for being a valued member of the EatsEasy community.</p>
     
