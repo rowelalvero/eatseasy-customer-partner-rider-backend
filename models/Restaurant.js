@@ -4,6 +4,7 @@ const restaurantSchema = new mongoose.Schema({
     title: {type: String , required: true},
     time: {type: String , required: true},
     ownerName: {type: String},
+    phoneVerification: { type: Boolean, default: false},
     phoneNumber: {type: String},
     imageUrl: {type: String , required: true},
     image1Url: {type: String},
