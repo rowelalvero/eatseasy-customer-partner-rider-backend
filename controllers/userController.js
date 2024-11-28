@@ -290,6 +290,7 @@ module.exports = {
         }
     },
 
+
     getAdminNumber: async (req, res) => {
         try {
             const adminNumber = await User.find({userType: "Admin"}, {phone: 1});

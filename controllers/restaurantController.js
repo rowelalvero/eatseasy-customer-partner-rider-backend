@@ -37,6 +37,33 @@ module.exports ={
             res.status(500).json({status: false, message: error.message });
         }
     },
+    // Update Restaurant details
+    updateRestaurant: async (req, res) => {
+      const restaurantId = req.params.id;
+      const { title, time, imageUrl, logoUrl, phoneNumber, coords, code } = req.body;
+
+      try {
+        // Find and update the restaurant by ID
+        const updatedRestaurant = await Restaurant.findByIdAndUpdate(
+          restaurantId,
+          { title, time, imageUrl, logoUrl, phoneNumber, coords, code },
+          { new: true, runValidators: true }
+        );
+
+        if (!updatedRestaurant) {
+          return res.status(404).json({ status: false, message: 'Restaurant not found' });
+        }
+
+        res.status(200).json({
+          status: true,
+          message: 'Restaurant details updated successfully',
+          data: updatedRestaurant,
+        });
+      } catch (error) {
+        res.status(500).json({ status: false, message: error.message });
+      }
+    },
+
 
     updateRestaurantImages: async (req, res) => {
         const { imageUrl, logoUrl } = req.body;
