@@ -17,6 +17,7 @@ const driverRoute = require("./routes/driver");
 const messagingRoute = require("./routes/messaging");
 const orderRoute = require("./routes/order");
 const ratingRoute = require("./routes/rating");
+const constantRoute = require('./routes/constant');
 const uploadRoute = require("./routes/uploads");
 
 dotenv.config();
@@ -70,6 +71,7 @@ app.use("/api/driver", driverRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/rating", ratingRoute);
 app.use("/api/messaging", messagingRoute);
+app.use("/api/constants", constantRoute);
 app.use("/api/uploads", uploadRoute);
 
 // Error handling middleware
