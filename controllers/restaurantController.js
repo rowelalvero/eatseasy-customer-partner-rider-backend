@@ -5,7 +5,6 @@ const User =require("../models/User");
 const payoutRequestEmail = require("../utils/payout_request_email");
 const admin = require("firebase-admin");
 
-
 module.exports ={
     addRestaurant: async (req, res) => {
         const owner = req.user.id;
@@ -40,13 +39,13 @@ module.exports ={
     // Update Restaurant details
     updateRestaurant: async (req, res) => {
       const restaurantId = req.params.id;
-      const { title, time, imageUrl, logoUrl, phoneNumber, coords, code } = req.body;
+      const { title, time, imageUrl, logoUrl, phoneNumber, coords, code, phoneVerification } = req.body;
 
       try {
         // Find and update the restaurant by ID
         const updatedRestaurant = await Restaurant.findByIdAndUpdate(
           restaurantId,
-          { title, time, imageUrl, logoUrl, phoneNumber, coords, code },
+          { title, time, imageUrl, logoUrl, phoneNumber, coords, code, phoneVerification },
           { new: true, runValidators: true }
         );
 
