@@ -62,11 +62,11 @@ module.exports = {
         imageUrl: food.imageUrl[0],
         messageType: 'order'
       };
-
+        console.log(user?.fcm);
       if (user?.fcm && user.fcm !== 'none') {
         sendNotification(user.fcm, "🥡 Your Order Placed Successfully", notificationData, `Please wait patiently, you will be updated on your order as soon as there is an update, 🙏`);
       }
-
+        console.log(restaurantOwner?.fcm);
       if (restaurantOwner?.fcm && restaurantOwner.fcm !== 'none') {
         sendNotification(restaurantOwner.fcm, "🥡 Incoming Order", notificationData, `You have a new order: ${order._id}. Please process the order 🙏`);
       }
