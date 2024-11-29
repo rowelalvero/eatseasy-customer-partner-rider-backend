@@ -331,7 +331,7 @@ module.exports = {
         //paymentStatus: "Completed",
       })
         .select(
-          "userId deliveryAddress deliveryOption paymentStatus deliveryDate orderItems orderTotal deliveryFee restaurantId orderStatus restaurantCoords recipientCoords orderDate"
+          "userId deliveryAddress deliveryOption paymentStatus deliveryDate orderItems orderTotal deliveryOption deliveryFee restaurantId orderStatus restaurantCoords recipientCoords orderDate"
         )
         .populate({
           path: "userId",
@@ -371,7 +371,7 @@ module.exports = {
         //paymentStatus: "Completed",
       })
         .select(
-          "userId deliveryAddress orderItems deliveryOption orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus orderDate"
+          "userId deliveryAddress orderItems deliveryOption orderTotal deliveryFee deliveryOption paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus orderDate"
         )
         .populate({
           path: "userId",
@@ -423,7 +423,7 @@ module.exports = {
         driverId: req.params.driver,
       })
         .select(
-          "userId deliveryAddress orderItems orderTotal deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus orderDate"
+          "userId deliveryAddress orderItems orderTotal deliveryOption deliveryFee paymentMethod restaurantId restaurantCoords recipientCoords driverStatus orderStatus orderDate"
         )
         .populate({
           path: "userId",
