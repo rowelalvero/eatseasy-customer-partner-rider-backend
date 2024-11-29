@@ -58,7 +58,7 @@ module.exports = {
       }
 
       const notificationData = {
-        orderId: order._id.toString(),
+        orderId: req.body.deliveryDate,
         imageUrl: food.imageUrl[0],
         messageType: 'order'
       };
