@@ -93,7 +93,6 @@ module.exports = {
     }
   },
 
-
   getOrderDetails: async (req, res) => {
       const orderId = req.params.id;
 
