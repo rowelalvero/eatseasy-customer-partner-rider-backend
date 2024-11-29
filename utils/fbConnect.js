@@ -1,10 +1,15 @@
-import * as firebase  from 'firebase-admin';
-    const  serviceAccount = require("../../serviceAccountKey.json")
+const admin = require('firebase-admin')
+const serviceAccount = require('../servicesAccountKey.json')
 
-    firebase.initializeApp({
-      credential: firebase.credential.cert(serviceAccount),
-      databaseURL: 'https://xxxxxx.firebaseio.com'
-    });
+
+const fireBaseConnection = async () => {
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+          databaseURL: "https://xxxxx.firebaseio.com"
+        });
+      console.log("Connected to Firebase");
+
+}
 
 async function sendPushNotification(deviceToken, messageBody) {
     const message = {
@@ -16,7 +21,7 @@ async function sendPushNotification(deviceToken, messageBody) {
     };
 
     try {
-        const response = await firebase.messaging().send(message);
+        const response = await admin.messaging().send(message);
         console.log('Successfully sent message:', response);
     } catch (error) {
         console.error('Error sending message:', error);
