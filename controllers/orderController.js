@@ -16,26 +16,14 @@ module.exports = {
   placeOrder: async (req, res) => {
     const { paymentMethod } = req.body;
 
-    const orderTotal = parseFloat(req.body.orderTotal);
-    const deliveryFee = parseFloat(req.body.deliveryFee);
-    const grandTotal = parseFloat(req.body.grandTotal);
-    const unitPrice = parseFloat(req.body.unitPrice);
-
-    if (isNaN(orderTotal) || isNaN(deliveryFee) || isNaN(grandTotal) || isNaN(unitPrice)) {
-      return res.status(400).json({ status: false, message: "Invalid number input" });
-    }
-
-    if (req.body.orderItems.length === 0) {
-      return res.status(400).json({ status: false, message: "Order items cannot be empty" });
-    }
 
     const order = new Order({
       userId: req.body.userId,
       orderItems: req.body.orderItems,
-      orderTotal,
-      deliveryFee,
-      grandTotal,
-      unitPrice,
+      orderTotal: parseFloat(req.body.orderTotal), // Convert to double
+      deliveryFee: parseFloat(req.body.deliveryFee), // Assuming you want to convert this as well
+      grandTotal: parseFloat(req.body.grandTotal),
+      unitPrice: parseFloat(req.body.unitPrice),
       restaurantAddress: req.body.restaurantAddress,
       paymentMethod: req.body.paymentMethod,
       restaurantId: req.body.restaurantId,
