@@ -16,13 +16,26 @@ module.exports = {
   placeOrder: async (req, res) => {
     const { paymentMethod } = req.body;
 
+    const orderTotal = parseFloat(req.body.orderTotal);
+    const deliveryFee = parseFloat(req.body.deliveryFee);
+    const grandTotal = parseFloat(req.body.grandTotal);
+    const unitPrice = parseFloat(req.body.unitPrice);
+
+    if (isNaN(orderTotal) || isNaN(deliveryFee) || isNaN(grandTotal) || isNaN(unitPrice)) {
+      return res.status(400).json({ status: false, message: "Invalid number input" });
+    }
+
+    if (req.body.orderItems.length === 0) {
+      return res.status(400).json({ status: false, message: "Order items cannot be empty" });
+    }
+
     const order = new Order({
       userId: req.body.userId,
       orderItems: req.body.orderItems,
-      orderTotal: parseFloat(req.body.orderTotal), // Convert to double
-      deliveryFee: parseFloat(req.body.deliveryFee), // Assuming you want to convert this as well
-      grandTotal: parseFloat(req.body.grandTotal),
-      unitPrice: parseFloat(req.body.unitPrice), // And this too
+      orderTotal,
+      deliveryFee,
+      grandTotal,
+      unitPrice,
       restaurantAddress: req.body.restaurantAddress,
       paymentMethod: req.body.paymentMethod,
       restaurantId: req.body.restaurantId,
@@ -35,23 +48,51 @@ module.exports = {
     });
 
     try {
-      if (paymentMethod == 'STRIPE') {
-         await Restaurant.findByIdAndUpdate(
-            order.restaurantId._id,
-            {
-              $inc: { earnings: order.orderTotal },
-            },
-            { new: true }
-         );
+      const user = await User.findById(order.userId);
+      if (!user) {
+        return res.status(404).json({ status: false, message: "User not found" });
+      }
+
+      const food = await Food.findById(order.orderItems[0].foodId, { imageUrl: 1, _id: 0 });
+      if (!food) {
+        return res.status(404).json({ status: false, message: "Food item not found" });
+      }
+
+      const restaurant = await Restaurant.findById(order.restaurantId);
+      if (!restaurant) {
+        return res.status(404).json({ status: false, message: "Restaurant not found" });
+      }
+
+      const restaurantOwner = await User.findById(restaurant.owner);
+      if (!restaurantOwner) {
+        return res.status(404).json({ status: false, message: "Restaurant owner not found" });
+      }
+
+      const notificationData = {
+        orderId: order._id.toString(),
+        imageUrl: food.imageUrl[0],
+        messageType: 'order'
+      };
+
+      if (user?.fcm && user.fcm !== 'none') {
+        sendNotification(user.fcm, "🥡 Your Order Placed Successfully", notificationData, `Please wait patiently, you will be updated on your order as soon as there is an update, 🙏`);
+      }
+
+      if (restaurantOwner?.fcm && restaurantOwner.fcm !== 'none') {
+        sendNotification(restaurantOwner.fcm, "🥡 Incoming Order", notificationData, `You have a new order: ${order._id}. Please process the order 🙏`);
+      }
+
+      if (paymentMethod === 'STRIPE') {
+        await Restaurant.findByIdAndUpdate(order.restaurantId, { $inc: { earnings: order.orderTotal } });
       }
 
       await order.save();
-      const orderId = order.id;
-      res.status(201).json({status: true, message: "Order placed successfully",orderId: orderId,});
+      res.status(201).json({ status: true, message: "Order placed successfully", orderId: order._id.toString() });
     } catch (error) {
       res.status(500).json({ status: false, message: error.message });
     }
-  },
+  }
+
 
   getOrderDetails: async (req, res) => {
       const orderId = req.params.id;
