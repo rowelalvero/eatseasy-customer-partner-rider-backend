@@ -3,7 +3,7 @@ const Food = require("../models/Food")
 
 module.exports = {
     addFood: async (req, res) => {
-        const { title, foodTags, category, foodType, code, isAvailable, restaurant, description, time, price, imageUrl, customAdditives } = req.body;
+        const { title, foodTags, category, foodType, code, isAvailable, stocks, restaurant, description, time, price, imageUrl, customAdditives } = req.body;
 
         // Simple validation
         if (!title || !foodTags || !category || !foodType || !code || !description || !price || !customAdditives || !time || !imageUrl || !restaurant || !isAvailable) {
