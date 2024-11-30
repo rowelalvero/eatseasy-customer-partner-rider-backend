@@ -74,14 +74,14 @@ module.exports = {
 
             const data = { messageType: "pay" };
                 // Send notification if FCM token exists
-                if (user.fcm || user.fcm !== null || user.fcm !== "") {
+                /*if (user.fcm || user.fcm !== null || user.fcm !== "") {
                    sendNotification(
                      user.fcm,
                      'Top-up successful',
                      data,
                      `An amount of Php ${amount} has been added to your wallet.`
                    );
-                }
+                }*/
 
             // Save the updated driver document
             await driver.save();

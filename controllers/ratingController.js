@@ -52,8 +52,7 @@ module.exports = {
         }
     },
 
-
-     checkIfUserRatedRestaurant: async (req, res) => {
+    checkIfUserRatedRestaurant: async (req, res) => {
         const ratingType = req.query.ratingType;
         const product = req.query.product;
 
